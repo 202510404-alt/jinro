@@ -270,6 +270,23 @@ class GameMap:
     def update(self, dt, player_obj):
         """main.py의 호출 규격(dt, player_obj)에 맞춘 맵 전체 요소 실시간 업데이트 프로토콜"""
         for entity in self.entities:
+            # 💡 [최적화 가드] 플레이어 활성화 범위(Activation Box) 내부의 적들만 실시간 업데이트 적용
+            if hasattr(player_obj, 'vars') and hasattr(player_obj.vars, 'x'):
+                # 모듈 패스 또는 클래스명에 'enemy'가 포함되어 있는지 식별 (지능형 판별)
+                is_enemy = "enemy" in entity.__class__.__module__.lower() or "enemy" in entity.__class__.__name__.lower()
+                
+                if is_enemy and hasattr(entity, 'vars') and hasattr(entity.vars, 'x'):
+                    px, py = player_obj.vars.x, player_obj.vars.y
+                    ex, ey = entity.vars.x, entity.vars.y
+                    
+                    # 렌더링 범위보다 여유를 두기 위해 가상 해상도의 약 1.5배 영역을 활성화 범위로 지정
+                    limit_x = settings.VIRTUAL_WIDTH * 1.5 if hasattr(settings, "VIRTUAL_WIDTH") else 1000
+                    limit_y = settings.VIRTUAL_HEIGHT * 1.5 if hasattr(settings, "VIRTUAL_HEIGHT") else 800
+                    
+                    # 내장 함수 abs()를 활용하여 플레이어와의 거리가 활성화 범위를 벗어나면 업데이트 스킵
+                    if abs(ex - px) > limit_x or abs(ey - py) > limit_y:
+                        continue
+
             # 1. 엔티티가 dt 기반 업데이트(update_with_dt)를 지원하는지 먼저 확인
             if hasattr(entity, "update_with_dt"):
                 try:
@@ -298,6 +315,7 @@ class GameMap:
                     entity.update(player_obj, self.platforms, self)
                 except Exception as e:
                     print(f"⚠️ [GameMap] 엔티티 일반 업데이트 중 오류 발생: {e}")
+                    
         # 트리거 박스 인스턴스 실시간 업데이트 보장 
         for box in self.trigger_boxes:
             if hasattr(box, "update"):
