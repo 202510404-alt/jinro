@@ -75,8 +75,15 @@ def serialize_map(editor):
     }
 
 
+# map_editor_tool/serializer.py:78-90 범위 수정
+
+# map_editor_tool/serializer.py 수정 (L88-103 부근)
 def _serialize_platform(editor, platform):
     vars_obj = platform.vars
+    
+    # platform_type 속성이 존재하지 않는 구버전 대비 예외 처리
+    p_type = getattr(vars_obj, "platform_type", "SOLID")
+
     return {
         "type": getattr(platform, "type", "platform"),
         "x": int(vars_obj.x),
@@ -84,16 +91,26 @@ def _serialize_platform(editor, platform):
         "width": int(vars_obj.width),
         "height": int(vars_obj.height),
         "is_visible": bool(vars_obj.is_visible),
-        "platform_type": getattr(vars_obj, "platform_type", "SOLID"),
-        "can_pass_through": bool(getattr(vars_obj, "passable_from_bottom", False)),
+        "is_solid": bool(vars_obj.is_solid),
+        "platform_type": p_type,  # 🎯 JSON 저장 스펙에 반드시 플랫폼 유형 추가 보장!
+        "can_pass_through": bool(getattr(vars_obj, "passable_from_bottom", False) or getattr(vars_obj, "can_pass_through", False)),
         "z_index": int(getattr(platform, "z_index", 2)),
     }
 
-
 def _serialize_structure(editor, struct):
     vars_obj = struct.vars
+    
+    # 🎯 데이터 주도형 아키텍처 상태 추출 무결성 확보
+    # struct.type 또는 vars_obj에 내장된 platform_type 프로토콜을 안전하게 탐색
+    p_type = getattr(struct, "type", "SOLID")
+    if hasattr(vars_obj, "platform_type"):
+        p_type = vars_obj.platform_type
+    elif hasattr(struct, "platform_type"):
+        p_type = struct.platform_type
+
     return {
-        "type": getattr(struct, "type", "platform"),
+        "type": str(p_type), # 인게임 및 하위 호환성을 위한 분기 매핑 보존
+        "platform_type": str(p_type), # 맵 시스템 파싱 동기화를 위한 핵심 필드 추가
         "x": int(vars_obj.x),
         "y": int(vars_obj.y),
         "width": int(vars_obj.width),

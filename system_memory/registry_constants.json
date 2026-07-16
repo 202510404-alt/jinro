@@ -1,3 +1,9 @@
 {
-  "registered_entities": []
+  "registered_entities": [
+    "ElasticCamera",
+    "EntityRegistry",
+    "Platform",
+    "PlatformVariables",
+    "PlayerInputHandler"
+  ]
 }

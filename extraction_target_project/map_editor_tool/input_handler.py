@@ -22,8 +22,18 @@ def handle_event(editor, event, mouse_virtual):
     if editor.mode == "select":
         from map_editor_tool import map_selector
         return map_selector.handle_select_event(editor, event, mouse_virtual)
+        
+    # 🎯 최소한의 안전한 단축키만 가볍게 복구하고 싶을 때 추가하는 영역
     if event.type == pygame.KEYDOWN:
-        return handle_keydown(editor, event)
+        if event.key == pygame.K_ESCAPE:
+            return editor._app_state("MENU") # ESC 누르면 안전하게 메뉴로 퇴장
+        elif event.key == pygame.K_1:
+            editor.tool = "place"
+        elif event.key == pygame.K_2:
+            editor.tool = "select"
+        elif event.key == pygame.K_3:
+            editor.tool = "erase"
+            
     if event.type == pygame.MOUSEBUTTONDOWN:
         return handle_mouse_down(editor, event, mouse_virtual)
     if event.type == pygame.MOUSEMOTION and editor.dragging and editor.selected_platform:
@@ -34,7 +44,6 @@ def handle_event(editor, event, mouse_virtual):
     if event.type == pygame.MOUSEBUTTONUP and event.button == 1:
         editor.dragging = False
     return None
-
 
 def handle_keydown(editor, event):
     if event.key == pygame.K_ESCAPE:
@@ -59,44 +68,100 @@ def handle_keydown(editor, event):
     return None
 
 
-def handle_selected_shortcuts(editor, event):
-    vars_obj = editor.selected_platform.vars
-    if event.key == pygame.K_LEFTBRACKET:
-        vars_obj.width = max(40, vars_obj.width - editor.GRID_SIZE)
-        editor.selected_platform.load_image()
-    elif event.key == pygame.K_RIGHTBRACKET:
-        vars_obj.width += editor.GRID_SIZE
-        editor.selected_platform.load_image()
-    elif event.key == pygame.K_SEMICOLON:
-        vars_obj.height = max(20, vars_obj.height - 10)
-        editor.selected_platform.load_image()
-    elif event.key == pygame.K_QUOTE:
-        vars_obj.height += 10
-        editor.selected_platform.load_image()
-    elif event.key == pygame.K_v:
-        vars_obj.is_visible = not vars_obj.is_visible
-    elif event.key == pygame.K_p:
-        vars_obj.passable_from_bottom = not getattr(vars_obj, "passable_from_bottom", False)
+# map_editor_tool/input_handler.py:62-79 범위 수정
+# map_editor_tool/input_handler.py:147-172 범위 수정 (사이드바 마우스 감지 추가)
+def handle_sidebar_click(editor, click_pos):
+    """
+    사이드바 영역 클릭 시 세부 처리부.
+    인스펙터 UI 내부의 버튼 충돌을 계산하여 즉시 속성 및 리사이징을 수행합니다.
+    """
+    panel_x = settings.VIRTUAL_WIDTH - editor.SIDEBAR_W
+    if click_pos.x < panel_x:
+        return False
+
+    # 1. 저장 버튼 클릭 처리
+    if editor.SAVE_BUTTON_RECT.collidepoint(click_pos):
+        from map_editor_tool import serializer
+        serializer.save_map(editor)
+        return True
+
+    # 2. 툴 버튼 클릭 처리
+    for tool_name, rect_x in [("place", panel_x + 24), ("select", panel_x + 116), ("erase", panel_x + 208)]:
+        tool_rect = pygame.Rect(rect_x, 246, 82, 42)
+        if tool_rect.collidepoint(click_pos):
+            editor.tool = tool_name
+            return True
+
+    # 3. 팔레트 오브젝트 선택 처리
+    for idx, definition in enumerate(editor.palette):
+        rect = pygame.Rect(panel_x + 24, 348 + idx * 54, editor.SIDEBAR_W - 48, 42)
+        if rect.collidepoint(click_pos):
+            editor.palette_index = idx
+            return True
+
+    # 4. 플랫폼 인스펙터 버튼 인터랙션 처리 (플랫폼이 선택되어 있을 때만 동작)
+    if editor.selected_platform:
+        vars_obj = editor.selected_platform.vars
+
+        # ── 가로 길이(Width) 수정 버튼 ──
+        if hasattr(editor, "BTN_W_DEC") and editor.BTN_W_DEC.collidepoint(click_pos):
+            vars_obj.width = max(editor.GRID_SIZE, vars_obj.width - editor.GRID_SIZE)
+            editor.selected_platform.load_image() # 실시간 텍스처 리사이징
+            return True
+        elif hasattr(editor, "BTN_W_INC") and editor.BTN_W_INC.collidepoint(click_pos):
+            vars_obj.width += editor.GRID_SIZE
+            editor.selected_platform.load_image()
+            return True
+
+        # ── 세로 길이(Height) 수정 버튼 ──
+        elif hasattr(editor, "BTN_H_DEC") and editor.BTN_H_DEC.collidepoint(click_pos):
+            vars_obj.height = max(10, vars_obj.height - 10)
+            editor.selected_platform.load_image()
+            return True
+        elif hasattr(editor, "BTN_H_INC") and editor.BTN_H_INC.collidepoint(click_pos):
+            vars_obj.height += 10
+            editor.selected_platform.load_image()
+            return True
+
+        # ── 충돌 타입 3종 변경 버튼 ──
+        elif hasattr(editor, "BTN_SOLID") and editor.BTN_SOLID.collidepoint(click_pos):
+            vars_obj.platform_type = "SOLID"
+            vars_obj.is_solid = True
+            vars_obj.passable_from_bottom = False
+            return True
+        elif hasattr(editor, "BTN_ONE_WAY") and editor.BTN_ONE_WAY.collidepoint(click_pos):
+            vars_obj.platform_type = "ONE_WAY"
+            vars_obj.is_solid = True
+            vars_obj.passable_from_bottom = True
+            return True
+        elif hasattr(editor, "BTN_GHOST") and editor.BTN_GHOST.collidepoint(click_pos):
+            vars_obj.platform_type = "GHOST"
+            vars_obj.is_solid = False
+            vars_obj.passable_from_bottom = True
+            return True
+
+    return False
 
 
 def handle_mouse_down(editor, event, mouse_virtual):
-    if event.button == 1:
-        if mouse_virtual[0] >= settings.VIRTUAL_WIDTH - editor.SIDEBAR_W:
-            return handle_sidebar_click(editor, mouse_virtual)
+    # 어떤 타입의 좌표가 들어와도 pygame.Vector2로 강제 통합하여 무결성 유지
+    pos_vector = pygame.Vector2(mouse_virtual[0], mouse_virtual[1])
 
-        world = screen_to_world(editor, mouse_virtual)
+    if event.button == 1:
+        # 사이드바 충돌 판정 (Vector2 속성인 .x 활용)
+        if pos_vector.x >= settings.VIRTUAL_WIDTH - editor.SIDEBAR_W:
+            return handle_sidebar_click(editor, pos_vector)
+
+        world = screen_to_world(editor, pos_vector)
         if editor.tool == "place":
             selection.place_selected(editor, world)
         elif editor.tool == "erase":
-            # 🎯 마우스 위치의 플랫폼/엔티티 통합 탐색 객체 획득
             target_obj = selection.find_platform_at(editor, world)
             if target_obj:
-                # 1. 플랫폼 리스트에 존재하는 경우 안전 삭제
                 if target_obj in editor.map_manager.platforms:
                     editor.map_manager.platforms.remove(target_obj)
                     if hasattr(editor.map_manager, "structures") and target_obj in editor.map_manager.structures:
                         editor.map_manager.structures.remove(target_obj)
-                # 2. 엔티티(몹 등) 리스트에 존재하는 경우 안전 삭제
                 elif target_obj in editor.map_manager.entities:
                     editor.map_manager.entities.remove(target_obj)
 
@@ -108,24 +173,31 @@ def handle_mouse_down(editor, event, mouse_virtual):
                 vars_obj = editor.selected_platform.vars
                 editor.dragging = True
                 editor.drag_offset = pygame.Vector2(world.x - vars_obj.x, world.y - vars_obj.y)
+                
     elif event.button == 3:
         editor.tool = "select"
-        editor.selected_platform = selection.find_platform_at(editor, screen_to_world(editor, mouse_virtual))
+        editor.selected_platform = selection.find_platform_at(editor, screen_to_world(editor, pos_vector))
+        
     elif event.button == 4:
         editor.camera.y = max(0, editor.camera.y - editor.GRID_SIZE)
     elif event.button == 5:
         editor.camera.y += editor.GRID_SIZE
+        
     return None
 
 
 def handle_sidebar_click(editor, mouse_virtual):
-    x, y = mouse_virtual
+    # 어떤 형태의 마우스 좌표가 넘어오든 안전하게 언패킹
+    x, y = mouse_virtual[0], mouse_virtual[1]
     panel_x = settings.VIRTUAL_WIDTH - editor.SIDEBAR_W
+
+    # 1. 원래의 [저장] 버튼 처리 (기존 구조 완벽 유지)
     if editor.SAVE_BUTTON_RECT.collidepoint(x, y):
         if editor.save_map():
             return editor._app_state("MENU")
         return None
 
+    # 2. 원래의 [툴 선택] 버튼 처리 (기존 구조 완벽 유지)
     tool_buttons = [
         ("place", pygame.Rect(panel_x + 24, 246, 82, 42)),
         ("select", pygame.Rect(panel_x + 116, 246, 82, 42)),
@@ -136,6 +208,7 @@ def handle_sidebar_click(editor, mouse_virtual):
             editor.tool = tool
             return None
 
+    # 3. 원래의 [팔레트 아이템 선택] 처리 (기존 구조 완벽 유지)
     item_y = 348
     for idx, _definition in enumerate(editor.palette):
         rect = pygame.Rect(panel_x + 24, item_y + idx * 54, editor.SIDEBAR_W - 48, 42)
@@ -143,6 +216,49 @@ def handle_sidebar_click(editor, mouse_virtual):
             editor.palette_index = idx
             editor.tool = "place"
             return None
+
+    # 4. 🎯 추가된 [인스펙터 플랫폼 수정] 처리 (선택된 플랫폼이 있을 때만 안전하게 검사)
+    # map_editor_tool/input_handler.py의 handle_sidebar_click 내 인스펙터 수정부
+    if editor.selected_platform:
+        vars_obj = editor.selected_platform.vars
+
+        # ── 가로 길이(W) 수정 ──
+        if hasattr(editor, "BTN_W_DEC") and editor.BTN_W_DEC.collidepoint(x, y):
+            vars_obj.width = max(editor.GRID_SIZE, vars_obj.width - editor.GRID_SIZE)
+            editor.selected_platform.load_image()
+            return None
+        elif hasattr(editor, "BTN_W_INC") and editor.BTN_W_INC.collidepoint(x, y):
+            vars_obj.width += editor.GRID_SIZE
+            editor.selected_platform.load_image()
+            return None
+
+        # ── 세로 길이(H) 수정 ──
+        elif hasattr(editor, "BTN_H_DEC") and editor.BTN_H_DEC.collidepoint(x, y):
+            vars_obj.height = max(10, vars_obj.height - 10)
+            editor.selected_platform.load_image()
+            return None
+        elif hasattr(editor, "BTN_H_INC") and editor.BTN_H_INC.collidepoint(x, y):
+            vars_obj.height += 10
+            editor.selected_platform.load_image()
+            return None
+
+        # ── 충돌 타입 3종 변경 및 내부 물리 플래그 강제 정렬 ──
+        elif hasattr(editor, "BTN_SOLID") and editor.BTN_SOLID.collidepoint(x, y):
+            vars_obj.platform_type = "SOLID"
+            vars_obj.is_solid = True
+            vars_obj.passable_from_bottom = False
+            return None
+        elif hasattr(editor, "BTN_ONE_WAY") and editor.BTN_ONE_WAY.collidepoint(x, y):
+            vars_obj.platform_type = "ONE_WAY"
+            vars_obj.is_solid = True
+            vars_obj.passable_from_bottom = True
+            return None
+        elif hasattr(editor, "BTN_GHOST") and editor.BTN_GHOST.collidepoint(x, y):
+            vars_obj.platform_type = "GHOST"
+            vars_obj.is_solid = False
+            vars_obj.passable_from_bottom = True
+            return None
+
     return None
 
 

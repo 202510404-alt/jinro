@@ -9,8 +9,31 @@
   "platforms": [],
   "structures": [
     {
-      "type": "platform",
+      "type": "ONE_WAY",
+      "platform_type": "ONE_WAY",
       "x": 1000,
+      "y": 1680,
+      "width": 240,
+      "height": 40,
+      "is_visible": true,
+      "can_pass_through": true,
+      "z_index": 2
+    },
+    {
+      "type": "GHOST",
+      "platform_type": "GHOST",
+      "x": 1320,
+      "y": 1680,
+      "width": 240,
+      "height": 40,
+      "is_visible": true,
+      "can_pass_through": true,
+      "z_index": 2
+    },
+    {
+      "type": "SOLID",
+      "platform_type": "SOLID",
+      "x": 680,
       "y": 1680,
       "width": 240,
       "height": 40,
@@ -19,21 +42,12 @@
       "z_index": 2
     },
     {
-      "type": "platform",
-      "x": 1200,
-      "y": 1560,
-      "width": 240,
-      "height": 40,
-      "is_visible": true,
-      "can_pass_through": false,
-      "z_index": 2
-    },
-    {
-      "type": "platform",
-      "x": 1120,
-      "y": 1400,
-      "width": 240,
-      "height": 40,
+      "type": "SOLID",
+      "platform_type": "SOLID",
+      "x": 280,
+      "y": 1240,
+      "width": 400,
+      "height": 130,
       "is_visible": true,
       "can_pass_through": false,
       "z_index": 2

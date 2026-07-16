@@ -10,8 +10,78 @@
   "structures": [
     {
       "type": "platform",
+      "x": 760,
+      "y": 480,
+      "width": 200,
+      "height": 450,
+      "is_visible": true,
+      "can_pass_through": true,
+      "z_index": 2
+    },
+    {
+      "type": "platform",
       "x": 920,
-      "y": 560,
+      "y": 720,
+      "width": 240,
+      "height": 40,
+      "is_visible": true,
+      "can_pass_through": false,
+      "z_index": 2
+    },
+    {
+      "type": "platform",
+      "x": 760,
+      "y": 1080,
+      "width": 240,
+      "height": 40,
+      "is_visible": true,
+      "can_pass_through": true,
+      "z_index": 2
+    },
+    {
+      "type": "platform",
+      "x": 880,
+      "y": 440,
+      "width": 280,
+      "height": 40,
+      "is_visible": true,
+      "can_pass_through": false,
+      "z_index": 2
+    },
+    {
+      "type": "platform",
+      "x": 80,
+      "y": 1040,
+      "width": 240,
+      "height": 40,
+      "is_visible": true,
+      "can_pass_through": false,
+      "z_index": 2
+    },
+    {
+      "type": "platform",
+      "x": 400,
+      "y": 1080,
+      "width": 240,
+      "height": 40,
+      "is_visible": true,
+      "can_pass_through": true,
+      "z_index": 2
+    },
+    {
+      "type": "platform",
+      "x": 160,
+      "y": 400,
+      "width": 240,
+      "height": 40,
+      "is_visible": true,
+      "can_pass_through": false,
+      "z_index": 2
+    },
+    {
+      "type": "platform",
+      "x": 440,
+      "y": 600,
       "width": 240,
       "height": 40,
       "is_visible": true,

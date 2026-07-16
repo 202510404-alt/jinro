@@ -1,12 +1,13 @@
 {
   "schema_version": 2,
-  "map_id": 1,
+  "map_id": "stage1",
   "map_width": 2400,
   "map_height": 1200,
   "background_type": "bg_sky",
   "ground_type": "ground_dirt",
-  "ground_y": 1080,
+  "ground_y": 1200.0,
   "platforms": [],
+  "structures": [],
   "entities": [],
   "triggers": [
     {

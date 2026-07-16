@@ -112,25 +112,69 @@ def draw_tool_button(editor, surface, tool, x, y):
     text(editor, surface, tool, x + 10, y + 11, editor.small_font)
 
 
+# map_editor_tool/renderer.py:115-133 범위 수정
+
+# map_editor_tool/renderer.py:117-136 범위 수정
 def draw_inspector(editor, surface, panel_x):
     y = 520
-    text(editor, surface, "Inspector", panel_x + 24, y, editor.font)
+    text(editor, surface, "Inspector", panel_x + 24, y, editor.header_font)
     if not editor.selected_platform:
         text(editor, surface, "No selection", panel_x + 24, y + 40, editor.small_font, (180, 198, 214))
         return
+        
     vars_obj = editor.selected_platform.vars
-    lines = [
-        f"x {int(vars_obj.x)}  y {int(vars_obj.y)}",
-        f"w {int(vars_obj.width)}  h {int(vars_obj.height)}",
-        f"visible {getattr(vars_obj, 'is_visible', True)}",
-        f"type {getattr(vars_obj, 'platform_type', 'SOLID')}", # 1. 3종 관통 판정 상태 표시 (기존 pass-through 대체 및 확장)
-        f"A/D: W-Scale  W/S: H-Scale",                         # 2. 가로/세로 조작을 위한 단축키 안내 라인 추가
-        f"T: Change Platform Type",                             # 3. 판정 변경을 위한 단축키 안내 라인 추가
-    ]
-    for idx, line in enumerate(lines):
-        # 안내 문구는 다른 색상으로 가독성 처리
-        color = (140, 160, 180) if idx >= 4 else (213, 225, 235)
-        text(editor, surface, line, panel_x + 24, y + 40 + idx * 28, editor.small_font, color)
+    
+    # 기본 좌표 및 크기 출력
+    text(editor, surface, f"Pos: ({int(vars_obj.x)}, {int(vars_obj.y)})", panel_x + 24, y + 36, editor.small_font)
+    text(editor, surface, f"Size: {int(vars_obj.width)} x {int(vars_obj.height)}", panel_x + 24, y + 60, editor.small_font)
+
+    # --- [가로/세로 조절 UI 영역] ---
+    # 가로(W) 조절 버튼 레이아웃 (W: [ - ] 100 [ + ])
+    text(editor, surface, "W:", panel_x + 24, y + 90, editor.small_font)
+    editor.BTN_W_DEC = pygame.Rect(panel_x + 50, y + 84, 28, 24)
+    editor.BTN_W_INC = pygame.Rect(panel_x + 130, y + 84, 28, 24)
+    
+    # 세로(H) 조절 버튼 레이아웃 (H: [ - ] 40 [ + ])
+    text(editor, surface, "H:", panel_x + 175, y + 90, editor.small_font)
+    editor.BTN_H_DEC = pygame.Rect(panel_x + 195, y + 84, 28, 24)
+    editor.BTN_H_INC = pygame.Rect(panel_x + 275, y + 84, 28, 24)
+
+    # W 버튼 렌더링
+    pygame.draw.rect(surface, (50, 65, 80), editor.BTN_W_DEC, border_radius=3)
+    pygame.draw.rect(surface, (50, 65, 80), editor.BTN_W_INC, border_radius=3)
+    text(editor, surface, "-", panel_x + 60, y + 88, editor.small_font)
+    text(editor, surface, "+", panel_x + 140, y + 88, editor.small_font)
+    text(editor, surface, f"{int(vars_obj.width)}", panel_x + 88, y + 90, editor.small_font, (255, 230, 150))
+
+    # H 버튼 렌더링
+    pygame.draw.rect(surface, (50, 65, 80), editor.BTN_H_DEC, border_radius=3)
+    pygame.draw.rect(surface, (50, 65, 80), editor.BTN_H_INC, border_radius=3)
+    text(editor, surface, "-", panel_x + 205, y + 88, editor.small_font)
+    text(editor, surface, "+", panel_x + 285, y + 88, editor.small_font)
+    text(editor, surface, f"{int(vars_obj.height)}", panel_x + 233, y + 90, editor.small_font, (255, 230, 150))
+
+    # --- [플랫폼 충돌 타입 UI 버튼 영역] ---
+    text(editor, surface, "Collision Type:", panel_x + 24, y + 130, editor.small_font)
+    
+    # 3종류 버튼의 Rect 생성 및 할당
+    editor.BTN_SOLID = pygame.Rect(panel_x + 24, y + 155, 80, 28)
+    editor.BTN_ONE_WAY = pygame.Rect(panel_x + 114, y + 155, 90, 28)
+    editor.BTN_GHOST = pygame.Rect(panel_x + 214, y + 155, 80, 28)
+
+    current_type = getattr(vars_obj, "platform_type", "SOLID")
+
+    # 버튼 내부 그리기 함수
+    def draw_type_btn(rect, label, target_type):
+        is_active = (current_type == target_type)
+        bg_color = (72, 101, 82) if is_active else (38, 49, 59)
+        border_color = (142, 188, 155) if is_active else (74, 91, 106)
+        pygame.draw.rect(surface, bg_color, rect, border_radius=4)
+        pygame.draw.rect(surface, border_color, rect, 1, border_radius=4)
+        text(editor, surface, label, rect.x + 8, rect.y + 6, editor.small_font, (255, 255, 255) if is_active else (180, 198, 214))
+
+    draw_type_btn(editor.BTN_SOLID, "SOLID", "SOLID")
+    draw_type_btn(editor.BTN_ONE_WAY, "ONE-WAY", "ONE_WAY")
+    draw_type_btn(editor.BTN_GHOST, "GHOST", "GHOST")
 
 
 def draw_help(editor, surface, panel_x):

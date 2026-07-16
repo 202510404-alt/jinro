@@ -183,12 +183,15 @@ class GameMap:
             pf.is_ground = True  
             self.platforms.append(pf)
             
+        # 1. 일반 플랫폼 복원 파트 수정
         for p_data in self.raw_platforms:
             pf = Platform(
                 x=p_data.get("x"),
                 y=p_data.get("y"),
                 width=p_data.get("width"),
-                height=p_data.get("height")
+                height=p_data.get("height"),
+                is_visible=bool(p_data.get("is_visible", True)),
+                platform_type=str(p_data.get("platform_type", "SOLID"))  # 정적 파라미터 매핑 확보
             )
             self.platforms.append(pf)
 
@@ -207,7 +210,11 @@ class GameMap:
                 y = float(s_data.get("y", 0.0))
                 width = float(s_data.get("width", 240.0))
                 height = float(s_data.get("height", 40.0))
-                type_val = str(s_data.get("type", "platform"))
+                
+                # 구조물 내 platform_type 키 매핑 (하위 호환을 위해 "type" 스펙도 フォールバック 처리)
+                p_type = s_data.get("platform_type", s_data.get("type", "SOLID"))
+                if p_type == "platform":  # 레거시 명칭 예외 처리
+                    p_type = "SOLID"
 
                 pf = Platform(
                     x=x,
@@ -215,9 +222,11 @@ class GameMap:
                     width=int(width),
                     height=int(height),
                     is_visible=bool(s_data.get("is_visible", True)),
-                    can_pass_through=bool(s_data.get("can_pass_through", False) or s_data.get("passable_from_bottom", False))
+                    platform_type=str(p_type)  # 초기화 단계에서 확실히 전달
                 )
-                pf.type = type_val
+                
+                # 추가 데이터 프로토콜 무결성 보존
+                pf.type = p_type
                 pf.z_index = int(s_data.get("z_index", 2))
                 
                 self.structures.append(pf)
