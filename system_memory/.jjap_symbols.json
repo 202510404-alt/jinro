@@ -132,8 +132,8 @@
       "start_line": 307,
       "end_line": 331,
       "calls": [
-        "run_main_menu",
-        "run_game"
+        "run_game",
+        "run_main_menu"
       ],
       "used_by": []
     },
@@ -993,9 +993,9 @@
       "start_line": 19,
       "end_line": 46,
       "calls": [
+        "snap",
         "handle_mouse_down",
-        "screen_to_world",
-        "snap"
+        "screen_to_world"
       ],
       "used_by": []
     },
@@ -1121,8 +1121,8 @@
       "start_line": 36,
       "end_line": 54,
       "calls": [
-        "next_new_map_file",
-        "file_to_map_name"
+        "file_to_map_name",
+        "next_new_map_file"
       ],
       "used_by": []
     },
@@ -1262,9 +1262,9 @@
       "start_line": 6,
       "end_line": 12,
       "calls": [
-        "draw_grid",
         "draw_selection",
         "draw_sidebar",
+        "draw_grid",
         "draw_status"
       ],
       "used_by": []
@@ -1324,11 +1324,11 @@
       "start_line": 77,
       "end_line": 104,
       "calls": [
-        "draw_button",
-        "text",
-        "draw_tool_button",
         "draw_help",
-        "draw_inspector"
+        "text",
+        "draw_inspector",
+        "draw_button",
+        "draw_tool_button"
       ],
       "used_by": []
     },
@@ -1354,8 +1354,8 @@
       "start_line": 118,
       "end_line": 177,
       "calls": [
-        "text",
-        "draw_type_btn"
+        "draw_type_btn",
+        "text"
       ],
       "used_by": []
     },
@@ -1473,10 +1473,10 @@
       "start_line": 40,
       "end_line": 75,
       "calls": [
-        "_serialize_trigger",
+        "_serialize_structure",
         "_serialize_entity",
         "_serialize_platform",
-        "_serialize_structure"
+        "_serialize_trigger"
       ],
       "used_by": []
     },
@@ -1902,8 +1902,8 @@
       "start_line": 358,
       "end_line": 502,
       "calls": [
-        "_draw_x_tiled",
-        "_draw_2d_tiled"
+        "_draw_2d_tiled",
+        "_draw_x_tiled"
       ],
       "used_by": []
     },
@@ -2541,7 +2541,7 @@
       "type": "class",
       "path": "extraction_target_project/player/combat_processor.py",
       "start_line": 5,
-      "end_line": 136,
+      "end_line": 167,
       "calls": [],
       "used_by": []
     },
@@ -2563,7 +2563,7 @@
       "type": "method",
       "path": "extraction_target_project/player/combat_processor.py",
       "start_line": 9,
-      "end_line": 136,
+      "end_line": 167,
       "calls": [],
       "used_by": []
     },
@@ -2596,7 +2596,7 @@
       "type": "method",
       "path": "extraction_target_project/player/input_handler.py",
       "start_line": 8,
-      "end_line": 43,
+      "end_line": 47,
       "calls": [],
       "used_by": []
     },
@@ -2606,7 +2606,7 @@
       "full_name": "PlayerInputHandler.trigger_attack",
       "type": "method",
       "path": "extraction_target_project/player/input_handler.py",
-      "start_line": 45,
+      "start_line": 49,
       "end_line": 67,
       "calls": [],
       "used_by": []
@@ -2717,7 +2717,7 @@
       "type": "class",
       "path": "extraction_target_project/player/variables.py",
       "start_line": 4,
-      "end_line": 81,
+      "end_line": 85,
       "calls": [],
       "used_by": []
     },
@@ -2728,7 +2728,7 @@
       "type": "method",
       "path": "extraction_target_project/player/variables.py",
       "start_line": 5,
-      "end_line": 67,
+      "end_line": 71,
       "calls": [],
       "used_by": []
     },
@@ -2738,8 +2738,8 @@
       "full_name": "PlayerVariables.take_damage",
       "type": "method",
       "path": "extraction_target_project/player/variables.py",
-      "start_line": 69,
-      "end_line": 75,
+      "start_line": 73,
+      "end_line": 79,
       "calls": [],
       "used_by": []
     },
@@ -2749,8 +2749,8 @@
       "full_name": "PlayerVariables.heal",
       "type": "method",
       "path": "extraction_target_project/player/variables.py",
-      "start_line": 77,
-      "end_line": 81,
+      "start_line": 81,
+      "end_line": 85,
       "calls": [],
       "used_by": []
     },

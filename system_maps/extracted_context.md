@@ -2,48 +2,62 @@
 # 🎯 AI GLOBAL GUIDELINES: 코드 무결성 및 디버깅 중심 가이드
 # [SCAN_MODE] EXTRACTION_TARGET_PROJECT
 # ==========================================================================
-# 📄 [요청 1] TARGET: extraction_target_project/map_editor_tool/selection.py (45-85라인)
+# 📄 [요청 1] TARGET: extraction_target_project/player/motions/attack_motions.py (1-14라인)
 # ----------------------------------------------------------
 ```python
-        editor.selected_platform = None
-        editor.status_message = "Deleted selected platform"
+# player/motions/attack_motions.py
+from player.motions.motion_base import MotionBase
 
-    # 2. 엔티티 컨테이너에서 제거 시도
-    elif hasattr(editor.map_manager, "entities") and editor.selected_platform in editor.map_manager.entities:
-        editor.map_manager.entities.remove(editor.selected_platform)
-        editor.selected_platform = None
-        editor.status_message = "Deleted selected entity unit"
+class AttackMotions(MotionBase):
+    def handle_state(self, vars_obj):
+        # 플레이어가 공격 중일 때만 작동
+        if vars_obj.is_attacking:
+            if vars_obj.combo_step == 1:
+                return "ATTACK_1"
+            elif vars_obj.combo_step == 2:
+                return "ATTACK_2"
+            elif vars_obj.combo_step == 3:
+                return "ATTACK_3"
+        return None
+```
 
+# 📄 [요청 2] TARGET: extraction_target_project/player/player_main.py (120-155라인)
+# ----------------------------------------------------------
+```python
+            if self.vars.anim_timer >= delay:
+                self.vars.anim_timer = 0
+                self.vars.current_frame_idx = (self.vars.current_frame_idx + 1) % len(anim_list)
 
-def place_selected(editor, world):
-    if not editor.palette:
-        return
-    definition = editor.palette[editor.palette_index]
-    data = dict(definition.defaults)
+    def update_with_dt(self, platforms, game_map, dt, entities=None):
+        """main.py의 호출 인터페이스를 지원하기 위한 update 래퍼 메서드"""
+        self.update(platforms, entities=entities, game_map=game_map, dt=dt)
 
-    # 🧱 [분기 1] 순정 지형 플랫폼 생성 로직 (인자 규격 유지)
-    if definition.category == "platform":
-        data.setdefault("width", 240)
-        data.setdefault("height", 40)
-        platform = EntityRegistry.create(
-            definition.factory_type,
-            x=editor._snap(world.x),
-            y=editor._snap(world.y),
-            width=data["width"],
-            height=data["height"],
-            is_visible=data.get("is_visible", True),
-            can_pass_through=data.get("can_pass_through", False),
-        )
-        if not platform and definition.factory_type == "platform":
-            from platform_system.platform_main import Platform
-            platform = Platform(
-                x=editor._snap(world.x),
-                y=editor._snap(world.y),
-                width=data["width"],
-                height=data["height"],
-                is_visible=data.get("is_visible", True),
-                can_pass_through=data.get("can_pass_through", False),
-            )
-        if platform:
-            platform.type = definition.factory_type
+    def draw(self, screen, camera_offset=(0, 0)):
+        """플레이어 본체 이미지와 공격 시 콤보 이펙트를 화면에 렌더링합니다."""
+        ox, oy = camera_offset
+        # 🎬 1. 캐릭터 본체 스프라이트 시퀀스 추출 및 출력
+        anim_list = self.assets.images.get(self.vars.current_state, [])
+        if not anim_list:
+            return
+            
+        # 혹시 모를 인덱스 바운드 에러를 막기 위한 최종 안전 필터링
+        idx = min(self.vars.current_frame_idx, len(anim_list) - 1)
+        player_image = anim_list[idx]
+        
+        # 왼쪽을 바라보고 있다면 이미지 좌우 반전
+        if not self.vars.facing_right:
+            player_image = pygame.transform.flip(player_image, True, False)
+            
+        screen.blit(player_image, (self.vars.x - ox, self.vars.y - oy))
+        
+        # 2. ⚔️ 공격 애니메이션 중일 때 콤보 검기 이펙트 출력 (원본 로직 완벽 보존)
+        if self.vars.is_attacking and self.vars.combo_step in self.assets.effect_images:
+            effect_img = self.assets.effect_images[self.vars.combo_step]
+            
+            # 플레이어가 바라보는 방향에 맞춰 이펙트도 반전 및 위치 정렬
+            if not self.vars.facing_right:
+                effect_img = pygame.transform.flip(effect_img, True, False)
+                screen.blit(effect_img, (self.vars.x - ox - 60, self.vars.y - oy))
+            else:
+                screen.blit(effect_img, (self.vars.x - ox + 30, self.vars.y - oy))
 ```

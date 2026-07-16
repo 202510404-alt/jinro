@@ -3641,7 +3641,7 @@ class GameMap:
   ├── "ground_y": float (val: 1800.0)
   ├── "platforms": List (len: 0)
   ├── "structures": List (len: 4)
-  ├── "entities": List (len: 11)
+  ├── "entities": List (len: 10)
   ├── "triggers": List (len: 0)
   ├── "editor_metadata": Dict (keys: ['source_map', 'file_name', 'object_registry']...)
 ```
@@ -3909,23 +3909,27 @@ class PlayerAssetLoader:
 ```python
 class PlayerCombatProcessor:
     def __init__(self):
-        self.attack_cooldown_timer = 0.0
+        pass
 
     def process(self, vars_obj, entities=None, dt=0.0):
-        # 1. 공격 딜레이(쿨타임) 연산
-        if self.attack_cooldown_timer > 0:
-            self.attack_cooldown_timer -= dt
-            if self.attack_cooldown_timer > 0:
-                return
+        # 안전장치: 변수 객체에 쿨타임 필드가 없을 경우 동적 확보
+        if not hasattr(vars_obj, 'attack_cooldown_timer'):
+            vars_obj.attack_cooldown_timer = 0.0
 
-        # 2. 새로운 공격 개시 시점 (is_attacking은 켜졌으나 타이머가 0일 때)
+        # 1. 공격 불가(쿨타임) 실시간 감쇄 연산
+        if vars_obj.attack_cooldown_timer > 0.0:
+            vars_obj.attack_cooldown_timer -= dt
+            if vars_obj.attack_cooldown_timer < 0.0:
+                vars_obj.attack_cooldown_timer = 0.0
+
+        # 2. 새로운 공격 모션 프레임 개시 시점
         if vars_obj.is_attacking and getattr(vars_obj, 'attack_timer', 0) == 0:
             if not hasattr(vars_obj, 'combo_step') or vars_obj.combo_step == 0:
                 vars_obj.combo_step = 1
 
-            # 🎯 [최적화 자동 타겟팅] 가장 가까운 유효 적 탐색
+            # 🎯 [타겟팅] 플레이어에게 가장 가까운 유효 적 탐색 (사거리 제한 완화)
             target_enemy = None
-            max_target_distance = vars_obj.attack_range_width * 1.5
+            max_target_distance = vars_obj.attack_range_width * 3.0  # 더 넓은 범위의 타겟 서칭 허용
             min_dist_sq = max_target_distance * max_target_distance
             
             if entities:
@@ -3944,68 +3948,88 @@ class PlayerCombatProcessor:
                         min_dist_sq = dist_sq
                         target_enemy = entity
 
-            # 3. 콤보 분기 처리
-            dash_speed = 750.0 # 시원한 돌진 속도감 부여
+            # 3. 콤보 분기 및 돌진 속도 적용 (★ 대시 길이를 기존의 10분의 1인 75.0 수준으로 조절)
+            dash_speed = 75.0  # 750.0에서 10분의 1로 급감하여 짧고 조작 가능한 대시로 변경
+            vars_obj.attack_timer = 12 if vars_obj.combo_step in [1, 2] else 18
             
-            if vars_obj.combo_step in [1, 2]:
-                self.attack_cooldown_timer = 0.2 # 1, 2타 딜레이 0.2초
-                vars_obj.attack_timer = 12       # 공격 판정 지속 프레임
-                
+            if vars_obj.combo_step == 1:
+                # [1타] 적을 향해 가볍고 짧은 추적 돌진
                 if target_enemy:
                     te_vars = target_enemy.vars
                     dx = te_vars.x - vars_obj.x
                     dy = te_vars.y - vars_obj.y
-                    vars_obj.facing_right = (dx > 0)
+                    dist = math.sqrt(dx*dx + dy*dy) if (dx*dx + dy*dy) > 0 else 1.0
                     
-                    y_margin = 25 # 겹침 판정 픽셀 범주
-                    if abs(dy) <= y_margin:
-                        # 1) Y값 겹침 -> 수평 대시
+                    vars_obj.facing_right = (dx > 0)
+                    y_margin = 25
+                    
+                    if abs(dy) > y_margin:
+                        vars_obj.vx = (dx / dist) * dash_speed
+                        vars_obj.vy = (dy / dist) * dash_speed
+                    else:
                         vars_obj.vx = dash_speed if dx > 0 else -dash_speed
                         vars_obj.vy = 0
-                    elif dy < -y_margin:
-                        # 2) 적이 위 -> 대각선 위 돌진
-                        vars_obj.vx = dash_speed * 0.7 if dx > 0 else -dash_speed * 0.7
-                        vars_obj.vy = -dash_speed * 0.7
-                    else:
-                        # 3) 적이 아래 -> 대각선 아래 돌진
-                        vars_obj.vx = dash_speed * 0.7 if dx > 0 else -dash_speed * 0.7
-                        vars_obj.vy = dash_speed * 0.7
                 else:
-                    # 타겟이 없으면 바라보는 방향 수평 대시
                     vars_obj.vx = dash_speed if vars_obj.facing_right else -dash_speed
                     vars_obj.vy = 0
+
+            elif vars_obj.combo_step == 2:
+                # [2타] 적을 관통하거나 뒤로 짧게 빠지는 역돌진
+                if target_enemy:
+                    te_vars = target_enemy.vars
+                    dx = te_vars.x - vars_obj.x
+                    dy = te_vars.y - vars_obj.y
+                    dist = math.sqrt(dx*dx + dy*dy) if (dx*dx + dy*dy) > 0 else 1.0
                     
+                    vars_obj.facing_right = (dx > 0)
+                    y_margin = 25
+                    
+                    if abs(dy) > y_margin:
+                        vars_obj.vx = (dx / dist) * dash_speed
+                        vars_obj.vy = (dy / dist) * dash_speed
+                    else:
+                        vars_obj.vx = dash_speed if dx > 0 else -dash_speed
+                        vars_obj.vy = 0
+                else:
+                    vars_obj.facing_right = not vars_obj.facing_right
+                    vars_obj.vx = dash_speed if vars_obj.facing_right else -dash_speed
+                    vars_obj.vy = 0
+
             elif vars_obj.combo_step == 3:
-                self.attack_cooldown_timer = 0.25 # 3타 막타 딜레이 0.25초
-                vars_obj.attack_timer = 18
-                
-                # 💥 3타는 철저하게 돌진 없이 가만히 서서 밀치는 느낌!
+                # [3타] 제자리 제어 공격
                 vars_obj.vx = 0
-                # 점프 중 내려찍을 경우를 대비해 필요시 아래로 고정하거나 정지
-                vars_obj.vy = 0 
+                vars_obj.vy = 0
 
             vars_obj.has_hit_enemy = False
 
-        # 4. 공격 액션 진행 중 (히트박스 생성 및 타격 연산)
+        # 4. 공격 액션 진행 중 (★ 콤보 시 조작감 쾌감을 극대화하기 위해 공격 범위 전면 확대)
         if vars_obj.is_attacking:
             vars_obj.attack_timer -= 1
             
-            # 요구사항: 공격 범위는 이펙트가 나오게 일치시켜야 함
+           # 콤보별 히트박스 영역 설계
             if vars_obj.combo_step in [1, 2]:
-                attack_w = vars_obj.attack_range_width * 1.3
-                attack_h = vars_obj.attack_range_height * 0.8
-                ax = vars_obj.x + vars_obj.width if vars_obj.facing_right else vars_obj.x - attack_w
-                ay = vars_obj.y + (vars_obj.height // 4)
+                # 1타, 2타: 대시하며 플레이어가 '지나간 자리(뒤쪽 궤적)'에 히트박스를 길게 배치
+                attack_w = vars_obj.attack_range_width * 2.2   # 가로 크기 (~176px)
+                attack_h = vars_obj.attack_range_height * 1.4  # 세로 크기 (~70px)
+                
+                if vars_obj.facing_right:
+                    # 오른쪽으로 돌진했으므로, 현재 몸체 기준 '왼쪽(뒤쪽)'으로 히트박스 배치
+                    ax = vars_obj.x + vars_obj.width - attack_w
+                else:
+                    # 왼쪽으로 돌진했으므로, 현재 몸체 기준 '오른쪽(뒤쪽)'으로 히트박스 배치
+                    ax = vars_obj.x
+                
+                ay = vars_obj.y - 10
             else:
-                # 3타: 쇠파이프 내려찍기 광역 범위 (주변 폭발형 충격파)
-                attack_w = vars_obj.attack_range_width * 2.0
-                attack_h = vars_obj.attack_range_height * 1.5
+                # 3타: 광폭 피날레 충격파 범위 (제자리 폭발형이므로 몸 중심 전후방을 다 덮음)
+                attack_w = vars_obj.attack_range_width * 3.5   # 초대형 (~280px)
+                attack_h = vars_obj.attack_range_height * 2.2  # 세로 증가 (~110px)
                 ax = vars_obj.x - (attack_w // 2) + (vars_obj.width // 2)
-                ay = vars_obj.y + vars_obj.height - attack_h
+                ay = vars_obj.y + vars_obj.height - attack_h - 10
 
             vars_obj.attack_rect = pygame.Rect(ax, ay, attack_w, attack_h)
 
-            # 실시간 피격 판정 루프
+            # 실시간 피격 감지 루프
             if entities and not vars_obj.has_hit_enemy:
                 for entity in entities:
                     if entity == self or getattr(entity, 'vars', None) == vars_obj:
@@ -4021,20 +4045,27 @@ class PlayerCombatProcessor:
                         damage = getattr(vars_obj, 'attack_damage', 15)
                         attack_dir = 1 if vars_obj.facing_right else -1
                         
-                        # 🎯 [넉백 조건 절대 제어] 3타만 강한 넉백 발동! 1,2타는 경직만
+                        # 3타 시전 시에만 초강력 넉백(3.5배) 계수 적용, 1/2타는 단순 경직용(0.3배)
                         if vars_obj.combo_step == 3:
-                            damage = int(damage * 1.5) # 3타 데미지 강화
-                            if hasattr(entity, 'take_damage'):
-                                entity.take_damage(damage, knockback_dir=attack_dir * 3.5)
-                        else:
+                            damage = int(damage * 1.5)
                             if hasattr(entity, 'take_damage'):
                                 entity.take_damage(damage, knockback_dir=attack_dir * 0.3)
+                        else:
+                            if hasattr(entity, 'take_damage'):
+                                entity.take_damage(damage, knockback_dir=attack_dir * 0.0)
 
-            # 공격 모션 프레임 만료 시 종료
+            # 공격 모션 지속 프레임 종료 시 정산 루프
             if vars_obj.attack_timer <= 0:
                 vars_obj.is_attacking = False
                 vars_obj.attack_rect = None
                 
+                # 공용 변수인 vars_obj.attack_cooldown_timer를 직접 세팅하여 인풋 핸들러와 데이터 동기화
+                if vars_obj.combo_step in [1, 2]:
+                    vars_obj.attack_cooldown_timer = 0.15  # 1, 2타 후 조작 대기 쿨타임
+                elif vars_obj.combo_step == 3:
+                    vars_obj.attack_cooldown_timer = 0.25  # 3타 후 조작 대기 쿨타임
+                
+                # 콤보 초기화 및 만료 핸들러
                 if vars_obj.combo_step == 3 or not vars_obj.has_hit_enemy:
                     vars_obj.combo_step = 0
         else:
@@ -4050,12 +4081,15 @@ class PlayerInputHandler:
     def __init__(self):
         self.mouse_was_pressed = False # 마우스 단발성 클릭 체크용 변수
 
-    def update(self, vars_obj, keys):
-        # ⚔️ 1. 마우스 좌클릭 입력 상시 감지 (공격 중에도 연타 입력을 누락 없이 체크하기 위해 최상단 배치)
+    def update(self, vars_obj, keys, dt=0.0):
+        # ⚔️ 1. 마우스 좌클릭 입력 및 쿨타임 검증
+        # 쿨타임 타이머(attack_cooldown_timer)가 0 이하일 때만 신규 공격 트리거 허용
         mouse_state = pygame.mouse.get_pressed()
         if mouse_state[0]:  
             if not self.mouse_was_pressed: 
-                self.trigger_attack(vars_obj)
+                cooldown = getattr(vars_obj, 'attack_cooldown_timer', 0.0)
+                if cooldown <= 0.0:
+                    self.trigger_attack(vars_obj)
             self.mouse_was_pressed = True
         else:
             self.mouse_was_pressed = False
@@ -4063,53 +4097,50 @@ class PlayerInputHandler:
         # 🏃 2. 키보드 이동 입력 상태 플래그 초기화
         vars_obj.is_moving = False
         
-        # 🎯 [누락 및 변조 수정] 외부 매개변수 keys를 강제로 덮어쓰던 하드코딩 라인을 제거하여
-        # 상위 엔진 프레임워크와의 유기적 캡슐화와 연출 시 조작 차단 인터페이스를 완벽히 확보
+        # [무결성 수정] 시프트 키 분기
         if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
             vars_obj.move_state = "RUN"
         else:
             vars_obj.move_state = "WALK"
 
-        # 🎯 [물리 무결성 수정] vars_obj.x 좌표 직접 변조 완전 제거
-        # 입력 핸들러는 의도와 방향 플래그만 변경하고, 실제 가변 이동은 player_main.py에서 dt와 안전하게 융합됩니다.
+        # 🎯 [무결성 수정] A/D 동시 입력 방지 (if-elif 구조 적용)
+        # 공격 중(`is_attacking`)일 때는 시선 방향(facing_right) 전환을 차단하여 돌진 방향 유지
         if keys[pygame.K_a]:
             vars_obj.is_moving = True
             if not vars_obj.is_attacking:
                 vars_obj.facing_right = False
                 
-        if keys[pygame.K_d]:
+        elif keys[pygame.K_d]:
             vars_obj.is_moving = True
             if not vars_obj.is_attacking:
                 vars_obj.facing_right = True
 
-        # 점프 입력 신호 감지 (이동 물리 엔진에 트리거 전달)
+        # 🚀 3. 점프 입력 제어 (공격 중 대각선 돌진 중일 때 점프가 입력되어 궤적이 깨지는 것을 안전 방지)
         if (keys[pygame.K_w] or keys[pygame.K_SPACE]) and not vars_obj.is_jumping:
-            vars_obj.vertical_velocity = -vars_obj.jump_power
-            vars_obj.is_jumping = True
+            # 돌진 공격 중에 강제 점프로 속도 벡터가 상충되지 않도록 가드
+            if not vars_obj.is_attacking:
+                vars_obj.vertical_velocity = -vars_obj.jump_power
+                vars_obj.is_jumping = True
 
     def trigger_attack(self, vars_obj):
-        """공격 버튼을 눌렀을 때 실행되는 콤보 전환 프로세서"""
+        # 공격 중인 애니메이션 세션이 도는 동안에는 중복 입력 방지
         if vars_obj.is_attacking:
             return
 
         vars_obj.is_attacking = True
-        vars_obj.attack_timer = vars_obj.attack_duration 
-
-        # 🎯 [누락 해결] 콤보 유효 시간(combo_timer) 및 콤보 초기화 분기를 완벽하게 정렬하여 연동 실패 차단
+        
+        # 콤보 판정 흐름 설계 (has_hit_enemy 조건과 무관하게 타이머 범위 내 클릭 시 부드럽게 전이)
         if getattr(vars_obj, 'combo_timer', 0) <= 0:
             vars_obj.combo_step = 1
         else:
-            # 적 타격 성공 여부에 따른 체인 콤보 연계 단계 연산
-            if vars_obj.combo_step == 1 and vars_obj.has_hit_enemy:
+            if vars_obj.combo_step == 1:
                 vars_obj.combo_step = 2
-            elif vars_obj.combo_step == 2 and vars_obj.has_hit_enemy:
+            elif vars_obj.combo_step == 2:
                 vars_obj.combo_step = 3
             else:
                 vars_obj.combo_step = 1
 
-        # 콤보 작동 성공 시 유효 만료 시간 최신화 및 타격 버퍼 리셋
-        vars_obj.combo_timer = getattr(vars_obj, 'combo_expire_time', 90)
-        vars_obj.has_hit_enemy = False
+        vars_obj.combo_timer = vars_obj.combo_expire_time
 ```
 
 --------------------------------------------------
@@ -4459,6 +4490,10 @@ class PlayerVariables:
         self.attack_range_height = 50
         self.attack_rect = None         
         
+        # player/variables.py 내부 __init__ 하단에 추가할 변수 프로토콜
+        self.attack_cooldown_timer = 0.0  # 공격 입력 및 콤보 조작 제한 타이머 (초 단위)
+        self.target_enemy = None          # 현재 콤보 사이클 내에서 정밀 조준 중인 적 객체 참조
+
         # 🎬 [애니메이션 핵심 제어 변수]
         self.anim_timer = 0             # 프레임 카운터
         self.anim_speed = 8             # 숫자가 낮을수록 애니메이션이 빨라짐 (8프레임마다 다음 장)

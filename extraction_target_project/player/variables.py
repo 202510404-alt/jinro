@@ -42,6 +42,10 @@ class PlayerVariables:
         self.attack_range_height = 50
         self.attack_rect = None         
         
+        # player/variables.py 내부 __init__ 하단에 추가할 변수 프로토콜
+        self.attack_cooldown_timer = 0.0  # 공격 입력 및 콤보 조작 제한 타이머 (초 단위)
+        self.target_enemy = None          # 현재 콤보 사이클 내에서 정밀 조준 중인 적 객체 참조
+
         # 🎬 [애니메이션 핵심 제어 변수]
         self.anim_timer = 0             # 프레임 카운터
         self.anim_speed = 8             # 숫자가 낮을수록 애니메이션이 빨라짐 (8프레임마다 다음 장)

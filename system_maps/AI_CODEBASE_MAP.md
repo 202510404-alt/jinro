@@ -106,8 +106,8 @@ project_root/
 ├── player/
 │   ├── __init__.py [📂 player/__init__.py]
 │   ├── asset_loader.py [📂 player/asset_loader.py] -> [💡 📦 imp: os, pygame, sys | 🧬 class PlayerAssetLoader [L6-70] |     └─ def __init__() [L7-10] |     └─ def load_all_assets() [L12-60] |     └─ def _load_series() [L62-70]]
-│   ├── combat_processor.py [📂 player/combat_processor.py] -> [💡 📦 imp: math, pygame | 🧬 class PlayerCombatProcessor [L5-136] |     └─ def __init__() [L6-7] |     └─ def process() [L9-136]]
-│   ├── input_handler.py [📂 player/input_handler.py] -> [💡 📦 imp: pygame | 🧬 class PlayerInputHandler [L4-67] |     └─ def __init__() [L5-6] |     └─ def update() [L8-43] |     └─ def trigger_attack() [L45-67]]
+│   ├── combat_processor.py [📂 player/combat_processor.py] -> [💡 📦 imp: math, pygame | 🧬 class PlayerCombatProcessor [L5-167] |     └─ def __init__() [L6-7] |     └─ def process() [L9-167]]
+│   ├── input_handler.py [📂 player/input_handler.py] -> [💡 📦 imp: pygame | 🧬 class PlayerInputHandler [L4-67] |     └─ def __init__() [L5-6] |     └─ def update() [L8-47] |     └─ def trigger_attack() [L49-67]]
 │   │     ├── 🔑 [REGISTRY]: "PlayerInputHandler"
 │   ├── motions/
 │   │   ├── __init__.py [📂 player/motions/__init__.py]
@@ -117,5 +117,5 @@ project_root/
 │   │   ├── motion_base.py [📂 player/motions/motion_base.py] -> [🧬 class MotionBase [L2-8] |     └─ def __init__() [L3-4] |     └─ def handle_state() [L6-8]]
 │   ├── physics_processor.py [📂 player/physics_processor.py] -> [💡 📦 imp: pygame, settings | 🧬 class PlayerPhysicsProcessor [L5-77] |     └─ def __init__() [L6-7] |     └─ def process() [L9-77]]
 │   ├── player_main.py [📂 player/player_main.py] -> [💡 📦 imp: player.asset_loader, player.combat_processor, player.input_handler, player.motions.air_motions, player.motions.attack_motions, player.motions.ground_motions, player.physics_processor, player.variables, pygame | 🧬 class Player [L12-155] |     └─ def __init__() [L13-27] |     └─ def update_animation_state() [L29-40] |     └─ def update() [L42-122] |     └─ def update_with_dt() [L124-126] |     └─ def draw() [L128-155]]
-│   ├── variables.py [📂 player/variables.py] -> [💡 📦 imp: settings | 🧬 class PlayerVariables [L4-81] |     └─ def __init__() [L5-67] |     └─ def take_damage() [L69-75] |     └─ def heal() [L77-81]]
+│   ├── variables.py [📂 player/variables.py] -> [💡 📦 imp: settings | 🧬 class PlayerVariables [L4-85] |     └─ def __init__() [L5-71] |     └─ def take_damage() [L73-79] |     └─ def heal() [L81-85]]
 ├── settings.py [📂 settings.py]
