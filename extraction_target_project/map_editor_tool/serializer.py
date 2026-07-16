@@ -152,9 +152,21 @@ def _serialize_trigger(editor, trigger):
      }
 
 
+# [📂 map_editor_tool/serializer.py]의 _infer_entity_type 함수 수정본
+
 def _infer_entity_type(editor, entity):
-     # 클래스 타입 문자열이 매칭되거나, 에디터 내부의 동적 주입 .type 속성이 존재할 때 완벽 식별
-     class_name = entity.__class__.__name__
-     if class_name == "DummyEnemy" or getattr(entity, "type", None) == "dummy":
-         return "dummy"
-     return class_name.lower()
+    """엔티티 객체로부터 JSON에 저장할 type_id를 안전하게 매핑 및 역추론"""
+    if hasattr(entity, "type"):
+        return entity.type
+
+    # 클래스 이름을 기반으로 타입 자동 파싱 (예: TestEnemy1 -> test_enemy1)
+    class_name = entity.__class__.__name__
+    
+    # "Enemy" 접미사가 붙어있다면 제거 (예: DummyEnemy -> Dummy -> dummy)
+    if class_name.endswith("Enemy") and class_name != "Enemy":
+        class_name = class_name[:-5]
+        
+    # PascalCase -> snake_case 정규식 변환
+    import re
+    snake_name = re.sub(r'(?<!^)(?=[A-Z])', '_', class_name).lower()
+    return snake_name

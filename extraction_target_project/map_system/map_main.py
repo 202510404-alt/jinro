@@ -3,19 +3,11 @@ import sys
 import json
 import math
 import pygame
-
+import settings
 # 프로젝트 내부 모듈 참조
 from map_system.map_engine import EntityRegistry, TriggerBoxInstance
 from map_system.variables import MapVariables
 from platform_system.platform_main import Platform
-
-# 🎯 [구조 보존 및 확장] 게임 실행 시점에 DummyEnemy 클래스가 EntityRegistry에 무조건 등록되도록 보장합니다.
-try:
-    from enemy.enemys.dummy.dummy_main import DummyEnemy
-    EntityRegistry.register("dummy", DummyEnemy)
-    EntityRegistry.register("DummyEnemy", DummyEnemy)
-except ImportError as e:
-    print(f"⚠️ [GameMap] DummyEnemy 모듈을 로드할 수 없습니다. 경로를 확인하십시오: {e}")
 
 
 class GameMap:
@@ -269,47 +261,57 @@ class GameMap:
 
     def update(self, dt, player_obj):
         """main.py의 호출 규격(dt, player_obj)에 맞춘 맵 전체 요소 실시간 업데이트 프로토콜"""
+        
+        # 💡 [해결 방안] 파이썬 인터프리터에게 이 함수 내의 pygame은 
+        # 로컬 변수가 아니라 모듈 전역(global)에 정의된 pygame임을 명시적으로 알려줍니다.
+        global pygame
+        import pygame
+        
+        # 💡 [유동적 해상도 반영] 현재 화면 크기의 1.5배 영역을 활성화 반경으로 실시간 계산
+        try:
+            import settings
+            limit_x = settings.VIRTUAL_WIDTH * 1.5
+            limit_y = settings.VIRTUAL_HEIGHT * 1.5
+        except Exception:
+            # settings 호출이 안 될 경우, 현재 실행 중인 pygame 창 크기 기준으로 자동 우회
+            current_surface = pygame.display.get_surface()
+            if current_surface:
+                screen_w, screen_h = current_surface.get_size()
+                limit_x = screen_w * 1.5
+                limit_y = screen_h * 1.5
+            else:
+                limit_x = 1200
+                limit_y = 900
+
         for entity in self.entities:
             # 💡 [최적화 가드] 플레이어 활성화 범위(Activation Box) 내부의 적들만 실시간 업데이트 적용
             if hasattr(player_obj, 'vars') and hasattr(player_obj.vars, 'x'):
-                # 모듈 패스 또는 클래스명에 'enemy'가 포함되어 있는지 식별 (지능형 판별)
-                is_enemy = "enemy" in entity.__class__.__module__.lower() or "enemy" in entity.__class__.__name__.lower()
                 
+                # 1단계: 개발자가 지정한 명시적인 적 태그(is_enemy)가 있는지 먼저 확인
+                is_enemy = getattr(entity, "is_enemy", None)
+                
+                # 2단계: 태그가 명시되어 있지 않다면(None), 폴더 경로 및 클래스명으로 자동 판별 (안전망)
+                if is_enemy is None:
+                    is_enemy = "enemy" in entity.__class__.__module__.lower() or "enemy" in entity.__class__.__name__.lower()
+                
+                # 최종적으로 적(is_enemy가 True)인 경우에만 거리 계산 및 잠재우기(Skip) 적용
                 if is_enemy and hasattr(entity, 'vars') and hasattr(entity.vars, 'x'):
                     px, py = player_obj.vars.x, player_obj.vars.y
                     ex, ey = entity.vars.x, entity.vars.y
                     
-                    # 렌더링 범위보다 여유를 두기 위해 가상 해상도의 약 1.5배 영역을 활성화 범위로 지정
-                    limit_x = settings.VIRTUAL_WIDTH * 1.5 if hasattr(settings, "VIRTUAL_WIDTH") else 1000
-                    limit_y = settings.VIRTUAL_HEIGHT * 1.5 if hasattr(settings, "VIRTUAL_HEIGHT") else 800
-                    
-                    # 내장 함수 abs()를 활용하여 플레이어와의 거리가 활성화 범위를 벗어나면 업데이트 스킵
+                    # 활성화 범위를 벗어난 먼 거리의 적들은 연산을 완전히 스킵(최적화)
                     if abs(ex - px) > limit_x or abs(ey - py) > limit_y:
                         continue
 
-            # 1. 엔티티가 dt 기반 업데이트(update_with_dt)를 지원하는지 먼저 확인
+            # ----------------------------------------------------
+            # 3. 활성화 범위 내에 있는 적들과 일반 오브젝트들은 즉시 업데이트
+            # ----------------------------------------------------
             if hasattr(entity, "update_with_dt"):
                 try:
-                    # 맵 정보(self)와 dt를 같이 전달
                     entity.update_with_dt(player_obj, self.platforms, self, dt)
                 except Exception as e:
                     print(f"⚠️ [GameMap] 엔티티 dt 업데이트 중 오류 발생: {e}")
             
-            # 2. 지원하지 않고 일반 update만 있다면 기존 규칙대로 self(지형 정보)를 포함하여 호출
-            elif hasattr(entity, "update"):
-                try:
-                    entity.update(player_obj, self.platforms, self)
-                except Exception as e:
-                    print(f"⚠️ [GameMap] 엔티티 일반 업데이트 중 오류 발생: {e}")
-            
-            # 2. 전용 메서드가 없고 일반 update만 있다면 이전 규칙대로 self(지형 정보)를 포함하여 호출
-            elif hasattr(entity, "update"):
-                try:
-                    entity.update(player_obj, self.platforms, self)
-                except Exception as e:
-                    print(f"⚠️ [GameMap] 엔티티 일반 업데이트 중 오류 발생: {e}")
-            
-            # 2. 전용 메서드가 없고 일반 update만 있다면 이전 규칙대로 self(지형 정보)를 포함하여 호출
             elif hasattr(entity, "update"):
                 try:
                     entity.update(player_obj, self.platforms, self)

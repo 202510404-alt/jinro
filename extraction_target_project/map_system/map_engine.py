@@ -5,6 +5,8 @@ import sys
 import math
 import json
 import settings
+import importlib
+import re
 
 class AssetManager:
     """
@@ -35,25 +37,46 @@ class AssetManager:
 class EntityRegistry:
     """
     클래스 참조 격리를 위한 중앙 집중식 Registry 시스템
-    특정 구체 클래스를 직접 import하지 않고 등록하여 문자열 기반으로 객체를 생성합니다.
     """
     _registry = {}
 
     @classmethod
-    def register(cls, entity_type, entity_class):
-        cls._registry[entity_type] = entity_class
-        print(f"✅ [EntityRegistry] '{entity_type}' 타입 클래스가 등록되었습니다: {entity_class.__name__}")
+    def register(cls, type_name, class_obj):
+        cls._registry[type_name] = class_obj
 
     @classmethod
-    def create(cls, entity_type, *args, **kwargs):
-        if entity_type not in cls._registry:
-            print(f"⚠️ [EntityRegistry] 등록되지 않은 엔티티 타입 요청: '{entity_type}'")
-            return None
+    def create(cls, type_name, x, y):
+        # 1. 기존에 이미 캐싱/등록된 엔티티가 있다면 즉시 반환 (기존 무결성 유지)
+        if type_name in cls._registry:
+            return cls._registry[type_name](x, y)
+
+        # 2. 🚀 [자동 동적 탐색 추가] 등록되지 않은 타입인 경우, 폴더 규칙을 기반으로 실시간 임포트 시도
         try:
-            return cls._registry[entity_type](*args, **kwargs)
+            # 예: "test_enemy1" -> enemy.enemys.test_enemy1.test_enemy1_main
+            # "dummy" -> enemy.enemys.dummy.dummy_main
+            module_path = f"enemy.enemys.{type_name}.{type_name}_main"
+            module = importlib.import_module(module_path)
+
+            # 스네이크 케이스를 PascalCase로 변환 (예: test_enemy1 -> TestEnemy1)
+            pascal_name = "".join([w.capitalize() for w in type_name.split("_")])
+            
+            class_obj = None
+            # 클래스 이름 매칭 유연성 보장 (TestEnemy1, TestEnemy1Enemy, DummyEnemy 등 탐색)
+            for candidate_name in [pascal_name, f"{pascal_name}Enemy", f"{pascal_name}Main"]:
+                if hasattr(module, candidate_name):
+                    class_obj = getattr(module, candidate_name)
+                    break
+            
+            if class_obj:
+                # 성능을 위해 다음 호출부터는 캐싱되도록 등록
+                cls.register(type_name, class_obj)
+                cls.register(class_obj.__name__, class_obj)
+                return class_obj(x, y)
+                
         except Exception as e:
-            print(f"🚨 [EntityRegistry] '{entity_type}' 인스턴스 생성 에러: {e}")
-            return None
+            print(f"⚠️ [EntityRegistry] '{type_name}' 동적 생성 실패: {e}")
+
+        return None
 
 class TriggerBoxInstance:
     def __init__(self, x, y, width, height, trigger_module, action_module):

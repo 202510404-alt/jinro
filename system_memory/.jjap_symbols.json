@@ -121,8 +121,8 @@
       "start_line": 238,
       "end_line": 262,
       "calls": [
-        "run_main_menu",
-        "run_game"
+        "run_game",
+        "run_main_menu"
       ],
       "used_by": []
     },
@@ -363,8 +363,8 @@
       "full_name": "TestEnemy1",
       "type": "class",
       "path": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py",
-      "start_line": 5,
-      "end_line": 64,
+      "start_line": 7,
+      "end_line": 198,
       "calls": [],
       "used_by": []
     },
@@ -374,30 +374,30 @@
       "full_name": "TestEnemy1.__init__",
       "type": "method",
       "path": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py",
-      "start_line": 6,
-      "end_line": 7,
+      "start_line": 8,
+      "end_line": 18,
       "calls": [],
       "used_by": []
     },
     {
-      "symbol_id": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py::TestEnemy1.update",
-      "name": "update",
-      "full_name": "TestEnemy1.update",
+      "symbol_id": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py::TestEnemy1.check_line_of_sight",
+      "name": "check_line_of_sight",
+      "full_name": "TestEnemy1.check_line_of_sight",
       "type": "method",
       "path": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py",
-      "start_line": 9,
-      "end_line": 42,
+      "start_line": 20,
+      "end_line": 52,
       "calls": [],
       "used_by": []
     },
     {
-      "symbol_id": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py::TestEnemy1.perform_attack",
-      "name": "perform_attack",
-      "full_name": "TestEnemy1.perform_attack",
+      "symbol_id": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py::TestEnemy1.update_with_dt",
+      "name": "update_with_dt",
+      "full_name": "TestEnemy1.update_with_dt",
       "type": "method",
       "path": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py",
-      "start_line": 44,
-      "end_line": 49,
+      "start_line": 54,
+      "end_line": 184,
       "calls": [],
       "used_by": []
     },
@@ -407,8 +407,8 @@
       "full_name": "TestEnemy1.draw",
       "type": "method",
       "path": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py",
-      "start_line": 51,
-      "end_line": 64,
+      "start_line": 186,
+      "end_line": 198,
       "calls": [],
       "used_by": []
     },
@@ -418,8 +418,8 @@
       "full_name": "TestEnemy1Variables",
       "type": "class",
       "path": "extraction_target_project/enemy/enemys/test_enemy1/variables.py",
-      "start_line": 3,
-      "end_line": 21,
+      "start_line": 4,
+      "end_line": 38,
       "calls": [],
       "used_by": []
     },
@@ -429,8 +429,8 @@
       "full_name": "TestEnemy1Variables.__init__",
       "type": "method",
       "path": "extraction_target_project/enemy/enemys/test_enemy1/variables.py",
-      "start_line": 4,
-      "end_line": 21,
+      "start_line": 5,
+      "end_line": 38,
       "calls": [],
       "used_by": []
     },
@@ -960,9 +960,9 @@
       "start_line": 19,
       "end_line": 46,
       "calls": [
+        "screen_to_world",
         "snap",
-        "handle_mouse_down",
-        "screen_to_world"
+        "handle_mouse_down"
       ],
       "used_by": []
     },
@@ -997,8 +997,8 @@
       "start_line": 146,
       "end_line": 186,
       "calls": [
-        "handle_sidebar_click",
-        "screen_to_world"
+        "screen_to_world",
+        "handle_sidebar_click"
       ],
       "used_by": []
     },
@@ -1144,7 +1144,7 @@
       "type": "class",
       "path": "extraction_target_project/map_editor_tool/object_registry.py",
       "start_line": 17,
-      "end_line": 116,
+      "end_line": 141,
       "calls": [],
       "used_by": []
     },
@@ -1187,20 +1187,7 @@
       "full_name": "EditorObjectRegistry.ensure_defaults",
       "type": "method",
       "path": "extraction_target_project/map_editor_tool/object_registry.py",
-      "start_line": 33,
-      "end_line": 65,
-      "calls": [
-        "EditorObjectDefinition"
-      ],
-      "used_by": []
-    },
-    {
-      "symbol_id": "extraction_target_project/map_editor_tool/object_registry.py::EditorObjectRegistry.discover_fabric_definitions",
-      "name": "discover_fabric_definitions",
-      "full_name": "EditorObjectRegistry.discover_fabric_definitions",
-      "type": "method",
-      "path": "extraction_target_project/map_editor_tool/object_registry.py",
-      "start_line": 67,
+      "start_line": 35,
       "end_line": 90,
       "calls": [
         "EditorObjectDefinition"
@@ -1213,8 +1200,21 @@
       "full_name": "EditorObjectRegistry.discover_fabric_definitions",
       "type": "method",
       "path": "extraction_target_project/map_editor_tool/object_registry.py",
-      "start_line": 93,
-      "end_line": 116,
+      "start_line": 92,
+      "end_line": 115,
+      "calls": [
+        "EditorObjectDefinition"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "extraction_target_project/map_editor_tool/object_registry.py::EditorObjectRegistry.discover_fabric_definitions",
+      "name": "discover_fabric_definitions",
+      "full_name": "EditorObjectRegistry.discover_fabric_definitions",
+      "type": "method",
+      "path": "extraction_target_project/map_editor_tool/object_registry.py",
+      "start_line": 118,
+      "end_line": 141,
       "calls": [
         "EditorObjectDefinition"
       ],
@@ -1229,9 +1229,9 @@
       "start_line": 6,
       "end_line": 12,
       "calls": [
-        "draw_status",
         "draw_sidebar",
         "draw_grid",
+        "draw_status",
         "draw_selection"
       ],
       "used_by": []
@@ -1291,11 +1291,11 @@
       "start_line": 77,
       "end_line": 104,
       "calls": [
+        "draw_inspector",
+        "draw_help",
         "text",
         "draw_tool_button",
-        "draw_help",
-        "draw_button",
-        "draw_inspector"
+        "draw_button"
       ],
       "used_by": []
     },
@@ -1440,10 +1440,10 @@
       "start_line": 40,
       "end_line": 75,
       "calls": [
-        "_serialize_platform",
-        "_serialize_trigger",
+        "_serialize_structure",
         "_serialize_entity",
-        "_serialize_structure"
+        "_serialize_trigger",
+        "_serialize_platform"
       ],
       "used_by": []
     },
@@ -1499,8 +1499,8 @@
       "full_name": "_infer_entity_type",
       "type": "function",
       "path": "extraction_target_project/map_editor_tool/serializer.py",
-      "start_line": 155,
-      "end_line": 160,
+      "start_line": 157,
+      "end_line": 172,
       "calls": [],
       "used_by": []
     },
@@ -1510,8 +1510,8 @@
       "full_name": "AssetManager",
       "type": "class",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 9,
-      "end_line": 32,
+      "start_line": 11,
+      "end_line": 34,
       "calls": [],
       "used_by": []
     },
@@ -1521,8 +1521,8 @@
       "full_name": "AssetManager.get_image",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 17,
-      "end_line": 32,
+      "start_line": 19,
+      "end_line": 34,
       "calls": [],
       "used_by": []
     },
@@ -1532,8 +1532,8 @@
       "full_name": "EntityRegistry",
       "type": "class",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 35,
-      "end_line": 56,
+      "start_line": 37,
+      "end_line": 79,
       "calls": [],
       "used_by": []
     },
@@ -1543,7 +1543,7 @@
       "full_name": "EntityRegistry.register",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 43,
+      "start_line": 44,
       "end_line": 45,
       "calls": [],
       "used_by": []
@@ -1555,7 +1555,7 @@
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
       "start_line": 48,
-      "end_line": 56,
+      "end_line": 79,
       "calls": [],
       "used_by": []
     },
@@ -1565,8 +1565,8 @@
       "full_name": "TriggerBoxInstance",
       "type": "class",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 58,
-      "end_line": 73,
+      "start_line": 81,
+      "end_line": 96,
       "calls": [],
       "used_by": []
     },
@@ -1576,8 +1576,8 @@
       "full_name": "TriggerBoxInstance.__init__",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 59,
-      "end_line": 63,
+      "start_line": 82,
+      "end_line": 86,
       "calls": [],
       "used_by": []
     },
@@ -1587,8 +1587,8 @@
       "full_name": "TriggerBoxInstance.to_dict",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 65,
-      "end_line": 73,
+      "start_line": 88,
+      "end_line": 96,
       "calls": [],
       "used_by": []
     },
@@ -1598,8 +1598,8 @@
       "full_name": "MapManager",
       "type": "class",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 75,
-      "end_line": 511,
+      "start_line": 98,
+      "end_line": 534,
       "calls": [],
       "used_by": []
     },
@@ -1609,8 +1609,8 @@
       "full_name": "MapManager.__init__",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 81,
-      "end_line": 106,
+      "start_line": 104,
+      "end_line": 129,
       "calls": [],
       "used_by": []
     },
@@ -1620,8 +1620,8 @@
       "full_name": "MapManager.add_trigger_box",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 109,
-      "end_line": 115,
+      "start_line": 132,
+      "end_line": 138,
       "calls": [
         "TriggerBoxInstance"
       ],
@@ -1633,8 +1633,8 @@
       "full_name": "MapManager.remove_at_position",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 118,
-      "end_line": 121,
+      "start_line": 141,
+      "end_line": 144,
       "calls": [],
       "used_by": []
     },
@@ -1644,8 +1644,8 @@
       "full_name": "MapManager.load_map_data",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 123,
-      "end_line": 266,
+      "start_line": 146,
+      "end_line": 289,
       "calls": [
         "TriggerBoxInstance"
       ],
@@ -1657,8 +1657,8 @@
       "full_name": "MapManager._create_entity_from_data",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 268,
-      "end_line": 299,
+      "start_line": 291,
+      "end_line": 322,
       "calls": [],
       "used_by": []
     },
@@ -1668,8 +1668,8 @@
       "full_name": "MapManager.fallback_default_map",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 301,
-      "end_line": 311,
+      "start_line": 324,
+      "end_line": 334,
       "calls": [],
       "used_by": []
     },
@@ -1679,8 +1679,8 @@
       "full_name": "MapManager.load_assets",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 313,
-      "end_line": 334,
+      "start_line": 336,
+      "end_line": 357,
       "calls": [],
       "used_by": []
     },
@@ -1690,8 +1690,8 @@
       "full_name": "MapManager.register_action_handler",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 336,
-      "end_line": 338,
+      "start_line": 359,
+      "end_line": 361,
       "calls": [],
       "used_by": []
     },
@@ -1701,8 +1701,8 @@
       "full_name": "MapManager.execute_trigger_action",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 340,
-      "end_line": 358,
+      "start_line": 363,
+      "end_line": 381,
       "calls": [],
       "used_by": []
     },
@@ -1712,8 +1712,8 @@
       "full_name": "MapManager.update",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 360,
-      "end_line": 412,
+      "start_line": 383,
+      "end_line": 435,
       "calls": [],
       "used_by": []
     },
@@ -1723,8 +1723,8 @@
       "full_name": "MapManager.update_trigger_system",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 414,
-      "end_line": 441,
+      "start_line": 437,
+      "end_line": 464,
       "calls": [],
       "used_by": []
     },
@@ -1734,8 +1734,8 @@
       "full_name": "MapManager.draw",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 443,
-      "end_line": 486,
+      "start_line": 466,
+      "end_line": 509,
       "calls": [],
       "used_by": []
     },
@@ -1745,8 +1745,8 @@
       "full_name": "MapManager._draw_x_tiled",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 488,
-      "end_line": 496,
+      "start_line": 511,
+      "end_line": 519,
       "calls": [],
       "used_by": []
     },
@@ -1756,8 +1756,8 @@
       "full_name": "MapManager._draw_2d_tiled",
       "type": "method",
       "path": "extraction_target_project/map_system/map_engine.py",
-      "start_line": 498,
-      "end_line": 511,
+      "start_line": 521,
+      "end_line": 534,
       "calls": [],
       "used_by": []
     },
@@ -1767,8 +1767,8 @@
       "full_name": "GameMap",
       "type": "class",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 21,
-      "end_line": 705,
+      "start_line": 13,
+      "end_line": 725,
       "calls": [],
       "used_by": []
     },
@@ -1778,8 +1778,8 @@
       "full_name": "GameMap.__init__",
       "type": "method",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 22,
-      "end_line": 45,
+      "start_line": 14,
+      "end_line": 37,
       "calls": [],
       "used_by": []
     },
@@ -1789,8 +1789,8 @@
       "full_name": "GameMap.load_map_from_json",
       "type": "method",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 47,
-      "end_line": 121,
+      "start_line": 39,
+      "end_line": 113,
       "calls": [],
       "used_by": []
     },
@@ -1800,8 +1800,8 @@
       "full_name": "GameMap.register_action_handler",
       "type": "method",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 123,
-      "end_line": 125,
+      "start_line": 115,
+      "end_line": 117,
       "calls": [],
       "used_by": []
     },
@@ -1811,8 +1811,8 @@
       "full_name": "GameMap.load_map_assets",
       "type": "method",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 127,
-      "end_line": 167,
+      "start_line": 119,
+      "end_line": 159,
       "calls": [],
       "used_by": []
     },
@@ -1822,8 +1822,8 @@
       "full_name": "GameMap.build_map",
       "type": "method",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 169,
-      "end_line": 251,
+      "start_line": 161,
+      "end_line": 243,
       "calls": [],
       "used_by": []
     },
@@ -1833,8 +1833,8 @@
       "full_name": "GameMap.register_action_handler",
       "type": "method",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 253,
-      "end_line": 254,
+      "start_line": 245,
+      "end_line": 246,
       "calls": [],
       "used_by": []
     },
@@ -1844,8 +1844,8 @@
       "full_name": "GameMap.execute_trigger_action",
       "type": "method",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 256,
-      "end_line": 268,
+      "start_line": 248,
+      "end_line": 260,
       "calls": [],
       "used_by": []
     },
@@ -1855,8 +1855,8 @@
       "full_name": "GameMap.update",
       "type": "method",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 270,
-      "end_line": 336,
+      "start_line": 262,
+      "end_line": 356,
       "calls": [],
       "used_by": []
     },
@@ -1866,8 +1866,8 @@
       "full_name": "GameMap.draw",
       "type": "method",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 338,
-      "end_line": 482,
+      "start_line": 358,
+      "end_line": 502,
       "calls": [
         "_draw_x_tiled",
         "_draw_2d_tiled"
@@ -1880,8 +1880,8 @@
       "full_name": "GameMap.update_trigger_system",
       "type": "method",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 484,
-      "end_line": 502,
+      "start_line": 504,
+      "end_line": 522,
       "calls": [],
       "used_by": []
     },
@@ -1891,8 +1891,8 @@
       "full_name": "GameMap.fallback_default_map",
       "type": "method",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 504,
-      "end_line": 526,
+      "start_line": 524,
+      "end_line": 546,
       "calls": [],
       "used_by": []
     },
@@ -1902,8 +1902,8 @@
       "full_name": "GameMap.add_platform",
       "type": "method",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 528,
-      "end_line": 571,
+      "start_line": 548,
+      "end_line": 591,
       "calls": [],
       "used_by": []
     },
@@ -1913,8 +1913,8 @@
       "full_name": "GameMap.add_trigger_box",
       "type": "method",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 573,
-      "end_line": 583,
+      "start_line": 593,
+      "end_line": 603,
       "calls": [],
       "used_by": []
     },
@@ -1924,8 +1924,8 @@
       "full_name": "GameMap.remove_at_position",
       "type": "method",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 585,
-      "end_line": 591,
+      "start_line": 605,
+      "end_line": 611,
       "calls": [],
       "used_by": []
     },
@@ -1935,8 +1935,8 @@
       "full_name": "GameMap._infer_entity_type",
       "type": "method",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 593,
-      "end_line": 596,
+      "start_line": 613,
+      "end_line": 616,
       "calls": [],
       "used_by": []
     },
@@ -1946,8 +1946,8 @@
       "full_name": "GameMap.save_map",
       "type": "method",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 598,
-      "end_line": 699,
+      "start_line": 618,
+      "end_line": 719,
       "calls": [],
       "used_by": []
     },
@@ -1957,8 +1957,8 @@
       "full_name": "GameMap.load_map",
       "type": "method",
       "path": "extraction_target_project/map_system/map_main.py",
-      "start_line": 701,
-      "end_line": 705,
+      "start_line": 721,
+      "end_line": 725,
       "calls": [],
       "used_by": []
     },

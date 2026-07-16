@@ -570,64 +570,196 @@ class DummyVariables:
 ```python
 class TestEnemy1:
     def __init__(self, x, y):
-        self.vars = TestEnemy1Variables(x, y)
+        # 1. variables.py에 명시된 모든 변수를 실시간 데이터로 장착!
+        self.vars = TestEnemy1Variables()
+        self.vars.x = x
+        self.vars.y = y
+        
+        # 2. 실시간 AI 상태 제어 변수
+        self.state = "PATROL" # PATROL, CHASE, LOST, ATTACK
+        
+        # 물리 연산용 접지 플래그 (점프 판단 및 낙하 판정용)
+        self.on_ground = False
 
-    def update(self, player, platforms, game_map=None):
-        # 1. 플레이어와의 거리 및 방향 계산
-        dx = player.vars.rect.centerx - self.vars.rect.centerx
-        dy = player.vars.rect.centery - self.vars.rect.centery
-        distance = math.sqrt(dx**2 + dy**2)
+    def check_line_of_sight(self, player_obj, platforms):
+        """적과 플레이어 사이에 벽(플랫폼)이 가로막고 있는지 선형 보간(LERP) 검사"""
+        if not hasattr(player_obj, 'vars'):
+            return False
+            
+        px, py = player_obj.vars.x, player_obj.vars.y
+        ex, ey = self.vars.x, self.vars.y
+        
+        # 거리가 감지 범위보다 멀면 즉시 감지 실패 (variables의 설정 참조)
+        distance = math.hypot(px - ex, py - ey)
+        if distance > self.vars.detection_range:
+            return False
+            
+        # 레이캐스팅 정밀 해상도 (몇 단계로 나누어 선을 그어볼 것인가)
+        steps = int(distance / 10) + 1
+        for i in range(steps):
+            t = i / steps
+            # 적과 플레이어 사이의 보간 좌표 계산
+            lx = ex + (px - ex) * t
+            ly = ey + (py - ey) * t
+            
+            # 보간 좌표가 어떤 플랫폼 내부를 관통하는지 검사
+            for plat in platforms:
+                plat_x = getattr(plat, 'x', 0)
+                plat_y = getattr(plat, 'y', 0)
+                plat_w = getattr(plat, 'width', 0) or getattr(plat, 'w', 40)
+                plat_h = getattr(plat, 'height', 0) or getattr(plat, 'h', 40)
+                
+                plat_rect = pygame.Rect(plat_x, plat_y, plat_w, plat_h)
+                if plat_rect.collidepoint(lx, ly):
+                    return False # 벽에 가로막혀 볼 수 없음!
+                    
+        return True # 가로막는 벽이 없으므로 플레이어 감지 성공!
 
-        # 2. 플레이어가 있는 방향 설정
-        if dx > 0:
-            self.vars.direction = 1
-        elif dx < 0:
-            self.vars.direction = -1
+    def update_with_dt(self, player_obj, platforms, game_map, dt):
+        """
+        인게임 루프에서 매 프레임 호출하는 핵심 업데이트 메서드.
+        하드코딩된 바닥값 없이, 100% 맵에 배치된 platforms(지형) 위에서만 딛고 서도록 작동합니다.
+        """
+        # dt 가드 설정 (비정상적인 큰 변화 방지)
+        dt = min(dt, 0.1)
 
-        # 3. 거리 기반 상태 전이 알고리즘
-        if distance <= self.vars.attack_range:
-            # 공격 범위 안으로 들어오면 멈춰서 공격
-            self.vars.state = "ATTACK"
+        # ----------------- [1. AI 상태 머신 연산 및 속도(vx) 설정] -----------------
+        can_see_player = self.check_line_of_sight(player_obj, platforms)
+        
+        # 플레이어와의 X축 거리 계산
+        dx = player_obj.vars.x - self.vars.x if hasattr(player_obj, 'vars') else 0
+        distance_to_player = abs(dx)
+
+        # 상태 전환 처리
+        if self.state == "PATROL":
+            # 평화롭게 순찰 속도(patrol_speed)로 이동
+            self.vars.vx = self.vars.direction * self.vars.patrol_speed
+            
+            # 플레이어가 시야에 들어왔을 때 즉시 어그로(CHASE) 상태 전환
+            if can_see_player:
+                self.state = "CHASE"
+                print("🚨 적 발견! 추적 상태로 돌입합니다.")
+
+        elif self.state == "CHASE":
+            # 시야에 보인다면 방향을 계속 갱신하며 추격 속도로 쫓아감
+            if dx > 0:
+                self.vars.direction = 1
+            elif dx < 0:
+                self.vars.direction = -1
+                
+            self.vars.vx = self.vars.direction * self.vars.chase_speed
+            
+            # 플레이어가 사정거리 안으로 들어왔다면 멈춰 서서 공격 상태 전환
+            if distance_to_player <= self.vars.attack_range:
+                self.state = "ATTACK"
+                self.vars.attack_cooldown = 40 # 딜레이 충전
+            # 플레이어를 시야에서 놓쳤다면 경계(LOST) 상태로 전환
+            elif not can_see_player:
+                self.state = "LOST"
+                self.vars.lost_timer = self.vars.lost_delay # 어그로 유지 타이머 작동 시작
+
+        elif self.state == "LOST":
+            self.vars.lost_timer -= 1
+            if can_see_player:
+                self.state = "CHASE"
+                self.vars.lost_timer = 0
+            elif self.vars.lost_timer <= 0:
+                self.state = "PATROL"
+                print("💤 어그로 해제. 순찰 복귀.")
+
+        elif self.state == "ATTACK":
             self.vars.vx = 0
-            self.perform_attack(player)
-        elif distance <= self.vars.detection_range:
-            # 감지 범위 내에 있으면 추적
-            self.vars.state = "CHASE"
-            self.vars.vx = self.vars.direction * self.vars.speed
-        else:
-            # 범위 밖이면 대기
-            self.vars.state = "IDLE"
-            self.vars.vx = 0
-
-        # 4. 물리 이동 및 충돌 처리
-        self.vars.rect.x += self.vars.vx
-        # (필요 시 기존 dummy 처럼 플랫폼/바닥 충돌 처리 구현 적용)
-
-        # 5. 공격 쿨다운 차감
-        if self.vars.attack_cooldown > 0:
             self.vars.attack_cooldown -= 1
+            if self.vars.attack_cooldown <= 0:
+                # 공격 후 다시 플레이어 거리를 보고 상태 결정
+                if distance_to_player > self.vars.attack_range:
+                    self.state = "CHASE"
+                else:
+                    self.vars.attack_cooldown = 40
 
-    def perform_attack(self, player):
-        if self.vars.attack_cooldown == 0:
-            # 💥 플레이어에게 데미지 전달 인터페이스 호출
-            if hasattr(player.vars, 'take_damage'):
-                player.vars.take_damage(10) # 예시 데미지
-            self.vars.attack_cooldown = self.vars.max_attack_cooldown
+        # ----------------- [2. 중력 및 낙하 속도 처리 (Y축 가속)] -----------------
+        GRAVITY = 980.0 * dt  # 픽셀 물리 기반 중력 가속도 계산
+        self.vars.vy += GRAVITY
+        if self.vars.vy > 900.0:  # 최대 종단 속도 제한
+            self.vars.vy = 900.0
 
-    def draw(self, screen, camera=None):
-        # 카메라 오프셋 적용
-        offset_x = camera.offset_x if camera else 0
-        offset_y = camera.offset_y if camera else 0
-        draw_rect = self.vars.rect.move(-offset_x, -offset_y)
+        # ----------------- [3. X축 이동 및 충돌 해결] -----------------
+        self.vars.x += self.vars.vx * dt * 60.0
+        self_rect = pygame.Rect(self.vars.x, self.vars.y, self.vars.width, self.vars.height)
 
-        # 상태별 가시적 구분을 위해 색상 변경 (디버깅/테스트용)
-        color = (0, 255, 0) # 기본 초록색 (IDLE)
-        if self.vars.state == "CHASE":
-            color = (255, 165, 0) # 추적 중 오렌지색
-        elif self.vars.state == "ATTACK":
-            color = (255, 0, 0) # 공격 중 빨간색
+        for plat in platforms:
+            p_vars = getattr(plat, 'vars', None)
+            if p_vars:
+                plat_x = getattr(p_vars, 'x', 0)
+                plat_y = getattr(p_vars, 'y', 0)
+                plat_w = getattr(p_vars, 'width', 0)
+                plat_h = getattr(p_vars, 'height', 0)
+            else:
+                plat_x = getattr(plat, 'x', 0)
+                plat_y = getattr(plat, 'y', 0)
+                plat_w = getattr(plat, 'width', 0) or getattr(plat, 'w', 40)
+                plat_h = getattr(plat, 'height', 0) or getattr(plat, 'h', 40)
 
-        pygame.draw.rect(screen, color, draw_rect)
+            plat_rect = pygame.Rect(plat_x, plat_y, plat_w, plat_h)
+            
+            # 옆면 충돌 시 방향 전환 및 밀어내기
+            if self_rect.colliderect(plat_rect):
+                # 머리/발끝이 겹친 게 아닌 옆면 충돌일 경우에만 작동
+                if self.vars.y + self.vars.height > plat_rect.top + 4 and self.vars.y < plat_rect.bottom - 4:
+                    if self.vars.vx > 0:
+                        self.vars.x = plat_rect.left - self.vars.width
+                        self.vars.direction = -1  # 벽에 닿았으므로 반대방향 순찰
+                    elif self.vars.vx < 0:
+                        self.vars.x = plat_rect.right
+                        self.vars.direction = 1   # 반대방향 순찰
+                    break
+
+        # ----------------- [4. Y축 이동 및 충돌 해결 (공중부양 차단 핵심)] -----------------
+        # 수직 이동 전에 이전 발끝(Bottom) 좌표 백업
+        old_bottom = self.vars.y + self.vars.height
+        
+        # Y축 이동분 반영
+        self.vars.y += self.vars.vy * dt
+        self_rect = pygame.Rect(self.vars.x, self.vars.y, self.vars.width, self.vars.height)
+        self.on_ground = False  # 접지 상태 초기화
+
+        # 하드코딩(536)을 지우고, 배치되어 있는 모든 플랫폼들과의 충돌을 루프로 판정합니다.
+        for plat in platforms:
+            p_vars = getattr(plat, 'vars', None)
+            if p_vars:
+                plat_x = getattr(p_vars, 'x', 0)
+                plat_y = getattr(p_vars, 'y', 0)
+                plat_w = getattr(p_vars, 'width', 0)
+                plat_h = getattr(p_vars, 'height', 0)
+            else:
+                plat_x = getattr(plat, 'x', 0)
+                plat_y = getattr(plat, 'y', 0)
+                plat_w = getattr(plat, 'width', 0) or getattr(plat, 'w', 40)
+                plat_h = getattr(plat, 'height', 0) or getattr(plat, 'h', 40)
+
+            plat_rect = pygame.Rect(plat_x, plat_y, plat_w, plat_h)
+            
+            # 발밑 충돌 체크 (위에서 아래로 떨어지는 도중 발끝이 플랫폼 윗면에 닿았는가?)
+            if self_rect.colliderect(plat_rect):
+                if self.vars.vy >= 0 and old_bottom <= plat_rect.top + 12:
+                    self.vars.y = plat_rect.top - self.vars.height
+                    self.vars.vy = 0
+                    self.on_ground = True
+                    break
+
+    def draw(self, screen, camera_offset=(0, 0)):
+        """적이 카메라 뷰포트에 연동되어 올바른 좌표에 렌더링되도록 처리"""
+        render_x = self.vars.x - camera_offset[0]
+        render_y = self.vars.y - camera_offset[1]
+        
+        # 주황색 몸통 상자 + 테두리 + 검은색 눈 렌더링 (투명 방지!)
+        rect = pygame.Rect(render_x, render_y, self.vars.width, self.vars.height)
+        pygame.draw.rect(screen, (241, 196, 15), rect)        # 주황색 몸체
+        pygame.draw.rect(screen, (44, 62, 80), rect, 2)       # 테두리
+        
+        # 바라보는 방향(direction)에 따라 시선 포커싱 눈동자 그리기
+        eye_x = render_x + (self.vars.width - 12 if self.vars.direction == 1 else 6)
+        pygame.draw.rect(screen, (0, 0, 0), (eye_x, render_y + 15, 6, 6)) # 눈
 ```
 
 --------------------------------------------------
@@ -636,24 +768,40 @@ class TestEnemy1:
 #### 🧱 Code Skeleton:
 ```python
 class TestEnemy1Variables:
-    def __init__(self, x, y):
-        # 기본 물리 및 위치 데이터
-        self.rect = pygame.Rect(x, y, 40, 60) # 임의 크기 설정
+    def __init__(self):
+        # 1. 기본 식별 및 플래그
+        self.is_enemy = True          # 💡 이전 단계에서 만든 하이브리드 최적화 가드를 위한 핵심 적 태그!
+        self.hp = 100                 # 체력
+        self.max_hp = 100             # 최대 체력
+        self.is_dead = False          # 사망 여부
+        self.is_hit = False           # 피격 경직 상태 여부
+        self.hit_timer = 0            # 피격 경직 타이머
+        
+        # 2. 물리 및 기본 위치 데이터 (main에서 실시간으로 대입/업데이트되는 변수들)
+        self.x = 0
+        self.y = 0
         self.vx = 0
         self.vy = 0
-        self.speed = 2 # 플레이어 추적 시 속도
+        self.width = 40
+        self.height = 60
         
-        # 상태 변수
-        self.state = "IDLE" # IDLE, CHASE, ATTACK
-        self.direction = 1  # 1: 우측, -1: 좌측
+        # 3. AI 이동 및 속도 제어
+        self.patrol_speed = 1.5       # 평소 순찰할 때 걷는 속도
+        self.chase_speed = 3.2        # 플레이어를 발견하고 쫓아갈 때 뛰는 속도
+        self.direction = 1            # 바라보는 방향 (1: 오른쪽, -1: 왼쪽)
         
-        # 🎯 감지 및 범위 설정 (핵심 로직용)
-        self.detection_range = 300  # 플레이어 감지 범위 (픽셀)
-        self.attack_range = 50     # 근접 공격 범위 (픽셀)
+        # 4. AI 인지 범위 및 추적 시스템 (픽셀 단위)
+        self.detection_range = 350    # 플레이어를 감지하는 시야 범위
+        self.attack_range = 45        # 근접 공격을 시작하는 무기 사정거리
         
-        # 애니메이션 및 쿨다운 (필요시)
-        self.attack_cooldown = 0
-        self.max_attack_cooldown = 60 # 프레임 단위 또는 타이머
+        # 5. 어그로 시간(초/프레임) 관리
+        self.lost_timer = 0           # 실시간 시야 상실 타이머
+        self.lost_delay = 180         # 시야에서 벗어나도 3초(180프레임) 동안 추적을 유지
+        
+        # 6. 공격 동작 관리
+        self.attack_cooldown = 0      # 다음 공격까지 남은 쿨타임
+        self.attack_ready_time = 30   # 공격 모션 전 선딜레이 시간 (0.5초 = 30프레임)
+        self.attack_total_cooldown = 60 # 공격 완료 후 재사용 대기 시간 (1초 = 60프레임)
 ```
 
 --------------------------------------------------
@@ -1565,40 +1713,65 @@ class EditorObjectRegistry:
     def get(cls, type_id):
         return cls._definitions.get(type_id)
 
+    # [📂 map_editor_tool/object_registry.py] 수정안
+
     @classmethod
     def ensure_defaults(cls):
-         if "platform.basic" not in cls._definitions:
-             cls.register(
-                 EditorObjectDefinition(
-                     type_id="platform.basic",
-                     label="Platform",
-                     category="platform",
-                     factory_type="platform",
-                     defaults={"width": 240, "height": 40, "z_index": 2}
-                 )
-             )
-         # 🎯 더미 엔티티 생성 실패 방지를 위한 기본 명세 강제 등록 보장
-         if "enemy.dummy" not in cls._definitions:
-             cls.register(
-                 EditorObjectDefinition(
-                     type_id="enemy.dummy",
-                     label="Dummy Enemy",
-                     category="enemy",
-                     factory_type="dummy",
-                     defaults={"z_index": 3}
-                 )
-             )
-         # 🎯 더미 엔티티 생성 실패 방지를 위한 기본 명세 강제 등록 보장
-         if "enemy.dummy" not in cls._definitions:
-             cls.register(
-                 EditorObjectDefinition(
-                     type_id="enemy.dummy",
-                     label="Dummy Enemy",
-                     category="enemy",
-                     factory_type="dummy",
-                     defaults={"z_index": 3}
-                 )
-             )
+        # 1. 지형 플랫폼 등 기본 오브젝트는 먼저 등록해둡니다.
+        if "platform.basic" not in cls._definitions:
+            cls.register(
+                EditorObjectDefinition(
+                    type_id="platform.basic",
+                    label="Platform",
+                    category="platform",
+                    factory_type="platform",
+                    defaults={"width": 240, "height": 40, "z_index": 2}
+                )
+            )
+
+        # 2. 🪐 [폴더 동적 스캔 프로토콜] enemy/enemys 폴더 내부를 실시간 탐색합니다.
+        # 프로젝트 루트 기준으로 경로를 유연하게 탐색하기 위한 베이스 설정
+        current_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+        # 실제 적 폴더들이 위치한 물리 경로 계산
+        enemys_dir = os.path.join(current_dir, "enemy", "enemys")
+
+        if os.path.exists(enemys_dir):
+            try:
+                # 폴더 내부를 뒤져서 하위 폴더(디렉토리) 목록만 추출합니다.
+                for folder_name in os.listdir(enemys_dir):
+                    sub_path = os.path.join(enemys_dir, folder_name)
+                    if os.path.isdir(sub_path) and not folder_name.startswith("__"):
+                        
+                        # 예: folder_name이 "test_enemy1" 이라면
+                        type_id = f"enemy.{folder_name}"      # "enemy.test_enemy1"
+                        # 에디터 UI에 보여줄 레이블 이름 자동 변환 ("test_enemy1" -> "Test Enemy1")
+                        label = folder_name.replace("_", " ").title() 
+                        
+                        if type_id not in cls._definitions:
+                            cls.register(
+                                EditorObjectDefinition(
+                                    type_id=type_id,
+                                    label=label,
+                                    category="enemy",
+                                    factory_type=folder_name, # "test_enemy1" (serializer 및 factory 연동 이름)
+                                    defaults={"z_index": 3}
+                                )
+                            )
+                            print(f"🤖 [EditorRegistry] 동적 적 버튼 등록 성공: {label} ({type_id})")
+            except Exception as e:
+                print(f"⚠️ [EditorRegistry] 적 폴더 스캔 중 오류 발생: {e}")
+        else:
+            # 폴더를 찾을 수 없는 경우를 대비한 비상 안전 폴백 (더미 기본 등록)
+            if "enemy.dummy" not in cls._definitions:
+                cls.register(
+                    EditorObjectDefinition(
+                        type_id="enemy.dummy",
+                        label="Dummy Enemy (Fallback)",
+                        category="enemy",
+                        factory_type="dummy",
+                        defaults={"z_index": 3}
+                    )
+                )
     
     def discover_fabric_definitions(cls):
         src_dir = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
@@ -2105,11 +2278,21 @@ def _serialize_trigger(editor, trigger):
      }
 
 def _infer_entity_type(editor, entity):
-     # 클래스 타입 문자열이 매칭되거나, 에디터 내부의 동적 주입 .type 속성이 존재할 때 완벽 식별
-     class_name = entity.__class__.__name__
-     if class_name == "DummyEnemy" or getattr(entity, "type", None) == "dummy":
-         return "dummy"
-     return class_name.lower()
+    """엔티티 객체로부터 JSON에 저장할 type_id를 안전하게 매핑 및 역추론"""
+    if hasattr(entity, "type"):
+        return entity.type
+
+    # 클래스 이름을 기반으로 타입 자동 파싱 (예: TestEnemy1 -> test_enemy1)
+    class_name = entity.__class__.__name__
+    
+    # "Enemy" 접미사가 붙어있다면 제거 (예: DummyEnemy -> Dummy -> dummy)
+    if class_name.endswith("Enemy") and class_name != "Enemy":
+        class_name = class_name[:-5]
+        
+    # PascalCase -> snake_case 정규식 변환
+    import re
+    snake_name = re.sub(r'(?<!^)(?=[A-Z])', '_', class_name).lower()
+    return snake_name
 ```
 
 --------------------------------------------------
@@ -2150,25 +2333,46 @@ class AssetManager:
 class EntityRegistry:
     """
     클래스 참조 격리를 위한 중앙 집중식 Registry 시스템
-    특정 구체 클래스를 직접 import하지 않고 등록하여 문자열 기반으로 객체를 생성합니다.
     """
     _registry = {}
 
     @classmethod
-    def register(cls, entity_type, entity_class):
-        cls._registry[entity_type] = entity_class
-        print(f"✅ [EntityRegistry] '{entity_type}' 타입 클래스가 등록되었습니다: {entity_class.__name__}")
+    def register(cls, type_name, class_obj):
+        cls._registry[type_name] = class_obj
 
     @classmethod
-    def create(cls, entity_type, *args, **kwargs):
-        if entity_type not in cls._registry:
-            print(f"⚠️ [EntityRegistry] 등록되지 않은 엔티티 타입 요청: '{entity_type}'")
-            return None
+    def create(cls, type_name, x, y):
+        # 1. 기존에 이미 캐싱/등록된 엔티티가 있다면 즉시 반환 (기존 무결성 유지)
+        if type_name in cls._registry:
+            return cls._registry[type_name](x, y)
+
+        # 2. 🚀 [자동 동적 탐색 추가] 등록되지 않은 타입인 경우, 폴더 규칙을 기반으로 실시간 임포트 시도
         try:
-            return cls._registry[entity_type](*args, **kwargs)
+            # 예: "test_enemy1" -> enemy.enemys.test_enemy1.test_enemy1_main
+            # "dummy" -> enemy.enemys.dummy.dummy_main
+            module_path = f"enemy.enemys.{type_name}.{type_name}_main"
+            module = importlib.import_module(module_path)
+
+            # 스네이크 케이스를 PascalCase로 변환 (예: test_enemy1 -> TestEnemy1)
+            pascal_name = "".join([w.capitalize() for w in type_name.split("_")])
+            
+            class_obj = None
+            # 클래스 이름 매칭 유연성 보장 (TestEnemy1, TestEnemy1Enemy, DummyEnemy 등 탐색)
+            for candidate_name in [pascal_name, f"{pascal_name}Enemy", f"{pascal_name}Main"]:
+                if hasattr(module, candidate_name):
+                    class_obj = getattr(module, candidate_name)
+                    break
+            
+            if class_obj:
+                # 성능을 위해 다음 호출부터는 캐싱되도록 등록
+                cls.register(type_name, class_obj)
+                cls.register(class_obj.__name__, class_obj)
+                return class_obj(x, y)
+                
         except Exception as e:
-            print(f"🚨 [EntityRegistry] '{entity_type}' 인스턴스 생성 에러: {e}")
-            return None
+            print(f"⚠️ [EntityRegistry] '{type_name}' 동적 생성 실패: {e}")
+
+        return None
 
 class TriggerBoxInstance:
     def __init__(self, x, y, width, height, trigger_module, action_module):
@@ -2882,35 +3086,63 @@ class GameMap:
 
     def update(self, dt, player_obj):
         """main.py의 호출 규격(dt, player_obj)에 맞춘 맵 전체 요소 실시간 업데이트 프로토콜"""
+        
+        # 💡 [해결 방안] 파이썬 인터프리터에게 이 함수 내의 pygame은 
+        # 로컬 변수가 아니라 모듈 전역(global)에 정의된 pygame임을 명시적으로 알려줍니다.
+        global pygame
+        import pygame
+        
+        # 💡 [유동적 해상도 반영] 현재 화면 크기의 1.5배 영역을 활성화 반경으로 실시간 계산
+        try:
+            import settings
+            limit_x = settings.VIRTUAL_WIDTH * 1.5
+            limit_y = settings.VIRTUAL_HEIGHT * 1.5
+        except Exception:
+            # settings 호출이 안 될 경우, 현재 실행 중인 pygame 창 크기 기준으로 자동 우회
+            current_surface = pygame.display.get_surface()
+            if current_surface:
+                screen_w, screen_h = current_surface.get_size()
+                limit_x = screen_w * 1.5
+                limit_y = screen_h * 1.5
+            else:
+                limit_x = 1200
+                limit_y = 900
+
         for entity in self.entities:
-            # 1. 엔티티가 dt 기반 업데이트(update_with_dt)를 지원하는지 먼저 확인
+            # 💡 [최적화 가드] 플레이어 활성화 범위(Activation Box) 내부의 적들만 실시간 업데이트 적용
+            if hasattr(player_obj, 'vars') and hasattr(player_obj.vars, 'x'):
+                
+                # 1단계: 개발자가 지정한 명시적인 적 태그(is_enemy)가 있는지 먼저 확인
+                is_enemy = getattr(entity, "is_enemy", None)
+                
+                # 2단계: 태그가 명시되어 있지 않다면(None), 폴더 경로 및 클래스명으로 자동 판별 (안전망)
+                if is_enemy is None:
+                    is_enemy = "enemy" in entity.__class__.__module__.lower() or "enemy" in entity.__class__.__name__.lower()
+                
+                # 최종적으로 적(is_enemy가 True)인 경우에만 거리 계산 및 잠재우기(Skip) 적용
+                if is_enemy and hasattr(entity, 'vars') and hasattr(entity.vars, 'x'):
+                    px, py = player_obj.vars.x, player_obj.vars.y
+                    ex, ey = entity.vars.x, entity.vars.y
+                    
+                    # 활성화 범위를 벗어난 먼 거리의 적들은 연산을 완전히 스킵(최적화)
+                    if abs(ex - px) > limit_x or abs(ey - py) > limit_y:
+                        continue
+
+            # ----------------------------------------------------
+            # 3. 활성화 범위 내에 있는 적들과 일반 오브젝트들은 즉시 업데이트
+            # ----------------------------------------------------
             if hasattr(entity, "update_with_dt"):
                 try:
-                    # 맵 정보(self)와 dt를 같이 전달
                     entity.update_with_dt(player_obj, self.platforms, self, dt)
                 except Exception as e:
                     print(f"⚠️ [GameMap] 엔티티 dt 업데이트 중 오류 발생: {e}")
             
-            # 2. 지원하지 않고 일반 update만 있다면 기존 규칙대로 self(지형 정보)를 포함하여 호출
             elif hasattr(entity, "update"):
                 try:
                     entity.update(player_obj, self.platforms, self)
                 except Exception as e:
                     print(f"⚠️ [GameMap] 엔티티 일반 업데이트 중 오류 발생: {e}")
-            
-            # 2. 전용 메서드가 없고 일반 update만 있다면 이전 규칙대로 self(지형 정보)를 포함하여 호출
-            elif hasattr(entity, "update"):
-                try:
-                    entity.update(player_obj, self.platforms, self)
-                except Exception as e:
-                    print(f"⚠️ [GameMap] 엔티티 일반 업데이트 중 오류 발생: {e}")
-            
-            # 2. 전용 메서드가 없고 일반 update만 있다면 이전 규칙대로 self(지형 정보)를 포함하여 호출
-            elif hasattr(entity, "update"):
-                try:
-                    entity.update(player_obj, self.platforms, self)
-                except Exception as e:
-                    print(f"⚠️ [GameMap] 엔티티 일반 업데이트 중 오류 발생: {e}")
+                    
         # 트리거 박스 인스턴스 실시간 업데이트 보장 
         for box in self.trigger_boxes:
             if hasattr(box, "update"):
@@ -3338,7 +3570,7 @@ class GameMap:
   ├── "ground_y": float (val: 1800.0)
   ├── "platforms": List (len: 0)
   ├── "structures": List (len: 4)
-  ├── "entities": List (len: 6)
+  ├── "entities": List (len: 11)
   ├── "triggers": List (len: 0)
   ├── "editor_metadata": Dict (keys: ['source_map', 'file_name', 'object_registry']...)
 ```
