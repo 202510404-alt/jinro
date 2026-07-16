@@ -17,6 +17,29 @@ class TestEnemy1:
         # 물리 연산용 접지 플래그 (점프 판단 및 낙하 판정용)
         self.on_ground = False
 
+    def take_damage(self, amount, knockback_dir=0):
+        """플레이어의 공격을 받았을 때 데미지를 받고 넉백되는 피격 로직"""
+        if self.vars.is_dead:
+            return
+            
+        self.vars.hp = max(0, self.vars.hp - amount)
+        self.vars.is_hit = True
+        self.vars.hit_timer = 20  # 약 0.3초간 완벽 경직 및 넉백
+        
+        # 타격을 받으면 즉시 뒤로 튕겨 나감 (넉백 가속도 주입)
+        if knockback_dir != 0:
+            self.vars.vx = knockback_dir * 350.0  # 넉백 강도 설정
+        
+        # 맞자마자 플레이어를 향해 상태를 '추적(CHASE)' 모드로 강제 강제 전환
+        self.state = "CHASE"
+        
+        print(f"💥 [TestEnemy1] 피격! 체력: {self.vars.hp}/{self.vars.max_hp}")
+        
+        if self.vars.hp <= 0:
+            self.vars.is_dead = True
+            self.vars.vx = 0
+            print("💀 [TestEnemy1] 사망함.")
+
     def check_line_of_sight(self, player_obj, platforms):
         """적과 플레이어 사이에 벽(플랫폼)이 가로막고 있는지 선형 보간(LERP) 검사"""
         if not hasattr(player_obj, 'vars'):
@@ -25,20 +48,17 @@ class TestEnemy1:
         px, py = player_obj.vars.x, player_obj.vars.y
         ex, ey = self.vars.x, self.vars.y
         
-        # 거리가 감지 범위보다 멀면 즉시 감지 실패 (variables의 설정 참조)
+        # 거리가 감지 범위보다 멀면 즉시 감지 실패
         distance = math.hypot(px - ex, py - ey)
         if distance > self.vars.detection_range:
             return False
             
-        # 레이캐스팅 정밀 해상도 (몇 단계로 나누어 선을 그어볼 것인가)
         steps = int(distance / 10) + 1
         for i in range(steps):
             t = i / steps
-            # 적과 플레이어 사이의 보간 좌표 계산
             lx = ex + (px - ex) * t
             ly = ey + (py - ey) * t
             
-            # 보간 좌표가 어떤 플랫폼 내부를 관통하는지 검사
             for plat in platforms:
                 plat_x = getattr(plat, 'x', 0)
                 plat_y = getattr(plat, 'y', 0)
@@ -47,52 +67,59 @@ class TestEnemy1:
                 
                 plat_rect = pygame.Rect(plat_x, plat_y, plat_w, plat_h)
                 if plat_rect.collidepoint(lx, ly):
-                    return False # 벽에 가로막혀 볼 수 없음!
+                    return False
                     
-        return True # 가로막는 벽이 없으므로 플레이어 감지 성공!
+        return True
 
     def update_with_dt(self, player_obj, platforms, game_map, dt):
         """
         인게임 루프에서 매 프레임 호출하는 핵심 업데이트 메서드.
-        하드코딩된 바닥값 없이, 100% 맵에 배치된 platforms(지형) 위에서만 딛고 서도록 작동합니다.
+        피격 경직 중일 때는 AI 행동 패턴을 일시정지하고 물리 넉백 슬라이딩 감속만 처리합니다.
         """
-        # dt 가드 설정 (비정상적인 큰 변화 방지)
+        # dt 가드 설정
         dt = min(dt, 0.1)
 
-        # ----------------- [1. AI 상태 머신 연산 및 속도(vx) 설정] -----------------
+        # ----------------- [1. 피격 경직(Hit State) 및 넉백 감쇠 연산] -----------------
+        if self.vars.is_hit:
+            self.vars.hit_timer -= 1
+            if self.vars.hit_timer <= 0:
+                self.vars.is_hit = False
+                
+            # 바닥 마찰력으로 넉백에 의한 속도를 서서히 미끄러지며 줄임
+            self.vars.vx *= 0.85
+            
+            # 경직 상태에서도 벽 충돌 및 중력 처리는 유지
+            self._apply_gravity_and_collisions(platforms, game_map, dt)
+            return
+
+        if self.vars.is_dead:
+            self.vars.vx = 0
+            self._apply_gravity_and_collisions(platforms, game_map, dt)
+            return
+
+        # ----------------- [2. AI 상태 머신 연산 및 속도(vx) 설정] -----------------
         can_see_player = self.check_line_of_sight(player_obj, platforms)
-        
-        # 플레이어와의 X축 거리 계산
         dx = player_obj.vars.x - self.vars.x if hasattr(player_obj, 'vars') else 0
         distance_to_player = abs(dx)
 
-        # 상태 전환 처리
         if self.state == "PATROL":
-            # 평화롭게 순찰 속도(patrol_speed)로 이동
             self.vars.vx = self.vars.direction * self.vars.patrol_speed
-            
-            # 플레이어가 시야에 들어왔을 때 즉시 어그로(CHASE) 상태 전환
             if can_see_player:
                 self.state = "CHASE"
-                print("🚨 적 발견! 추적 상태로 돌입합니다.")
 
         elif self.state == "CHASE":
-            # 시야에 보인다면 방향을 계속 갱신하며 추격 속도로 쫓아감
             if dx > 0:
                 self.vars.direction = 1
             elif dx < 0:
                 self.vars.direction = -1
-                
             self.vars.vx = self.vars.direction * self.vars.chase_speed
             
-            # 플레이어가 사정거리 안으로 들어왔다면 멈춰 서서 공격 상태 전환
             if distance_to_player <= self.vars.attack_range:
                 self.state = "ATTACK"
-                self.vars.attack_cooldown = 40 # 딜레이 충전
-            # 플레이어를 시야에서 놓쳤다면 경계(LOST) 상태로 전환
+                self.vars.attack_cooldown = 40
             elif not can_see_player:
                 self.state = "LOST"
-                self.vars.lost_timer = self.vars.lost_delay # 어그로 유지 타이머 작동 시작
+                self.vars.lost_timer = self.vars.lost_delay
 
         elif self.state == "LOST":
             self.vars.lost_timer -= 1
@@ -101,81 +128,63 @@ class TestEnemy1:
                 self.vars.lost_timer = 0
             elif self.vars.lost_timer <= 0:
                 self.state = "PATROL"
-                print("💤 어그로 해제. 순찰 복귀.")
 
         elif self.state == "ATTACK":
             self.vars.vx = 0
             self.vars.attack_cooldown -= 1
             if self.vars.attack_cooldown <= 0:
-                # 공격 후 다시 플레이어 거리를 보고 상태 결정
                 if distance_to_player > self.vars.attack_range:
                     self.state = "CHASE"
                 else:
                     self.vars.attack_cooldown = 40
 
-        # ----------------- [2. 중력 및 낙하 속도 처리 (Y축 가속)] -----------------
-        GRAVITY = 980.0 * dt  # 픽셀 물리 기반 중력 가속도 계산
+        # AI 연산 후 최종 물리 및 플랫폼 충돌 적용
+        self._apply_gravity_and_collisions(platforms, game_map, dt)
+
+    def _apply_gravity_and_collisions(self, platforms, game_map, dt):
+        """순수 중력 및 플랫폼 충돌 로직"""
+        # 중력 적용
+        GRAVITY = 980.0 * dt
         self.vars.vy += GRAVITY
-        if self.vars.vy > 900.0:  # 최대 종단 속도 제한
+        if self.vars.vy > 900.0:
             self.vars.vy = 900.0
 
-        # ----------------- [3. X축 이동 및 충돌 해결] -----------------
+        # X축 이동 및 충돌
         self.vars.x += self.vars.vx * dt * 60.0
         self_rect = pygame.Rect(self.vars.x, self.vars.y, self.vars.width, self.vars.height)
 
         for plat in platforms:
             p_vars = getattr(plat, 'vars', None)
-            if p_vars:
-                plat_x = getattr(p_vars, 'x', 0)
-                plat_y = getattr(p_vars, 'y', 0)
-                plat_w = getattr(p_vars, 'width', 0)
-                plat_h = getattr(p_vars, 'height', 0)
-            else:
-                plat_x = getattr(plat, 'x', 0)
-                plat_y = getattr(plat, 'y', 0)
-                plat_w = getattr(plat, 'width', 0) or getattr(plat, 'w', 40)
-                plat_h = getattr(plat, 'height', 0) or getattr(plat, 'h', 40)
-
+            plat_x = getattr(p_vars if p_vars else plat, 'x', 0)
+            plat_y = getattr(p_vars if p_vars else plat, 'y', 0)
+            plat_w = getattr(p_vars if p_vars else plat, 'width', 0) or getattr(plat, 'w', 40)
+            plat_h = getattr(p_vars if p_vars else plat, 'height', 0) or getattr(plat, 'h', 40)
             plat_rect = pygame.Rect(plat_x, plat_y, plat_w, plat_h)
             
-            # 옆면 충돌 시 방향 전환 및 밀어내기
             if self_rect.colliderect(plat_rect):
-                # 머리/발끝이 겹친 게 아닌 옆면 충돌일 경우에만 작동
                 if self.vars.y + self.vars.height > plat_rect.top + 4 and self.vars.y < plat_rect.bottom - 4:
                     if self.vars.vx > 0:
                         self.vars.x = plat_rect.left - self.vars.width
-                        self.vars.direction = -1  # 벽에 닿았으므로 반대방향 순찰
+                        self.vars.direction = -1
                     elif self.vars.vx < 0:
                         self.vars.x = plat_rect.right
-                        self.vars.direction = 1   # 반대방향 순찰
+                        self.vars.direction = 1
                     break
 
-        # ----------------- [4. Y축 이동 및 충돌 해결 (공중부양 차단 핵심)] -----------------
-        # 수직 이동 전에 이전 발끝(Bottom) 좌표 백업
+        # Y축 이동 및 충돌
         old_bottom = self.vars.y + self.vars.height
-        
-        # Y축 이동분 반영
         self.vars.y += self.vars.vy * dt
         self_rect = pygame.Rect(self.vars.x, self.vars.y, self.vars.width, self.vars.height)
-        self.on_ground = False  # 접지 상태 초기화
+        self.on_ground = False
 
-        # 하드코딩(536)을 지우고, 배치되어 있는 모든 플랫폼들과의 충돌을 루프로 판정합니다.
         for plat in platforms:
             p_vars = getattr(plat, 'vars', None)
-            if p_vars:
-                plat_x = getattr(p_vars, 'x', 0)
-                plat_y = getattr(p_vars, 'y', 0)
-                plat_w = getattr(p_vars, 'width', 0)
-                plat_h = getattr(p_vars, 'height', 0)
-            else:
-                plat_x = getattr(plat, 'x', 0)
-                plat_y = getattr(plat, 'y', 0)
-                plat_w = getattr(plat, 'width', 0) or getattr(plat, 'w', 40)
-                plat_h = getattr(plat, 'height', 0) or getattr(plat, 'h', 40)
-
+            plat_x = getattr(p_vars if p_vars else plat, 'x', 0)
+            plat_y = getattr(p_vars if p_vars else plat, 'y', 0)
+            plat_w = getattr(p_vars if p_vars else plat, 'width', 0) or getattr(plat, 'w', 40)
+            plat_h = getattr(p_vars if p_vars else plat, 'height', 0) or getattr(plat, 'h', 40)
             plat_rect = pygame.Rect(plat_x, plat_y, plat_w, plat_h)
             
-            # 발밑 충돌 체크 (위에서 아래로 떨어지는 도중 발끝이 플랫폼 윗면에 닿았는가?)
             if self_rect.colliderect(plat_rect):
                 if self.vars.vy >= 0 and old_bottom <= plat_rect.top + 12:
                     self.vars.y = plat_rect.top - self.vars.height
@@ -184,15 +193,19 @@ class TestEnemy1:
                     break
 
     def draw(self, screen, camera_offset=(0, 0)):
-        """적이 카메라 뷰포트에 연동되어 올바른 좌표에 렌더링되도록 처리"""
+        if self.vars.is_dead:
+            return # 죽었으면 렌더링 스킵 (추후 사망 시체 애니메이션 추가 공간)
+            
         render_x = self.vars.x - camera_offset[0]
         render_y = self.vars.y - camera_offset[1]
         
-        # 주황색 몸통 상자 + 테두리 + 검은색 눈 렌더링 (투명 방지!)
-        rect = pygame.Rect(render_x, render_y, self.vars.width, self.vars.height)
-        pygame.draw.rect(screen, (241, 196, 15), rect)        # 주황색 몸체
-        pygame.draw.rect(screen, (44, 62, 80), rect, 2)       # 테두리
+        # 🎨 피격(is_hit) 시 빨간색 상자, 평소에는 주황색 상자로 렌더링하여 피격 피드백 제공!
+        body_color = (231, 76, 60) if self.vars.is_hit else (241, 196, 15)
         
-        # 바라보는 방향(direction)에 따라 시선 포커싱 눈동자 그리기
+        rect = pygame.Rect(render_x, render_y, self.vars.width, self.vars.height)
+        pygame.draw.rect(screen, body_color, rect)
+        pygame.draw.rect(screen, (44, 62, 80), rect, 2)
+        
+        # 눈 렌더링
         eye_x = render_x + (self.vars.width - 12 if self.vars.direction == 1 else 6)
-        pygame.draw.rect(screen, (0, 0, 0), (eye_x, render_y + 15, 6, 6)) # 눈
+        pygame.draw.rect(screen, (0, 0, 0), (eye_x, render_y + 15, 6, 6))

@@ -581,6 +581,29 @@ class TestEnemy1:
         # 물리 연산용 접지 플래그 (점프 판단 및 낙하 판정용)
         self.on_ground = False
 
+    def take_damage(self, amount, knockback_dir=0):
+        """플레이어의 공격을 받았을 때 데미지를 받고 넉백되는 피격 로직"""
+        if self.vars.is_dead:
+            return
+            
+        self.vars.hp = max(0, self.vars.hp - amount)
+        self.vars.is_hit = True
+        self.vars.hit_timer = 20  # 약 0.3초간 완벽 경직 및 넉백
+        
+        # 타격을 받으면 즉시 뒤로 튕겨 나감 (넉백 가속도 주입)
+        if knockback_dir != 0:
+            self.vars.vx = knockback_dir * 350.0  # 넉백 강도 설정
+        
+        # 맞자마자 플레이어를 향해 상태를 '추적(CHASE)' 모드로 강제 강제 전환
+        self.state = "CHASE"
+        
+        print(f"💥 [TestEnemy1] 피격! 체력: {self.vars.hp}/{self.vars.max_hp}")
+        
+        if self.vars.hp <= 0:
+            self.vars.is_dead = True
+            self.vars.vx = 0
+            print("💀 [TestEnemy1] 사망함.")
+
     def check_line_of_sight(self, player_obj, platforms):
         """적과 플레이어 사이에 벽(플랫폼)이 가로막고 있는지 선형 보간(LERP) 검사"""
         if not hasattr(player_obj, 'vars'):
@@ -589,20 +612,17 @@ class TestEnemy1:
         px, py = player_obj.vars.x, player_obj.vars.y
         ex, ey = self.vars.x, self.vars.y
         
-        # 거리가 감지 범위보다 멀면 즉시 감지 실패 (variables의 설정 참조)
+        # 거리가 감지 범위보다 멀면 즉시 감지 실패
         distance = math.hypot(px - ex, py - ey)
         if distance > self.vars.detection_range:
             return False
             
-        # 레이캐스팅 정밀 해상도 (몇 단계로 나누어 선을 그어볼 것인가)
         steps = int(distance / 10) + 1
         for i in range(steps):
             t = i / steps
-            # 적과 플레이어 사이의 보간 좌표 계산
             lx = ex + (px - ex) * t
             ly = ey + (py - ey) * t
             
-            # 보간 좌표가 어떤 플랫폼 내부를 관통하는지 검사
             for plat in platforms:
                 plat_x = getattr(plat, 'x', 0)
                 plat_y = getattr(plat, 'y', 0)
@@ -611,52 +631,59 @@ class TestEnemy1:
                 
                 plat_rect = pygame.Rect(plat_x, plat_y, plat_w, plat_h)
                 if plat_rect.collidepoint(lx, ly):
-                    return False # 벽에 가로막혀 볼 수 없음!
+                    return False
                     
-        return True # 가로막는 벽이 없으므로 플레이어 감지 성공!
+        return True
 
     def update_with_dt(self, player_obj, platforms, game_map, dt):
         """
         인게임 루프에서 매 프레임 호출하는 핵심 업데이트 메서드.
-        하드코딩된 바닥값 없이, 100% 맵에 배치된 platforms(지형) 위에서만 딛고 서도록 작동합니다.
+        피격 경직 중일 때는 AI 행동 패턴을 일시정지하고 물리 넉백 슬라이딩 감속만 처리합니다.
         """
-        # dt 가드 설정 (비정상적인 큰 변화 방지)
+        # dt 가드 설정
         dt = min(dt, 0.1)
 
-        # ----------------- [1. AI 상태 머신 연산 및 속도(vx) 설정] -----------------
+        # ----------------- [1. 피격 경직(Hit State) 및 넉백 감쇠 연산] -----------------
+        if self.vars.is_hit:
+            self.vars.hit_timer -= 1
+            if self.vars.hit_timer <= 0:
+                self.vars.is_hit = False
+                
+            # 바닥 마찰력으로 넉백에 의한 속도를 서서히 미끄러지며 줄임
+            self.vars.vx *= 0.85
+            
+            # 경직 상태에서도 벽 충돌 및 중력 처리는 유지
+            self._apply_gravity_and_collisions(platforms, game_map, dt)
+            return
+
+        if self.vars.is_dead:
+            self.vars.vx = 0
+            self._apply_gravity_and_collisions(platforms, game_map, dt)
+            return
+
+        # ----------------- [2. AI 상태 머신 연산 및 속도(vx) 설정] -----------------
         can_see_player = self.check_line_of_sight(player_obj, platforms)
-        
-        # 플레이어와의 X축 거리 계산
         dx = player_obj.vars.x - self.vars.x if hasattr(player_obj, 'vars') else 0
         distance_to_player = abs(dx)
 
-        # 상태 전환 처리
         if self.state == "PATROL":
-            # 평화롭게 순찰 속도(patrol_speed)로 이동
             self.vars.vx = self.vars.direction * self.vars.patrol_speed
-            
-            # 플레이어가 시야에 들어왔을 때 즉시 어그로(CHASE) 상태 전환
             if can_see_player:
                 self.state = "CHASE"
-                print("🚨 적 발견! 추적 상태로 돌입합니다.")
 
         elif self.state == "CHASE":
-            # 시야에 보인다면 방향을 계속 갱신하며 추격 속도로 쫓아감
             if dx > 0:
                 self.vars.direction = 1
             elif dx < 0:
                 self.vars.direction = -1
-                
             self.vars.vx = self.vars.direction * self.vars.chase_speed
             
-            # 플레이어가 사정거리 안으로 들어왔다면 멈춰 서서 공격 상태 전환
             if distance_to_player <= self.vars.attack_range:
                 self.state = "ATTACK"
-                self.vars.attack_cooldown = 40 # 딜레이 충전
-            # 플레이어를 시야에서 놓쳤다면 경계(LOST) 상태로 전환
+                self.vars.attack_cooldown = 40
             elif not can_see_player:
                 self.state = "LOST"
-                self.vars.lost_timer = self.vars.lost_delay # 어그로 유지 타이머 작동 시작
+                self.vars.lost_timer = self.vars.lost_delay
 
         elif self.state == "LOST":
             self.vars.lost_timer -= 1
@@ -665,81 +692,63 @@ class TestEnemy1:
                 self.vars.lost_timer = 0
             elif self.vars.lost_timer <= 0:
                 self.state = "PATROL"
-                print("💤 어그로 해제. 순찰 복귀.")
 
         elif self.state == "ATTACK":
             self.vars.vx = 0
             self.vars.attack_cooldown -= 1
             if self.vars.attack_cooldown <= 0:
-                # 공격 후 다시 플레이어 거리를 보고 상태 결정
                 if distance_to_player > self.vars.attack_range:
                     self.state = "CHASE"
                 else:
                     self.vars.attack_cooldown = 40
 
-        # ----------------- [2. 중력 및 낙하 속도 처리 (Y축 가속)] -----------------
-        GRAVITY = 980.0 * dt  # 픽셀 물리 기반 중력 가속도 계산
+        # AI 연산 후 최종 물리 및 플랫폼 충돌 적용
+        self._apply_gravity_and_collisions(platforms, game_map, dt)
+
+    def _apply_gravity_and_collisions(self, platforms, game_map, dt):
+        """순수 중력 및 플랫폼 충돌 로직"""
+        # 중력 적용
+        GRAVITY = 980.0 * dt
         self.vars.vy += GRAVITY
-        if self.vars.vy > 900.0:  # 최대 종단 속도 제한
+        if self.vars.vy > 900.0:
             self.vars.vy = 900.0
 
-        # ----------------- [3. X축 이동 및 충돌 해결] -----------------
+        # X축 이동 및 충돌
         self.vars.x += self.vars.vx * dt * 60.0
         self_rect = pygame.Rect(self.vars.x, self.vars.y, self.vars.width, self.vars.height)
 
         for plat in platforms:
             p_vars = getattr(plat, 'vars', None)
-            if p_vars:
-                plat_x = getattr(p_vars, 'x', 0)
-                plat_y = getattr(p_vars, 'y', 0)
-                plat_w = getattr(p_vars, 'width', 0)
-                plat_h = getattr(p_vars, 'height', 0)
-            else:
-                plat_x = getattr(plat, 'x', 0)
-                plat_y = getattr(plat, 'y', 0)
-                plat_w = getattr(plat, 'width', 0) or getattr(plat, 'w', 40)
-                plat_h = getattr(plat, 'height', 0) or getattr(plat, 'h', 40)
-
+            plat_x = getattr(p_vars if p_vars else plat, 'x', 0)
+            plat_y = getattr(p_vars if p_vars else plat, 'y', 0)
+            plat_w = getattr(p_vars if p_vars else plat, 'width', 0) or getattr(plat, 'w', 40)
+            plat_h = getattr(p_vars if p_vars else plat, 'height', 0) or getattr(plat, 'h', 40)
             plat_rect = pygame.Rect(plat_x, plat_y, plat_w, plat_h)
             
-            # 옆면 충돌 시 방향 전환 및 밀어내기
             if self_rect.colliderect(plat_rect):
-                # 머리/발끝이 겹친 게 아닌 옆면 충돌일 경우에만 작동
                 if self.vars.y + self.vars.height > plat_rect.top + 4 and self.vars.y < plat_rect.bottom - 4:
                     if self.vars.vx > 0:
                         self.vars.x = plat_rect.left - self.vars.width
-                        self.vars.direction = -1  # 벽에 닿았으므로 반대방향 순찰
+                        self.vars.direction = -1
                     elif self.vars.vx < 0:
                         self.vars.x = plat_rect.right
-                        self.vars.direction = 1   # 반대방향 순찰
+                        self.vars.direction = 1
                     break
 
-        # ----------------- [4. Y축 이동 및 충돌 해결 (공중부양 차단 핵심)] -----------------
-        # 수직 이동 전에 이전 발끝(Bottom) 좌표 백업
+        # Y축 이동 및 충돌
         old_bottom = self.vars.y + self.vars.height
-        
-        # Y축 이동분 반영
         self.vars.y += self.vars.vy * dt
         self_rect = pygame.Rect(self.vars.x, self.vars.y, self.vars.width, self.vars.height)
-        self.on_ground = False  # 접지 상태 초기화
+        self.on_ground = False
 
-        # 하드코딩(536)을 지우고, 배치되어 있는 모든 플랫폼들과의 충돌을 루프로 판정합니다.
         for plat in platforms:
             p_vars = getattr(plat, 'vars', None)
-            if p_vars:
-                plat_x = getattr(p_vars, 'x', 0)
-                plat_y = getattr(p_vars, 'y', 0)
-                plat_w = getattr(p_vars, 'width', 0)
-                plat_h = getattr(p_vars, 'height', 0)
-            else:
-                plat_x = getattr(plat, 'x', 0)
-                plat_y = getattr(plat, 'y', 0)
-                plat_w = getattr(plat, 'width', 0) or getattr(plat, 'w', 40)
-                plat_h = getattr(plat, 'height', 0) or getattr(plat, 'h', 40)
-
+            plat_x = getattr(p_vars if p_vars else plat, 'x', 0)
+            plat_y = getattr(p_vars if p_vars else plat, 'y', 0)
+            plat_w = getattr(p_vars if p_vars else plat, 'width', 0) or getattr(plat, 'w', 40)
+            plat_h = getattr(p_vars if p_vars else plat, 'height', 0) or getattr(plat, 'h', 40)
             plat_rect = pygame.Rect(plat_x, plat_y, plat_w, plat_h)
             
-            # 발밑 충돌 체크 (위에서 아래로 떨어지는 도중 발끝이 플랫폼 윗면에 닿았는가?)
             if self_rect.colliderect(plat_rect):
                 if self.vars.vy >= 0 and old_bottom <= plat_rect.top + 12:
                     self.vars.y = plat_rect.top - self.vars.height
@@ -748,18 +757,22 @@ class TestEnemy1:
                     break
 
     def draw(self, screen, camera_offset=(0, 0)):
-        """적이 카메라 뷰포트에 연동되어 올바른 좌표에 렌더링되도록 처리"""
+        if self.vars.is_dead:
+            return # 죽었으면 렌더링 스킵 (추후 사망 시체 애니메이션 추가 공간)
+            
         render_x = self.vars.x - camera_offset[0]
         render_y = self.vars.y - camera_offset[1]
         
-        # 주황색 몸통 상자 + 테두리 + 검은색 눈 렌더링 (투명 방지!)
-        rect = pygame.Rect(render_x, render_y, self.vars.width, self.vars.height)
-        pygame.draw.rect(screen, (241, 196, 15), rect)        # 주황색 몸체
-        pygame.draw.rect(screen, (44, 62, 80), rect, 2)       # 테두리
+        # 🎨 피격(is_hit) 시 빨간색 상자, 평소에는 주황색 상자로 렌더링하여 피격 피드백 제공!
+        body_color = (231, 76, 60) if self.vars.is_hit else (241, 196, 15)
         
-        # 바라보는 방향(direction)에 따라 시선 포커싱 눈동자 그리기
+        rect = pygame.Rect(render_x, render_y, self.vars.width, self.vars.height)
+        pygame.draw.rect(screen, body_color, rect)
+        pygame.draw.rect(screen, (44, 62, 80), rect, 2)
+        
+        # 눈 렌더링
         eye_x = render_x + (self.vars.width - 12 if self.vars.direction == 1 else 6)
-        pygame.draw.rect(screen, (0, 0, 0), (eye_x, render_y + 15, 6, 6)) # 눈
+        pygame.draw.rect(screen, (0, 0, 0), (eye_x, render_y + 15, 6, 6))
 ```
 
 --------------------------------------------------
@@ -950,7 +963,10 @@ def run_game(window_screen, virtual_screen, clock):
                     
         # 대화창이 꺼져있을 때만 물리 및 업데이트 작동
          if not dialogue_manager.is_active:
-            player.update(game_map.platforms, game_map=game_map)
+            # 델타 타임(dt)과 적 목록(game_map.entities)을 함께 넘겨주어 정밀 물리와 타격을 작동시킵니다.
+# 만약 main.py 내부의 루프에 dt 변수명이 다르게 되어있다면(예: deltatime 등) 해당 변수명으로 넣어주세요.
+            dt = clock.get_time() / 1000.0  # 혹시 루프 내에 dt 정의가 없다면 이 줄을 위에 추가하세요.
+            player.update_with_dt(game_map.platforms, game_map, dt, entities=game_map.entities)
             game_map.update(dt, player_obj=player)
             
             # 카메라 타겟 중심점 계산
@@ -1069,6 +1085,60 @@ def run_main_menu(window_screen, virtual_screen, clock):
         scaled_surf = pygame.transform.scale(virtual_screen, (SCREEN_WIDTH, SCREEN_HEIGHT))
         window_screen.blit(scaled_surf, (0, 0))
         pygame.display.flip()
+
+def draw(self, screen, camera_offset=(0, 0)):
+        """플레이어 본체 이미지와 공격 시 쇠파이프 콤보 이펙트를 화면에 렌더링합니다."""
+        ox, oy = camera_offset
+        # 🎬 1. 캐릭터 본체 스프라이트 시퀀스 추출 및 출력 (기존 순정 로직 완벽 보존)
+        anim_list = self.assets.images.get(self.vars.current_state, [])
+        if not anim_list:
+            return
+            
+        # 혹시 모를 인덱스 바운드 에러를 막기 위한 최종 안전 필터링
+        idx = min(self.vars.current_frame_idx, len(anim_list) - 1)
+        player_image = anim_list[idx]
+        
+        # 왼쪽을 바라보고 있다면 이미지 좌우 반전
+        if not self.vars.facing_right:
+            player_image = pygame.transform.flip(player_image, True, False)
+            
+        screen.blit(player_image, (self.vars.x - ox, self.vars.y - oy))
+        
+        # ─────────────────────────────────────────────────────────────
+        # 🎯 [새로운 시스템 추가] 쇠파이프 타격 범위(이펙트) 가시화 및 콤보별 연출
+        # ─────────────────────────────────────────────────────────────
+        if getattr(self.vars, 'is_attacking', False) and getattr(self.vars, 'attack_rect', None):
+            # 카메라 좌표계가 반영된 실시간 이펙트 렌더링 사각형 변환
+            eff_rect = pygame.Rect(
+                self.vars.attack_rect.x - ox,
+                self.vars.attack_rect.y - oy,
+                self.vars.attack_rect.width,
+                self.vars.attack_rect.height
+            )
+            
+            # 투명도(Alpha) 표현이 가능한 이펙트 전용 특수 표면(Surface) 생성 (최적화 결합)
+            effect_surf = pygame.Surface((eff_rect.width, eff_rect.height), pygame.SRCALPHA)
+            
+            # 현재 콤보 단수(1타, 2타, 3타막타)에 맞춰 시각 효과 가변 분기
+            combo = getattr(self.vars, 'combo_step', 1)
+            if combo == 1:
+                # 1타: 신속하게 파고드는 블루 화이트 타격 잔상 (반투명)
+                color = (52, 152, 219, 140) 
+                pygame.draw.ellipse(effect_surf, color, (0, 0, eff_rect.width, eff_rect.height))
+            elif combo == 2:
+                # 2타: 좌우 반전 궤적으로 휘두르는 날카로운 옐로우 타격 잔상
+                color = (241, 196, 15, 140)
+                pygame.draw.ellipse(effect_surf, color, (0, 0, eff_rect.width, eff_rect.height))
+            elif combo == 3:
+                # 3타: 제자리 고정 묵직한 오렌지-레드 대형 광역 내려찍기 충격파 연출
+                color = (231, 76, 60, 180)
+                # 바닥 충격파 영역 생성
+                pygame.draw.rect(effect_surf, color, (0, 0, eff_rect.width, eff_rect.height), border_radius=8)
+                # 크래시 방지 및 시인성을 위한 내부 화이트 하이라이트 테두리 선 추가
+                pygame.draw.rect(effect_surf, (255, 255, 255, 220), (0, 0, eff_rect.width, eff_rect.height), 3, border_radius=8)
+                
+            # 최종 연산 완료된 이펙트를 게임 화면에 블릿(Blit) 출력
+            screen.blit(effect_surf, (eff_rect.x, eff_rect.y))
 
 def main():
     """게임 진입점"""
@@ -3837,30 +3907,134 @@ class PlayerAssetLoader:
 #### 🧱 Code Skeleton:
 ```python
 class PlayerCombatProcessor:
-    def process(self, vars_obj):
+    def __init__(self):
+        self.attack_cooldown_timer = 0.0
+
+    def process(self, vars_obj, entities=None, dt=0.0):
+        # 1. 공격 딜레이(쿨타임) 연산
+        if self.attack_cooldown_timer > 0:
+            self.attack_cooldown_timer -= dt
+            if self.attack_cooldown_timer > 0:
+                return
+
+        # 2. 새로운 공격 개시 시점 (is_attacking은 켜졌으나 타이머가 0일 때)
+        if vars_obj.is_attacking and getattr(vars_obj, 'attack_timer', 0) == 0:
+            if not hasattr(vars_obj, 'combo_step') or vars_obj.combo_step == 0:
+                vars_obj.combo_step = 1
+
+            # 🎯 [최적화 자동 타겟팅] 가장 가까운 유효 적 탐색
+            target_enemy = None
+            max_target_distance = vars_obj.attack_range_width * 1.5
+            min_dist_sq = max_target_distance * max_target_distance
+            
+            if entities:
+                for entity in entities:
+                    if entity == self or getattr(entity, 'vars', None) == vars_obj:
+                        continue
+                    e_vars = getattr(entity, 'vars', None)
+                    if not e_vars or getattr(e_vars, 'is_dead', False):
+                        continue
+                    
+                    dx = e_vars.x - vars_obj.x
+                    dy = e_vars.y - vars_obj.y
+                    dist_sq = dx*dx + dy*dy
+                    
+                    if dist_sq < min_dist_sq:
+                        min_dist_sq = dist_sq
+                        target_enemy = entity
+
+            # 3. 콤보 분기 처리
+            dash_speed = 750.0 # 시원한 돌진 속도감 부여
+            
+            if vars_obj.combo_step in [1, 2]:
+                self.attack_cooldown_timer = 0.2 # 1, 2타 딜레이 0.2초
+                vars_obj.attack_timer = 12       # 공격 판정 지속 프레임
+                
+                if target_enemy:
+                    te_vars = target_enemy.vars
+                    dx = te_vars.x - vars_obj.x
+                    dy = te_vars.y - vars_obj.y
+                    vars_obj.facing_right = (dx > 0)
+                    
+                    y_margin = 25 # 겹침 판정 픽셀 범주
+                    if abs(dy) <= y_margin:
+                        # 1) Y값 겹침 -> 수평 대시
+                        vars_obj.vx = dash_speed if dx > 0 else -dash_speed
+                        vars_obj.vy = 0
+                    elif dy < -y_margin:
+                        # 2) 적이 위 -> 대각선 위 돌진
+                        vars_obj.vx = dash_speed * 0.7 if dx > 0 else -dash_speed * 0.7
+                        vars_obj.vy = -dash_speed * 0.7
+                    else:
+                        # 3) 적이 아래 -> 대각선 아래 돌진
+                        vars_obj.vx = dash_speed * 0.7 if dx > 0 else -dash_speed * 0.7
+                        vars_obj.vy = dash_speed * 0.7
+                else:
+                    # 타겟이 없으면 바라보는 방향 수평 대시
+                    vars_obj.vx = dash_speed if vars_obj.facing_right else -dash_speed
+                    vars_obj.vy = 0
+                    
+            elif vars_obj.combo_step == 3:
+                self.attack_cooldown_timer = 0.25 # 3타 막타 딜레이 0.25초
+                vars_obj.attack_timer = 18
+                
+                # 💥 3타는 철저하게 돌진 없이 가만히 서서 밀치는 느낌!
+                vars_obj.vx = 0
+                # 점프 중 내려찍을 경우를 대비해 필요시 아래로 고정하거나 정지
+                vars_obj.vy = 0 
+
+            vars_obj.has_hit_enemy = False
+
+        # 4. 공격 액션 진행 중 (히트박스 생성 및 타격 연산)
         if vars_obj.is_attacking:
             vars_obj.attack_timer -= 1
             
-            # 공격 방향에 따라 히트박스 x좌표 산출
-            if vars_obj.facing_right:
-                attack_x = vars_obj.x + vars_obj.width
+            # 요구사항: 공격 범위는 이펙트가 나오게 일치시켜야 함
+            if vars_obj.combo_step in [1, 2]:
+                attack_w = vars_obj.attack_range_width * 1.3
+                attack_h = vars_obj.attack_range_height * 0.8
+                ax = vars_obj.x + vars_obj.width if vars_obj.facing_right else vars_obj.x - attack_w
+                ay = vars_obj.y + (vars_obj.height // 4)
             else:
-                attack_x = vars_obj.x - vars_obj.attack_range_width
-                
-            attack_y = vars_obj.y + (vars_obj.height // 4)
-            
-            vars_obj.attack_rect = pygame.Rect(
-                attack_x, attack_y, 
-                vars_obj.attack_range_width, vars_obj.attack_range_height
-            )
+                # 3타: 쇠파이프 내려찍기 광역 범위 (주변 폭발형 충격파)
+                attack_w = vars_obj.attack_range_width * 2.0
+                attack_h = vars_obj.attack_range_height * 1.5
+                ax = vars_obj.x - (attack_w // 2) + (vars_obj.width // 2)
+                ay = vars_obj.y + vars_obj.height - attack_h
 
-            # 공격 종료 판정
+            vars_obj.attack_rect = pygame.Rect(ax, ay, attack_w, attack_h)
+
+            # 실시간 피격 판정 루프
+            if entities and not vars_obj.has_hit_enemy:
+                for entity in entities:
+                    if entity == self or getattr(entity, 'vars', None) == vars_obj:
+                        continue
+                    e_vars = getattr(entity, 'vars', None)
+                    if not e_vars or getattr(e_vars, 'is_dead', False) or getattr(e_vars, 'is_hit', False):
+                        continue
+
+                    enemy_rect = pygame.Rect(e_vars.x, e_vars.y, e_vars.width, e_vars.height)
+                    
+                    if vars_obj.attack_rect.colliderect(enemy_rect):
+                        vars_obj.has_hit_enemy = True
+                        damage = getattr(vars_obj, 'attack_damage', 15)
+                        attack_dir = 1 if vars_obj.facing_right else -1
+                        
+                        # 🎯 [넉백 조건 절대 제어] 3타만 강한 넉백 발동! 1,2타는 경직만
+                        if vars_obj.combo_step == 3:
+                            damage = int(damage * 1.5) # 3타 데미지 강화
+                            if hasattr(entity, 'take_damage'):
+                                entity.take_damage(damage, knockback_dir=attack_dir * 3.5)
+                        else:
+                            if hasattr(entity, 'take_damage'):
+                                entity.take_damage(damage, knockback_dir=attack_dir * 0.3)
+
+            # 공격 모션 프레임 만료 시 종료
             if vars_obj.attack_timer <= 0:
                 vars_obj.is_attacking = False
                 vars_obj.attack_rect = None
                 
-                # 적 타격 실패 시 콤보 리셋
-                if not vars_obj.has_hit_enemy:
+                if vars_obj.combo_step == 3 or not vars_obj.has_hit_enemy:
                     vars_obj.combo_step = 0
         else:
             vars_obj.attack_rect = None
@@ -3876,7 +4050,7 @@ class PlayerInputHandler:
         self.mouse_was_pressed = False # 마우스 단발성 클릭 체크용 변수
 
     def update(self, vars_obj, keys):
-        # ⚔️ 1. 마우스 좌클릭 입력 상시 감지 (공격 중에도 연타 입력을 받을 수 있도록 최상단 배치)
+        # ⚔️ 1. 마우스 좌클릭 입력 상시 감지 (공격 중에도 연타 입력을 누락 없이 체크하기 위해 최상단 배치)
         mouse_state = pygame.mouse.get_pressed()
         if mouse_state[0]:  
             if not self.mouse_was_pressed: 
@@ -3885,54 +4059,55 @@ class PlayerInputHandler:
         else:
             self.mouse_was_pressed = False
 
-        # 🏃 2. 키보드 이동 입력 처리 (★공격 중이어도 이동이 끊기지 않도록 수정)
-        keys = pygame.key.get_pressed()
+        # 🏃 2. 키보드 이동 입력 상태 플래그 초기화
         vars_obj.is_moving = False
         
-        # 걷기/달리기 속도 설정
+        # 🎯 [누락 및 변조 수정] 외부 매개변수 keys를 강제로 덮어쓰던 하드코딩 라인을 제거하여
+        # 상위 엔진 프레임워크와의 유기적 캡슐화와 연출 시 조작 차단 인터페이스를 완벽히 확보
         if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
-            current_speed = vars_obj.run_speed
             vars_obj.move_state = "RUN"
         else:
-            current_speed = vars_obj.walk_speed
             vars_obj.move_state = "WALK"
 
-        # 🌟 핵심 수정: 공격 중일 때도 키보드 입력을 받아서 좌표를 움직여줍니다!
+        # 🎯 [물리 무결성 수정] vars_obj.x 좌표 직접 변조 완전 제거
+        # 입력 핸들러는 의도와 방향 플래그만 변경하고, 실제 가변 이동은 player_main.py에서 dt와 안전하게 융합됩니다.
         if keys[pygame.K_a]:
-            vars_obj.x -= current_speed
             vars_obj.is_moving = True
-            # 단, 공격 애니메이션 재생 중에는 공격하는 방향을 유지하기 위해 바라보는 방향 전환을 막아줄 수 있습니다.
-            # 공격 중에 뒤를 돌면 어색할 수 있으므로, 공격 중이 아닐 때만 방향 전환을 허용합니다.
             if not vars_obj.is_attacking:
                 vars_obj.facing_right = False
                 
         if keys[pygame.K_d]:
-            vars_obj.x += current_speed
             vars_obj.is_moving = True
             if not vars_obj.is_attacking:
                 vars_obj.facing_right = True
 
-        # 점프 입력 (공격 중에도 점프가 가능하도록 유지)
+        # 점프 입력 신호 감지 (이동 물리 엔진에 트리거 전달)
         if (keys[pygame.K_w] or keys[pygame.K_SPACE]) and not vars_obj.is_jumping:
             vars_obj.vertical_velocity = -vars_obj.jump_power
             vars_obj.is_jumping = True
 
     def trigger_attack(self, vars_obj):
-        """공격 버튼을 눌렀을 때 실행되는 콤보 전환기"""
+        """공격 버튼을 눌렀을 때 실행되는 콤보 전환 프로세서"""
         if vars_obj.is_attacking:
             return
 
         vars_obj.is_attacking = True
         vars_obj.attack_timer = vars_obj.attack_duration 
 
-        # 적 타격 여부에 따른 콤보 전환
-        if vars_obj.combo_step == 1 and vars_obj.has_hit_enemy:
-            vars_obj.combo_step = 2
-        elif vars_obj.combo_step == 2 and vars_obj.has_hit_enemy:
-            vars_obj.combo_step = 3
-        else:
+        # 🎯 [누락 해결] 콤보 유효 시간(combo_timer) 및 콤보 초기화 분기를 완벽하게 정렬하여 연동 실패 차단
+        if getattr(vars_obj, 'combo_timer', 0) <= 0:
             vars_obj.combo_step = 1
+        else:
+            # 적 타격 성공 여부에 따른 체인 콤보 연계 단계 연산
+            if vars_obj.combo_step == 1 and vars_obj.has_hit_enemy:
+                vars_obj.combo_step = 2
+            elif vars_obj.combo_step == 2 and vars_obj.has_hit_enemy:
+                vars_obj.combo_step = 3
+            else:
+                vars_obj.combo_step = 1
 
+        # 콤보 작동 성공 시 유효 만료 시간 최신화 및 타격 버퍼 리셋
+        vars_obj.combo_timer = getattr(vars_obj, 'combo_expire_time', 90)
         vars_obj.has_hit_enemy = False
 ```
 
@@ -4012,47 +4187,63 @@ class MotionBase:
 #### 🧱 Code Skeleton:
 ```python
 class PlayerPhysicsProcessor:
-    def process(self, vars_obj, platforms, game_map=None):
-        # 1. Y축 좌표를 업데이트하기 전에 '이전 발끝 위치'를 먼저 기록해둡니다.
+    def __init__(self):
+        pass
+
+    def process(self, vars_obj, platforms, game_map=None, dt=1.0/60.0):
+        # 1. Y축 좌표를 업데이트하기 전에 '이전 발끝 위치'를 먼저 기록
         old_bottom = vars_obj.y + vars_obj.height
 
-        # 중력 적용 및 실제 Y축 이동
-        vars_obj.vertical_velocity += vars_obj.gravity
-        vars_obj.y += vars_obj.vertical_velocity
+        # 가변 프레임 환경(dt)에 맞춘 가속 스케일러 연산
+        fps_scale = dt * 60.0
+
+        # 중력 적용 및 Y축 좌표 실제 이동
+        vars_obj.vertical_velocity += vars_obj.gravity * fps_scale
+        vars_obj.y += vars_obj.vertical_velocity * fps_scale
 
         player_rect = pygame.Rect(vars_obj.x, vars_obj.y, vars_obj.width, vars_obj.height)
         on_sub_platform = False
 
-        # 플랫폼 충돌 검사
+        # 플랫폼 충돌 정밀 검사
         for platform in platforms:
-            # [GHOST 분기] 통과형 플랫폼은 물리 판정을 아예 건너뜁니다.
+            # [GHOST 분기] 통과형 플랫폼은 연산에서 제외
             if not platform.vars.is_solid:
                 continue
                 
             plat_rect = pygame.Rect(platform.vars.x, platform.vars.y, platform.vars.width, platform.vars.height)
             
             if player_rect.colliderect(plat_rect):
-                # ─── A. 떨어지는 중일 때 (착지 처리: SOLID & ONE_WAY 공통) ───
+                # ─── A. 하강/낙하 중일 때 (착지 처리: SOLID & ONE_WAY 공통) ───
                 if vars_obj.vertical_velocity > 0:
-                    # 이동하기 전 발끝(old_bottom)이 플랫폼 윗면보다 높게 있었을 때만 착지시킵니다.
-                    if old_bottom <= platform.vars.y + 10:
+                    # [하드코딩 제거] 매직 넘버 12 대신 낙하 속도와 프레임 보정치를 연동한 동적 착지 임계값 산출
+                    dynamic_threshold = max(12.0, vars_obj.vertical_velocity * fps_scale + 2.0)
+                    
+                    if old_bottom <= platform.vars.y + dynamic_threshold:
                         vars_obj.y = platform.vars.y - vars_obj.height
                         vars_obj.vertical_velocity = 0
                         vars_obj.is_jumping = False
                         on_sub_platform = True
+                        
+                        # 💡 [차후 기능 확장 가드] 플랫폼 객체에 특수 밟기 기믹(무너짐 등) 기능이 있다면 동적 호출
+                        if hasattr(platform, "on_stepped"):
+                            platform.on_stepped(vars_obj, dt)
                         break
                 
-                # ─── B. 점프하며 올라가는 중일 때 (머리 충돌 처리: ONLY SOLID) ───
+                # ─── B. 점프 상승 중일 때 (천장 충돌 처리: ONLY SOLID) ───
                 elif vars_obj.vertical_velocity < 0:
-                    # 아래에서 위로 통과 불가능한(SOLID) 플랫폼인 경우만 머리를 막습니다.
+                    # 아래에서 위로 통과할 수 없는 플랫폼 유형인 경우에만 정수리를 막음
                     if not platform.vars.passable_from_bottom:
-                        # 이동하기 전 정수리가 플랫폼 아랫면보다 아래에 있었는지 검증
-                        old_top = vars_obj.y - vars_obj.vertical_velocity
+                        # 이전 프레임의 머리 꼭대기 위치를 가변 dt 스케일에 맞춰 정확하게 역산
+                        old_top = vars_obj.y - (vars_obj.vertical_velocity * fps_scale)
                         if old_top >= platform.vars.y + platform.vars.height:
                             vars_obj.y = platform.vars.y + platform.vars.height
-                            vars_obj.vertical_velocity = 0 # 상승 속도 리셋 (뚝 떨어지게 만듦)
+                            vars_obj.vertical_velocity = 0 
+                            
+                            # 💡 [차후 기능 확장 가드] 천장 충돌 시 플랫폼 특수 기믹(스위치 작동 등) 확장 인터페이스
+                            if hasattr(platform, "on_head_bump"):
+                                platform.on_head_bump(vars_obj, dt)
 
-        # 메인 바닥 착지 검사
+        # 맵 시스템의 메인 바닥 착지 처리
         if not on_sub_platform:
             g_y = game_map.ground_y if (game_map and hasattr(game_map, 'ground_y')) else GROUND_Y
             if vars_obj.y + vars_obj.height >= g_y:
@@ -4060,11 +4251,11 @@ class PlayerPhysicsProcessor:
                 vars_obj.vertical_velocity = 0
                 vars_obj.is_jumping = False
 
-        # 좌측 맵 바운더리 제한
+        # 좌측 화면 경계 밖 이탈 제어
         if vars_obj.x < 0:
             vars_obj.x = 0
 
-        # 우측 맵 바운더리 제한
+        # 우측 화면/월드 경계 밖 이탈 제어 (유동적 가변 맵 대응 너비 반영)
         max_width = game_map.width if game_map else SCREEN_WIDTH
         if vars_obj.x > max_width - vars_obj.width:
             vars_obj.x = max_width - vars_obj.width
@@ -4105,16 +4296,26 @@ class Player:
         if state is not None:
             self.vars.current_state = state
 
-    def update(self, platforms, game_map=None):
+    def update(self, platforms, entities=None, game_map=None, dt=1.0/60.0):
         """플레이어의 모든 입력, 이동, 충돌, 애니메이션 프레임을 실시간 업데이트합니다."""
+        
+        # 가변 프레임 환경에 대응하기 위한 프레임 스케일러 보정값 계산
+        fps_scale = dt * 60.0
+
+        # ⏱️ [누락 해결] 콤보 유효 타이머 감소 연산 (시간 경과 시 콤보 리셋 보장)
+        if getattr(self.vars, 'combo_timer', 0) > 0:
+            self.vars.combo_timer -= fps_scale
+            if self.vars.combo_timer < 0:
+                self.vars.combo_timer = 0
+
         # 💀 사망 상태(is_dead == True) 예외 처리 및 기초 동작 제한
         if self.vars.is_dead:
             self.vars.is_moving = False
             self.vars.is_attacking = False
             self.vars.attack_rect = None
             
-            # 최소한의 물리 엔진(중력, 충돌 판정)만 처리하여 바닥에 떨어질 수 있게 함
-            self.physics_engine.process(self.vars, platforms, game_map=game_map)
+            # 최소한의 물리 엔진(중력, 충돌 판정)만 처리하여 바닥에 떨어질 수 있게 함 (dt 반영)
+            self.physics_engine.process(self.vars, platforms, game_map=game_map, dt=dt)
             
             # 사망 애니메이션 상태 적용 (DEAD 에셋이 없는 경우 기본 IDLE 대기 상태 유지)
             if "DEAD" in self.assets.images:
@@ -4122,31 +4323,31 @@ class Player:
             else:
                 self.vars.current_state = "IDLE"
                 
-            # 애니메이션 프레임 업데이트
+            # 애니메이션 프레임 업데이트 (fps_scale 반영)
             anim_list = self.assets.images.get(self.vars.current_state, [])
             if anim_list:
-                self.vars.anim_timer += 1
+                self.vars.anim_timer += fps_scale
                 delay = getattr(self.vars, 'state_delays', {}).get(self.vars.current_state, self.vars.anim_speed)
                 if self.vars.anim_timer >= delay:
                     self.vars.anim_timer = 0
                     self.vars.current_frame_idx = (self.vars.current_frame_idx + 1) % len(anim_list)
             return
 
-        # 1. ⌨️ 사용자 키보드 입력 분석 (정석대로 인자 2개 전달)
+        # 1. ⌨️ 사용자 키보드 입력 분석 (인자 전달 구조 유지)
         keys = pygame.key.get_pressed()
         self.input_handler.update(self.vars, keys)
 
-        # 2. 🪐 분리된 엔진 컴포넌트 가동 (물리 및 전투)
-        self.physics_engine.process(self.vars, platforms, game_map=game_map)
-        self.combat_engine.process(self.vars)
+        # 2. 🪐 [오류 수정] 분리된 엔진 컴포넌트 가동 (물리 및 전투 엔진 인터페이스 및 dt 결합 완벽 갱신)
+        self.physics_engine.process(self.vars, platforms, game_map=game_map, dt=dt)
+        self.combat_engine.process(self.vars, entities=entities, dt=dt)
 
         # 3. 🎬 상태 기반 애니메이션 프레임 제어
         self.update_animation_state()
         
         anim_list = self.assets.images.get(self.vars.current_state, [])
         if anim_list:
-            # 🌟 [오류 수정] animation_timer -> anim_timer 로 변경
-            self.vars.anim_timer += 1
+            # [가변 보정] 델타 프레임 가중치를 더해 어떤 프레임에서도 일정한 속도로 애니메이션 재생
+            self.vars.anim_timer += fps_scale
             # 각 상태(State)별로 지정된 프레임 딜레이 적용 (없으면 기본 anim_speed인 8 적용)
             delay = getattr(self.vars, 'state_delays', {}).get(self.vars.current_state, self.vars.anim_speed)
             if self.vars.anim_timer >= delay:
@@ -4188,73 +4389,58 @@ class Player:
 ### 📄 extraction_target_project/player/variables.py
 #### 🧱 Code Skeleton:
 ```python
-class PlayerVariables:
-    def __init__(self, x, y):
-        # 🧍 기본 물리 변수
-        self.x = x
-        self.y = y
-        self.width = 40
-        self.height = 60
-        self.walk_speed = 4
-        self.run_speed = 8
-        self.jump_power = 16
-        self.gravity = 0.8
-        self.vertical_velocity = 0
-        self.is_jumping = False
-        self.current_state = "IDLE"
-        self.facing_right = True
-        self.is_moving = False
-        self.move_state = "WALK"
-        
-        # ⚔️ 공격 및 콤보 관련 변수
-        self.is_attacking = False       # 현재 공격 애니메이션/모션이 재생 중인가?
-        self.combo_step = 0             # 0: 공격안함, 1: 1타, 2: 2타, 3: 3타
-        self.attack_timer = 0           # 공격 모션이 유지되는 프레임 수
-        self.attack_duration = 15       # 공격 모션 1회당 유지 시간
-        self.has_hit_enemy = False      # 이번 공격 타수에서 적을 맞췄는가?
-        
-        # ⏱️ 콤보 유효 타이머 (1.5초 = 90프레임)
-        self.combo_expire_time = 90     
-        self.combo_timer = 0            
-        
-        # 📐 공격 범위(히트박스) 크기 설정
-        self.attack_range_width = 80
-        self.attack_range_height = 50
-        self.attack_rect = None         
-        
-        # 🎬 [애니메이션 핵심 제어 변수]
-        self.anim_timer = 0             # 프레임 카운터
-        self.anim_speed = 8             # 숫자가 낮을수록 애니메이션이 빨라짐 (8프레임마다 다음 장)
-        self.current_frame_idx = 0      # 리스트에서 현재 몇 번째 이미지를 그릴지 인덱스
-        
-        self.state_delays = {
-            "IDLE": 8,
-            "WALK": 6,
-            "RUN": 4,
-            "ATTACK": 5
-        }
-        
-        # 🚀 점프 선딜레이 타이머 (W 누른 순간 5프레임 동안만 READY_JUMP 유지)
-        self.ready_jump_timer = 0
+class PlayerInputHandler:
+    def __init__(self):
+        self.mouse_was_pressed = False # 마우스 단발성 클릭 체크용 변수
 
-        # ❤️ HP 및 생존 관련 변수
-        self.max_hp = 100
-        self.hp = 100
-        self.is_dead = False
+    def update(self, vars_obj, keys):
+        # ⚔️ 1. 마우스 좌클릭 입력 상시 감지 (공격 중에도 연타 입력을 누락 없이 체크하기 위해 최상단 배치)
+        mouse_state = pygame.mouse.get_pressed()
+        if mouse_state[0]:  
+            if not self.mouse_was_pressed: 
+                self.trigger_attack(vars_obj)
+            self.mouse_was_pressed = True
+        else:
+            self.mouse_was_pressed = False
 
-    def take_damage(self, amount):
-        """데미지를 입어 hp를 감소시키고, 0 이하가 되면 사망 처리합니다."""
-        if self.is_dead or amount <= 0:
+        # 🏃 2. 키보드 이동 입력 상태 플래그 초기화
+        vars_obj.is_moving = False
+        
+        # 🎯 [매개변수 무력화 해결] 기존의 keys = pygame.key.get_pressed() 덮어쓰기를 제거하여
+        # 상위 시스템(player_main)에서 안전하게 가공하여 전달한 keys 매핑 정보만 신뢰하도록 조율.
+        if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
+            vars_obj.move_state = "RUN"
+        else:
+            vars_obj.move_state = "WALK"
+
+        # 🎯 [치명적 결합도 수정] vars_obj.x에 속도를 직접 더해 워프시키던 하드코딩 완전 삭제.
+        # 방향성 플래그와 이동 의사(is_moving)만 토글하여 넘겨주면, player_main.py가 dt와 결합해 물리 이동을 처리합니다.
+        if keys[pygame.K_a]:
+            vars_obj.is_moving = True
+            if not vars_obj.is_attacking:
+                vars_obj.facing_right = False
+                
+        if keys[pygame.K_d]:
+            vars_obj.is_moving = True
+            if not vars_obj.is_attacking:
+                vars_obj.facing_right = True
+
+    def trigger_attack(self, vars_obj):
+        """공격 버튼을 눌렀을 때 실행되는 콤보 전환 프로세서"""
+        if vars_obj.is_attacking:
             return
-        self.hp = max(0, self.hp - amount)
-        if self.hp <= 0:
-            self.is_dead = True
-
-    def heal(self, amount):
-        """체력을 회복시키되, 최대 체력을 초과하지 않도록 합니다."""
-        if self.is_dead or amount <= 0:
-            return
-        self.hp = min(self.max_hp, self.hp + amount)
+            
+        vars_obj.is_attacking = True
+        vars_obj.attack_timer = vars_obj.attack_duration
+        vars_obj.has_hit_enemy = False
+        
+        # 콤보 단계 순환 처리 (1타 -> 2타 -> 3타)
+        if vars_obj.combo_step >= 3 or vars_obj.combo_timer <= 0:
+            vars_obj.combo_step = 1
+        else:
+            vars_obj.combo_step += 1
+            
+        vars_obj.combo_timer = vars_obj.combo_expire_time
 ```
 
 --------------------------------------------------

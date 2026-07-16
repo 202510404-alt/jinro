@@ -1,11 +1,23 @@
 # src/main.py
 import pygame
 import sys
+import os
+from player.player_main import Player
+
+
 from settings import SCREEN_WIDTH, SCREEN_HEIGHT, VIRTUAL_WIDTH, VIRTUAL_HEIGHT, FPS, GROUND_Y
 from player.player_main import Player
 from map_system.map_main import GameMap
 from camera import ElasticCamera
 from dialogue_system.dialogue_manager import DialogueManager
+
+current_dir = os.path.dirname(os.path.abspath(__file__))
+if current_dir not in sys.path:
+    sys.path.insert(0, current_dir)
+# 그 상위 폴더(jinro 등)나 프로젝트 루트도 인식할 수 있게 안전망으로 등록
+parent_dir = os.path.dirname(current_dir)
+if parent_dir not in sys.path:
+    sys.path.insert(0, parent_dir)
 
 # 카메라 및 시스템 세팅 상수 안전망 정의
 CAMERA_SMOOTHING = 0.05
@@ -115,7 +127,10 @@ def run_game(window_screen, virtual_screen, clock):
                     
         # 대화창이 꺼져있을 때만 물리 및 업데이트 작동
          if not dialogue_manager.is_active:
-            player.update(game_map.platforms, game_map=game_map)
+            # 델타 타임(dt)과 적 목록(game_map.entities)을 함께 넘겨주어 정밀 물리와 타격을 작동시킵니다.
+# 만약 main.py 내부의 루프에 dt 변수명이 다르게 되어있다면(예: deltatime 등) 해당 변수명으로 넣어주세요.
+            dt = clock.get_time() / 1000.0  # 혹시 루프 내에 dt 정의가 없다면 이 줄을 위에 추가하세요.
+            player.update_with_dt(game_map.platforms, game_map, dt, entities=game_map.entities)
             game_map.update(dt, player_obj=player)
             
             # 카메라 타겟 중심점 계산
@@ -234,6 +249,60 @@ def run_main_menu(window_screen, virtual_screen, clock):
         scaled_surf = pygame.transform.scale(virtual_screen, (SCREEN_WIDTH, SCREEN_HEIGHT))
         window_screen.blit(scaled_surf, (0, 0))
         pygame.display.flip()
+
+def draw(self, screen, camera_offset=(0, 0)):
+        """플레이어 본체 이미지와 공격 시 쇠파이프 콤보 이펙트를 화면에 렌더링합니다."""
+        ox, oy = camera_offset
+        # 🎬 1. 캐릭터 본체 스프라이트 시퀀스 추출 및 출력 (기존 순정 로직 완벽 보존)
+        anim_list = self.assets.images.get(self.vars.current_state, [])
+        if not anim_list:
+            return
+            
+        # 혹시 모를 인덱스 바운드 에러를 막기 위한 최종 안전 필터링
+        idx = min(self.vars.current_frame_idx, len(anim_list) - 1)
+        player_image = anim_list[idx]
+        
+        # 왼쪽을 바라보고 있다면 이미지 좌우 반전
+        if not self.vars.facing_right:
+            player_image = pygame.transform.flip(player_image, True, False)
+            
+        screen.blit(player_image, (self.vars.x - ox, self.vars.y - oy))
+        
+        # ─────────────────────────────────────────────────────────────
+        # 🎯 [새로운 시스템 추가] 쇠파이프 타격 범위(이펙트) 가시화 및 콤보별 연출
+        # ─────────────────────────────────────────────────────────────
+        if getattr(self.vars, 'is_attacking', False) and getattr(self.vars, 'attack_rect', None):
+            # 카메라 좌표계가 반영된 실시간 이펙트 렌더링 사각형 변환
+            eff_rect = pygame.Rect(
+                self.vars.attack_rect.x - ox,
+                self.vars.attack_rect.y - oy,
+                self.vars.attack_rect.width,
+                self.vars.attack_rect.height
+            )
+            
+            # 투명도(Alpha) 표현이 가능한 이펙트 전용 특수 표면(Surface) 생성 (최적화 결합)
+            effect_surf = pygame.Surface((eff_rect.width, eff_rect.height), pygame.SRCALPHA)
+            
+            # 현재 콤보 단수(1타, 2타, 3타막타)에 맞춰 시각 효과 가변 분기
+            combo = getattr(self.vars, 'combo_step', 1)
+            if combo == 1:
+                # 1타: 신속하게 파고드는 블루 화이트 타격 잔상 (반투명)
+                color = (52, 152, 219, 140) 
+                pygame.draw.ellipse(effect_surf, color, (0, 0, eff_rect.width, eff_rect.height))
+            elif combo == 2:
+                # 2타: 좌우 반전 궤적으로 휘두르는 날카로운 옐로우 타격 잔상
+                color = (241, 196, 15, 140)
+                pygame.draw.ellipse(effect_surf, color, (0, 0, eff_rect.width, eff_rect.height))
+            elif combo == 3:
+                # 3타: 제자리 고정 묵직한 오렌지-레드 대형 광역 내려찍기 충격파 연출
+                color = (231, 76, 60, 180)
+                # 바닥 충격파 영역 생성
+                pygame.draw.rect(effect_surf, color, (0, 0, eff_rect.width, eff_rect.height), border_radius=8)
+                # 크래시 방지 및 시인성을 위한 내부 화이트 하이라이트 테두리 선 추가
+                pygame.draw.rect(effect_surf, (255, 255, 255, 220), (0, 0, eff_rect.width, eff_rect.height), 3, border_radius=8)
+                
+            # 최종 연산 완료된 이펙트를 게임 화면에 블릿(Blit) 출력
+            screen.blit(effect_surf, (eff_rect.x, eff_rect.y))
 
 def main():
     """게임 진입점"""

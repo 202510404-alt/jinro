@@ -39,16 +39,26 @@ class Player:
         if state is not None:
             self.vars.current_state = state
 
-    def update(self, platforms, game_map=None):
+    def update(self, platforms, entities=None, game_map=None, dt=1.0/60.0):
         """플레이어의 모든 입력, 이동, 충돌, 애니메이션 프레임을 실시간 업데이트합니다."""
+        
+        # 가변 프레임 환경에 대응하기 위한 프레임 스케일러 보정값 계산
+        fps_scale = dt * 60.0
+
+        # ⏱️ [누락 해결] 콤보 유효 타이머 감소 연산 (시간 경과 시 콤보 리셋 보장)
+        if getattr(self.vars, 'combo_timer', 0) > 0:
+            self.vars.combo_timer -= fps_scale
+            if self.vars.combo_timer < 0:
+                self.vars.combo_timer = 0
+
         # 💀 사망 상태(is_dead == True) 예외 처리 및 기초 동작 제한
         if self.vars.is_dead:
             self.vars.is_moving = False
             self.vars.is_attacking = False
             self.vars.attack_rect = None
             
-            # 최소한의 물리 엔진(중력, 충돌 판정)만 처리하여 바닥에 떨어질 수 있게 함
-            self.physics_engine.process(self.vars, platforms, game_map=game_map)
+            # 최소한의 물리 엔진(중력, 충돌 판정)만 처리하여 바닥에 떨어질 수 있게 함 (dt 반영)
+            self.physics_engine.process(self.vars, platforms, game_map=game_map, dt=dt)
             
             # 사망 애니메이션 상태 적용 (DEAD 에셋이 없는 경우 기본 IDLE 대기 상태 유지)
             if "DEAD" in self.assets.images:
@@ -56,36 +66,64 @@ class Player:
             else:
                 self.vars.current_state = "IDLE"
                 
-            # 애니메이션 프레임 업데이트
+            # 애니메이션 프레임 업데이트 (fps_scale 반영)
             anim_list = self.assets.images.get(self.vars.current_state, [])
             if anim_list:
-                self.vars.anim_timer += 1
+                self.vars.anim_timer += fps_scale
                 delay = getattr(self.vars, 'state_delays', {}).get(self.vars.current_state, self.vars.anim_speed)
                 if self.vars.anim_timer >= delay:
                     self.vars.anim_timer = 0
                     self.vars.current_frame_idx = (self.vars.current_frame_idx + 1) % len(anim_list)
             return
 
-        # 1. ⌨️ 사용자 키보드 입력 분석 (정석대로 인자 2개 전달)
+        # 1. ⌨️ 사용자 키보드 입력 분석 (인자 전달 구조 유지)
         keys = pygame.key.get_pressed()
         self.input_handler.update(self.vars, keys)
 
-        # 2. 🪐 분리된 엔진 컴포넌트 가동 (물리 및 전투)
-        self.physics_engine.process(self.vars, platforms, game_map=game_map)
-        self.combat_engine.process(self.vars)
+        # 🪐 [관성 물리 메커니즘 통합]
+        if self.vars.is_attacking:
+            # 공격(돌진) 중일 때는 입력에 의한 속도 제어를 우회하고, 자연스러운 감속(마찰력)만 적용
+            self.vars.vx *= max(0.0, 1.0 - (0.35 * fps_scale))
+            self.vars.vy *= max(0.0, 1.0 - (0.35 * fps_scale))
+        else:
+            if self.vars.is_moving:
+                # 가속
+                target_speed = self.vars.run_speed if self.vars.move_state == "RUN" else self.vars.walk_speed
+                direction = 1 if self.vars.facing_right else -1
+                target_vx = target_speed * direction
+                # 가속률 적용하여 target_vx에 도달
+                self.vars.vx += (target_vx - self.vars.vx) * min(1.0, 0.25 * fps_scale)
+            else:
+                # 감속
+                self.vars.vx *= max(0.0, 1.0 - (0.35 * fps_scale))
+            
+            # 공격 중이 아닐 때는 vy도 자연스럽게 감속
+            self.vars.vy *= max(0.0, 1.0 - (0.35 * fps_scale))
+
+        # 최종 물리 좌표(x, y) 업데이트
+        self.vars.x += self.vars.vx * fps_scale
+        self.vars.y += self.vars.vy * fps_scale
+
+        # 2. 🪐 [오류 수정] 분리된 엔진 컴포넌트 가동 (물리 및 전투 엔진 인터페이스 및 dt 결합 완벽 갱신)
+        self.physics_engine.process(self.vars, platforms, game_map=game_map, dt=dt)
+        self.combat_engine.process(self.vars, entities=entities, dt=dt)
 
         # 3. 🎬 상태 기반 애니메이션 프레임 제어
         self.update_animation_state()
         
         anim_list = self.assets.images.get(self.vars.current_state, [])
         if anim_list:
-            # 🌟 [오류 수정] animation_timer -> anim_timer 로 변경
-            self.vars.anim_timer += 1
+            # [가변 보정] 델타 프레임 가중치를 더해 어떤 프레임에서도 일정한 속도로 애니메이션 재생
+            self.vars.anim_timer += fps_scale
             # 각 상태(State)별로 지정된 프레임 딜레이 적용 (없으면 기본 anim_speed인 8 적용)
             delay = getattr(self.vars, 'state_delays', {}).get(self.vars.current_state, self.vars.anim_speed)
             if self.vars.anim_timer >= delay:
                 self.vars.anim_timer = 0
                 self.vars.current_frame_idx = (self.vars.current_frame_idx + 1) % len(anim_list)
+
+    def update_with_dt(self, platforms, game_map, dt, entities=None):
+        """main.py의 호출 인터페이스를 지원하기 위한 update 래퍼 메서드"""
+        self.update(platforms, entities=entities, game_map=game_map, dt=dt)
 
     def draw(self, screen, camera_offset=(0, 0)):
         """플레이어 본체 이미지와 공격 시 콤보 이펙트를 화면에 렌더링합니다."""

@@ -72,8 +72,8 @@
       "full_name": "AppState",
       "type": "class",
       "path": "extraction_target_project/main.py",
-      "start_line": 16,
-      "end_line": 19,
+      "start_line": 28,
+      "end_line": 31,
       "calls": [],
       "used_by": []
     },
@@ -83,8 +83,8 @@
       "full_name": "draw_player_hp_hud",
       "type": "function",
       "path": "extraction_target_project/main.py",
-      "start_line": 21,
-      "end_line": 74,
+      "start_line": 33,
+      "end_line": 86,
       "calls": [],
       "used_by": []
     },
@@ -94,8 +94,8 @@
       "full_name": "run_game",
       "type": "function",
       "path": "extraction_target_project/main.py",
-      "start_line": 76,
-      "end_line": 150,
+      "start_line": 88,
+      "end_line": 165,
       "calls": [
         "draw_player_hp_hud"
       ],
@@ -107,8 +107,19 @@
       "full_name": "run_main_menu",
       "type": "function",
       "path": "extraction_target_project/main.py",
-      "start_line": 152,
-      "end_line": 236,
+      "start_line": 167,
+      "end_line": 251,
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "extraction_target_project/main.py::draw",
+      "name": "draw",
+      "full_name": "draw",
+      "type": "function",
+      "path": "extraction_target_project/main.py",
+      "start_line": 253,
+      "end_line": 305,
       "calls": [],
       "used_by": []
     },
@@ -118,8 +129,8 @@
       "full_name": "main",
       "type": "function",
       "path": "extraction_target_project/main.py",
-      "start_line": 238,
-      "end_line": 262,
+      "start_line": 307,
+      "end_line": 331,
       "calls": [
         "run_game",
         "run_main_menu"
@@ -364,7 +375,7 @@
       "type": "class",
       "path": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py",
       "start_line": 7,
-      "end_line": 198,
+      "end_line": 211,
       "calls": [],
       "used_by": []
     },
@@ -380,13 +391,24 @@
       "used_by": []
     },
     {
+      "symbol_id": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py::TestEnemy1.take_damage",
+      "name": "take_damage",
+      "full_name": "TestEnemy1.take_damage",
+      "type": "method",
+      "path": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py",
+      "start_line": 20,
+      "end_line": 41,
+      "calls": [],
+      "used_by": []
+    },
+    {
       "symbol_id": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py::TestEnemy1.check_line_of_sight",
       "name": "check_line_of_sight",
       "full_name": "TestEnemy1.check_line_of_sight",
       "type": "method",
       "path": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py",
-      "start_line": 20,
-      "end_line": 52,
+      "start_line": 43,
+      "end_line": 72,
       "calls": [],
       "used_by": []
     },
@@ -396,8 +418,19 @@
       "full_name": "TestEnemy1.update_with_dt",
       "type": "method",
       "path": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py",
-      "start_line": 54,
-      "end_line": 184,
+      "start_line": 74,
+      "end_line": 142,
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py::TestEnemy1._apply_gravity_and_collisions",
+      "name": "_apply_gravity_and_collisions",
+      "full_name": "TestEnemy1._apply_gravity_and_collisions",
+      "type": "method",
+      "path": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py",
+      "start_line": 144,
+      "end_line": 193,
       "calls": [],
       "used_by": []
     },
@@ -407,8 +440,8 @@
       "full_name": "TestEnemy1.draw",
       "type": "method",
       "path": "extraction_target_project/enemy/enemys/test_enemy1/test_enemy1_main.py",
-      "start_line": 186,
-      "end_line": 198,
+      "start_line": 195,
+      "end_line": 211,
       "calls": [],
       "used_by": []
     },
@@ -960,8 +993,8 @@
       "start_line": 19,
       "end_line": 46,
       "calls": [
-        "screen_to_world",
         "snap",
+        "screen_to_world",
         "handle_mouse_down"
       ],
       "used_by": []
@@ -997,8 +1030,8 @@
       "start_line": 146,
       "end_line": 186,
       "calls": [
-        "screen_to_world",
-        "handle_sidebar_click"
+        "handle_sidebar_click",
+        "screen_to_world"
       ],
       "used_by": []
     },
@@ -1088,8 +1121,8 @@
       "start_line": 36,
       "end_line": 54,
       "calls": [
-        "next_new_map_file",
-        "file_to_map_name"
+        "file_to_map_name",
+        "next_new_map_file"
       ],
       "used_by": []
     },
@@ -1229,9 +1262,9 @@
       "start_line": 6,
       "end_line": 12,
       "calls": [
-        "draw_sidebar",
         "draw_grid",
         "draw_status",
+        "draw_sidebar",
         "draw_selection"
       ],
       "used_by": []
@@ -1291,11 +1324,11 @@
       "start_line": 77,
       "end_line": 104,
       "calls": [
+        "text",
+        "draw_button",
         "draw_inspector",
         "draw_help",
-        "text",
-        "draw_tool_button",
-        "draw_button"
+        "draw_tool_button"
       ],
       "used_by": []
     },
@@ -1440,9 +1473,9 @@
       "start_line": 40,
       "end_line": 75,
       "calls": [
-        "_serialize_structure",
         "_serialize_entity",
         "_serialize_trigger",
+        "_serialize_structure",
         "_serialize_platform"
       ],
       "used_by": []
@@ -1869,8 +1902,8 @@
       "start_line": 358,
       "end_line": 502,
       "calls": [
-        "_draw_x_tiled",
-        "_draw_2d_tiled"
+        "_draw_2d_tiled",
+        "_draw_x_tiled"
       ],
       "used_by": []
     },
@@ -2507,8 +2540,19 @@
       "full_name": "PlayerCombatProcessor",
       "type": "class",
       "path": "extraction_target_project/player/combat_processor.py",
-      "start_line": 4,
-      "end_line": 31,
+      "start_line": 5,
+      "end_line": 136,
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "extraction_target_project/player/combat_processor.py::PlayerCombatProcessor.__init__",
+      "name": "__init__",
+      "full_name": "PlayerCombatProcessor.__init__",
+      "type": "method",
+      "path": "extraction_target_project/player/combat_processor.py",
+      "start_line": 6,
+      "end_line": 7,
       "calls": [],
       "used_by": []
     },
@@ -2518,8 +2562,8 @@
       "full_name": "PlayerCombatProcessor.process",
       "type": "method",
       "path": "extraction_target_project/player/combat_processor.py",
-      "start_line": 5,
-      "end_line": 31,
+      "start_line": 9,
+      "end_line": 136,
       "calls": [],
       "used_by": []
     },
@@ -2530,7 +2574,7 @@
       "type": "class",
       "path": "extraction_target_project/player/input_handler.py",
       "start_line": 4,
-      "end_line": 66,
+      "end_line": 67,
       "calls": [],
       "used_by": []
     },
@@ -2552,7 +2596,7 @@
       "type": "method",
       "path": "extraction_target_project/player/input_handler.py",
       "start_line": 8,
-      "end_line": 48,
+      "end_line": 43,
       "calls": [],
       "used_by": []
     },
@@ -2562,8 +2606,8 @@
       "full_name": "PlayerInputHandler.trigger_attack",
       "type": "method",
       "path": "extraction_target_project/player/input_handler.py",
-      "start_line": 50,
-      "end_line": 66,
+      "start_line": 45,
+      "end_line": 67,
       "calls": [],
       "used_by": []
     },
@@ -2574,7 +2618,18 @@
       "type": "class",
       "path": "extraction_target_project/player/physics_processor.py",
       "start_line": 5,
-      "end_line": 61,
+      "end_line": 77,
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "extraction_target_project/player/physics_processor.py::PlayerPhysicsProcessor.__init__",
+      "name": "__init__",
+      "full_name": "PlayerPhysicsProcessor.__init__",
+      "type": "method",
+      "path": "extraction_target_project/player/physics_processor.py",
+      "start_line": 6,
+      "end_line": 7,
       "calls": [],
       "used_by": []
     },
@@ -2584,8 +2639,8 @@
       "full_name": "PlayerPhysicsProcessor.process",
       "type": "method",
       "path": "extraction_target_project/player/physics_processor.py",
-      "start_line": 6,
-      "end_line": 61,
+      "start_line": 9,
+      "end_line": 77,
       "calls": [],
       "used_by": []
     },
@@ -2596,7 +2651,7 @@
       "type": "class",
       "path": "extraction_target_project/player/player_main.py",
       "start_line": 12,
-      "end_line": 117,
+      "end_line": 127,
       "calls": [],
       "used_by": []
     },
@@ -2629,7 +2684,7 @@
       "type": "method",
       "path": "extraction_target_project/player/player_main.py",
       "start_line": 42,
-      "end_line": 88,
+      "end_line": 98,
       "calls": [],
       "used_by": []
     },
@@ -2639,52 +2694,52 @@
       "full_name": "Player.draw",
       "type": "method",
       "path": "extraction_target_project/player/player_main.py",
-      "start_line": 90,
-      "end_line": 117,
+      "start_line": 100,
+      "end_line": 127,
       "calls": [],
       "used_by": []
     },
     {
-      "symbol_id": "extraction_target_project/player/variables.py::PlayerVariables",
-      "name": "PlayerVariables",
-      "full_name": "PlayerVariables",
+      "symbol_id": "extraction_target_project/player/variables.py::PlayerInputHandler",
+      "name": "PlayerInputHandler",
+      "full_name": "PlayerInputHandler",
       "type": "class",
       "path": "extraction_target_project/player/variables.py",
       "start_line": 4,
-      "end_line": 70,
+      "end_line": 55,
       "calls": [],
       "used_by": []
     },
     {
-      "symbol_id": "extraction_target_project/player/variables.py::PlayerVariables.__init__",
+      "symbol_id": "extraction_target_project/player/variables.py::PlayerInputHandler.__init__",
       "name": "__init__",
-      "full_name": "PlayerVariables.__init__",
+      "full_name": "PlayerInputHandler.__init__",
       "type": "method",
       "path": "extraction_target_project/player/variables.py",
       "start_line": 5,
-      "end_line": 56,
+      "end_line": 6,
       "calls": [],
       "used_by": []
     },
     {
-      "symbol_id": "extraction_target_project/player/variables.py::PlayerVariables.take_damage",
-      "name": "take_damage",
-      "full_name": "PlayerVariables.take_damage",
+      "symbol_id": "extraction_target_project/player/variables.py::PlayerInputHandler.update",
+      "name": "update",
+      "full_name": "PlayerInputHandler.update",
       "type": "method",
       "path": "extraction_target_project/player/variables.py",
-      "start_line": 58,
-      "end_line": 64,
+      "start_line": 8,
+      "end_line": 38,
       "calls": [],
       "used_by": []
     },
     {
-      "symbol_id": "extraction_target_project/player/variables.py::PlayerVariables.heal",
-      "name": "heal",
-      "full_name": "PlayerVariables.heal",
+      "symbol_id": "extraction_target_project/player/variables.py::PlayerInputHandler.trigger_attack",
+      "name": "trigger_attack",
+      "full_name": "PlayerInputHandler.trigger_attack",
       "type": "method",
       "path": "extraction_target_project/player/variables.py",
-      "start_line": 66,
-      "end_line": 70,
+      "start_line": 40,
+      "end_line": 55,
       "calls": [],
       "used_by": []
     },

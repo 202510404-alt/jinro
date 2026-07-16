@@ -60,7 +60,7 @@ project_root/
 │   │   │   ├── variables.py [📂 enemy/enemys/dummy/variables.py] -> [🧬 class DummyVariables [L1-26] |     └─ def __init__() [L2-26]]
 │   │   ├── test_enemy1/
 │   │   │   ├── __init__.py [📂 enemy/enemys/test_enemy1/__init__.py]
-│   │   │   ├── test_enemy1_main.py [📂 enemy/enemys/test_enemy1/test_enemy1_main.py] -> [💡 📦 imp: enemy.enemys.test_enemy1.variables, math, pygame | 🧬 class TestEnemy1 [L7-198] |     └─ def __init__() [L8-18] |     └─ def check_line_of_sight() [L20-52] |     └─ def update_with_dt() [L54-184] |     └─ def draw() [L186-198]]
+│   │   │   ├── test_enemy1_main.py [📂 enemy/enemys/test_enemy1/test_enemy1_main.py] -> [💡 📦 imp: enemy.enemys.test_enemy1.variables, math, pygame | 🧬 class TestEnemy1 [L7-211] |     └─ def __init__() [L8-18] |     └─ def take_damage() [L20-41] |     └─ def check_line_of_sight() [L43-72] |     └─ def update_with_dt() [L74-142] |     └─ def _apply_gravity_and_collisions() [L144-193] |     └─ def draw() [L195-211]]
 │   │   │   ├── variables.py [📂 enemy/enemys/test_enemy1/variables.py] -> [💡 📦 imp: pygame | 🧬 class TestEnemy1Variables [L4-38] |     └─ def __init__() [L5-38]]
 ├── event_system/
 │   ├── actions/
@@ -73,7 +73,7 @@ project_root/
 │   │   ├── zone_enter.py [📂 event_system/triggers/zone_enter.py]
 ├── fabric_system/
 │   ├── editor_objects.json [📂 fabric_system/editor_objects.json] -> [💡 📦 json_keys: 1개 포착 | 🔑 "objects" [list]]
-├── main.py [📂 main.py] -> [💡 📦 imp: camera, dialogue_system.dialogue_manager, map_editor_tool.map_editor, map_system.map_main, math, player.player_main, pygame, settings, sys | 🧬 class AppState [L16-19] | 🎯 def draw_player_hp_hud() [L21-74] | 🎯 def run_game() [L76-150] | 🎯 def run_main_menu() [L152-236] | 🎯 def main() [L238-262]]
+├── main.py [📂 main.py] -> [💡 📦 imp: camera, dialogue_system.dialogue_manager, map_editor_tool.map_editor, map_system.map_main, math, os, player.player_main, pygame, settings, sys | 🧬 class AppState [L28-31] | 🎯 def draw_player_hp_hud() [L33-86] | 🎯 def run_game() [L88-165] | 🎯 def run_main_menu() [L167-251] | 🎯 def draw() [L253-305] | 🎯 def main() [L307-331]]
 ├── map_editor_tool/
 │   ├── __init__.py [📂 map_editor_tool/__init__.py] -> [💡 📦 imp: map_editor_tool.editor_main, map_editor_tool.object_registry]
 │   ├── editor_main.py [📂 map_editor_tool/editor_main.py] -> [💡 📦 imp: map_editor_tool, map_editor_tool.object_registry, map_system.map_main, os, pygame, settings | 🧬 class MapEditor [L10-210] |     └─ def __init__() [L16-40] |     └─ def _ensure_maps_dir() [L42-45] |     └─ def _build_map_selection_buttons() [L47-48] |     └─ def get_object_visibility() [L50-51] |     └─ def calculate_placement_pos() [L53-54] |     └─ def load_map() [L56-72] |     └─ def _file_to_map_name() [L74-75] |     └─ def _map_name_to_file() [L77-78] |     └─ def _next_new_map_file() [L80-81] |     └─ def run() [L83-104] |     └─ def _handle_event() [L106-107] |     └─ def _handle_select_event() [L109-110] |     └─ def _handle_keydown() [L112-113] |     └─ def _handle_selected_shortcuts() [L115-116] |     └─ def _handle_mouse_down() [L118-119] |     └─ def _handle_sidebar_click() [L121-122] |     └─ def _update_camera() [L124-125] |     └─ def place_selected() [L127-128] |     └─ def find_platform_at() [L130-131] |     └─ def delete_selected() [L133-134] |     └─ def save_map() [L136-137] |     └─ def load_saved_or_source() [L139-140] |     └─ def serialize_map() [L142-143] |     └─ def _serialize_platform() [L145-146] |     └─ def _serialize_structure() [L148-149] |     └─ def _serialize_entity() [L151-152] |     └─ def _serialize_trigger() [L154-155] |     └─ def _infer_entity_type() [L157-158] |     └─ def _draw() [L160-161] |     └─ def _draw_map_select() [L163-164] |     └─ def _draw_button() [L166-167] |     └─ def _draw_grid() [L169-170] |     └─ def _draw_selection() [L172-173] |     └─ def _draw_sidebar() [L175-176] |     └─ def _draw_tool_button() [L178-179] |     └─ def _draw_inspector() [L181-182] |     └─ def _draw_help() [L184-185] |     └─ def _draw_status() [L187-188] |     └─ def _text() [L190-191] |     └─ def _window_to_virtual() [L193-194] |     └─ def _screen_to_world() [L196-197] |     └─ def _snap() [L199-200] |     └─ def _app_state() [L202-207] |     └─ def scan_map_files() [L209-210]]
@@ -106,8 +106,8 @@ project_root/
 ├── player/
 │   ├── __init__.py [📂 player/__init__.py]
 │   ├── asset_loader.py [📂 player/asset_loader.py] -> [💡 📦 imp: os, pygame, sys | 🧬 class PlayerAssetLoader [L6-70] |     └─ def __init__() [L7-10] |     └─ def load_all_assets() [L12-60] |     └─ def _load_series() [L62-70]]
-│   ├── combat_processor.py [📂 player/combat_processor.py] -> [💡 📦 imp: pygame | 🧬 class PlayerCombatProcessor [L4-31] |     └─ def process() [L5-31]]
-│   ├── input_handler.py [📂 player/input_handler.py] -> [💡 📦 imp: pygame | 🧬 class PlayerInputHandler [L4-66] |     └─ def __init__() [L5-6] |     └─ def update() [L8-48] |     └─ def trigger_attack() [L50-66]]
+│   ├── combat_processor.py [📂 player/combat_processor.py] -> [💡 📦 imp: math, pygame | 🧬 class PlayerCombatProcessor [L5-136] |     └─ def __init__() [L6-7] |     └─ def process() [L9-136]]
+│   ├── input_handler.py [📂 player/input_handler.py] -> [💡 📦 imp: pygame | 🧬 class PlayerInputHandler [L4-67] |     └─ def __init__() [L5-6] |     └─ def update() [L8-43] |     └─ def trigger_attack() [L45-67]]
 │   │     ├── 🔑 [REGISTRY]: "PlayerInputHandler"
 │   ├── motions/
 │   │   ├── __init__.py [📂 player/motions/__init__.py]
@@ -115,7 +115,8 @@ project_root/
 │   │   ├── attack_motions.py [📂 player/motions/attack_motions.py] -> [💡 📦 imp: player.motions.motion_base | 🧬 class AttackMotions [L4-14] |     └─ def handle_state() [L5-14]]
 │   │   ├── ground_motions.py [📂 player/motions/ground_motions.py] -> [💡 📦 imp: player.motions.motion_base | 🧬 class GroundMotions [L4-13] |     └─ def handle_state() [L5-13]]
 │   │   ├── motion_base.py [📂 player/motions/motion_base.py] -> [🧬 class MotionBase [L2-8] |     └─ def __init__() [L3-4] |     └─ def handle_state() [L6-8]]
-│   ├── physics_processor.py [📂 player/physics_processor.py] -> [💡 📦 imp: pygame, settings | 🧬 class PlayerPhysicsProcessor [L5-61] |     └─ def process() [L6-61]]
-│   ├── player_main.py [📂 player/player_main.py] -> [💡 📦 imp: player.asset_loader, player.combat_processor, player.input_handler, player.motions.air_motions, player.motions.attack_motions, player.motions.ground_motions, player.physics_processor, player.variables, pygame | 🧬 class Player [L12-117] |     └─ def __init__() [L13-27] |     └─ def update_animation_state() [L29-40] |     └─ def update() [L42-88] |     └─ def draw() [L90-117]]
-│   ├── variables.py [📂 player/variables.py] -> [💡 📦 imp: settings | 🧬 class PlayerVariables [L4-70] |     └─ def __init__() [L5-56] |     └─ def take_damage() [L58-64] |     └─ def heal() [L66-70]]
+│   ├── physics_processor.py [📂 player/physics_processor.py] -> [💡 📦 imp: pygame, settings | 🧬 class PlayerPhysicsProcessor [L5-77] |     └─ def __init__() [L6-7] |     └─ def process() [L9-77]]
+│   ├── player_main.py [📂 player/player_main.py] -> [💡 📦 imp: player.asset_loader, player.combat_processor, player.input_handler, player.motions.air_motions, player.motions.attack_motions, player.motions.ground_motions, player.physics_processor, player.variables, pygame | 🧬 class Player [L12-127] |     └─ def __init__() [L13-27] |     └─ def update_animation_state() [L29-40] |     └─ def update() [L42-98] |     └─ def draw() [L100-127]]
+│   ├── variables.py [📂 player/variables.py] -> [💡 📦 imp: pygame | 🧬 class PlayerInputHandler [L4-55] |     └─ def __init__() [L5-6] |     └─ def update() [L8-38] |     └─ def trigger_attack() [L40-55]]
+│   │     ├── 🔑 [REGISTRY]: "PlayerInputHandler"
 ├── settings.py [📂 settings.py]
