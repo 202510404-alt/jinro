@@ -2411,12 +2411,12 @@ class EntityRegistry:
         cls._registry[type_name] = class_obj
 
     @classmethod
-    def create(cls, type_name, x, y):
-        # 1. 기존에 이미 캐싱/등록된 엔티티가 있다면 즉시 반환 (기존 무결성 유지)
+    def create(cls, type_name, x, y, **kwargs):
+        # 1. 기존에 이미 캐싱/등록된 엔티티가 있다면 전달된 kwargs를 포함해 인스턴스 생성
         if type_name in cls._registry:
-            return cls._registry[type_name](x, y)
-
-        # 2. 🚀 [자동 동적 탐색 추가] 등록되지 않은 타입인 경우, 폴더 규칙을 기반으로 실시간 임포트 시도
+            return cls._registry[type_name](x, y, **kwargs)
+        
+        # 2. 🚀 [자동 동적 탐색] 등록되지 않은 타입인 경우, 폴더 규칙을 기반으로 실시간 임포트 시도
         try:
             # 예: "test_enemy1" -> enemy.enemys.test_enemy1.test_enemy1_main
             # "dummy" -> enemy.enemys.dummy.dummy_main
@@ -2437,7 +2437,8 @@ class EntityRegistry:
                 # 성능을 위해 다음 호출부터는 캐싱되도록 등록
                 cls.register(type_name, class_obj)
                 cls.register(class_obj.__name__, class_obj)
-                return class_obj(x, y)
+                # 새로 임포트한 클래스를 인스턴스화할 때도 **kwargs를 안전하게 넘겨줌
+                return class_obj(x, y, **kwargs)
                 
         except Exception as e:
             print(f"⚠️ [EntityRegistry] '{type_name}' 동적 생성 실패: {e}")
@@ -4337,6 +4338,30 @@ class Player:
         keys = pygame.key.get_pressed()
         self.input_handler.update(self.vars, keys)
 
+        # 🪐 [관성 물리 메커니즘 통합]
+        if self.vars.is_attacking:
+            # 공격(돌진) 중일 때는 입력에 의한 속도 제어를 우회하고, 자연스러운 감속(마찰력)만 적용
+            self.vars.vx *= max(0.0, 1.0 - (0.35 * fps_scale))
+            self.vars.vy *= max(0.0, 1.0 - (0.35 * fps_scale))
+        else:
+            if self.vars.is_moving:
+                # 가속
+                target_speed = self.vars.run_speed if self.vars.move_state == "RUN" else self.vars.walk_speed
+                direction = 1 if self.vars.facing_right else -1
+                target_vx = target_speed * direction
+                # 가속률 적용하여 target_vx에 도달
+                self.vars.vx += (target_vx - self.vars.vx) * min(1.0, 0.25 * fps_scale)
+            else:
+                # 감속
+                self.vars.vx *= max(0.0, 1.0 - (0.35 * fps_scale))
+            
+            # 공격 중이 아닐 때는 vy도 자연스럽게 감속
+            self.vars.vy *= max(0.0, 1.0 - (0.35 * fps_scale))
+
+        # 최종 물리 좌표(x, y) 업데이트
+        self.vars.x += self.vars.vx * fps_scale
+        self.vars.y += self.vars.vy * fps_scale
+
         # 2. 🪐 [오류 수정] 분리된 엔진 컴포넌트 가동 (물리 및 전투 엔진 인터페이스 및 dt 결합 완벽 갱신)
         self.physics_engine.process(self.vars, platforms, game_map=game_map, dt=dt)
         self.combat_engine.process(self.vars, entities=entities, dt=dt)
@@ -4353,6 +4378,10 @@ class Player:
             if self.vars.anim_timer >= delay:
                 self.vars.anim_timer = 0
                 self.vars.current_frame_idx = (self.vars.current_frame_idx + 1) % len(anim_list)
+
+    def update_with_dt(self, platforms, game_map, dt, entities=None):
+        """main.py의 호출 인터페이스를 지원하기 위한 update 래퍼 메서드"""
+        self.update(platforms, entities=entities, game_map=game_map, dt=dt)
 
     def draw(self, screen, camera_offset=(0, 0)):
         """플레이어 본체 이미지와 공격 시 콤보 이펙트를 화면에 렌더링합니다."""
@@ -4389,58 +4418,84 @@ class Player:
 ### 📄 extraction_target_project/player/variables.py
 #### 🧱 Code Skeleton:
 ```python
-class PlayerInputHandler:
-    def __init__(self):
-        self.mouse_was_pressed = False # 마우스 단발성 클릭 체크용 변수
-
-    def update(self, vars_obj, keys):
-        # ⚔️ 1. 마우스 좌클릭 입력 상시 감지 (공격 중에도 연타 입력을 누락 없이 체크하기 위해 최상단 배치)
-        mouse_state = pygame.mouse.get_pressed()
-        if mouse_state[0]:  
-            if not self.mouse_was_pressed: 
-                self.trigger_attack(vars_obj)
-            self.mouse_was_pressed = True
-        else:
-            self.mouse_was_pressed = False
-
-        # 🏃 2. 키보드 이동 입력 상태 플래그 초기화
-        vars_obj.is_moving = False
+class PlayerVariables:
+    def __init__(self, x, y):
+        # 🧍 기본 물리 변수
+        self.x = x
+        self.y = y
+        self.width = 40
+        self.height = 60
+        self.walk_speed = 4
+        self.run_speed = 8
+        self.jump_power = 16
+        self.gravity = 0.8
+        self.vertical_velocity = 0
+        self.is_jumping = False
+        self.current_state = "IDLE"
+        self.facing_right = True
+        self.is_moving = False
+        self.move_state = "WALK"
         
-        # 🎯 [매개변수 무력화 해결] 기존의 keys = pygame.key.get_pressed() 덮어쓰기를 제거하여
-        # 상위 시스템(player_main)에서 안전하게 가공하여 전달한 keys 매핑 정보만 신뢰하도록 조율.
-        if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
-            vars_obj.move_state = "RUN"
-        else:
-            vars_obj.move_state = "WALK"
+        # 🧍 물리 가속도 변수 보충 (가변 프레임 및 관성 마찰 연산의 축)
+        self.vx = 0.0
+        self.vy = 0.0
+        
+        # ⚔️ 공격 및 콤보 관련 변수
+        self.is_attacking = False       # 현재 공격 애니메이션/모션이 재생 중인가?
+        self.combo_step = 0             # 0: 공격안함, 1: 1타, 2: 2타, 3: 3타
+        self.attack_timer = 0           # 공격 모션이 유지되는 프레임 수
+        self.attack_duration = 15       # 공격 모션 1회당 유지 시간
+        self.has_hit_enemy = False      # 이번 공격 타수에서 적을 맞췄는가?
+        
+        # ⚔️ 전투 확장성 확보 (v1.3 연동용 기본 공격 공격력)
+        self.attack_damage = 15
+        
+        # ⏱️ 콤보 유효 타이머 (1.5초 = 90프레임)
+        self.combo_expire_time = 90     
+        self.combo_timer = 0            
+        
+        # 📐 공격 범위(히트박스) 크기 설정
+        self.attack_range_width = 80
+        self.attack_range_height = 50
+        self.attack_rect = None         
+        
+        # 🎬 [애니메이션 핵심 제어 변수]
+        self.anim_timer = 0             # 프레임 카운터
+        self.anim_speed = 8             # 숫자가 낮을수록 애니메이션이 빨라짐 (8프레임마다 다음 장)
+        self.current_frame_idx = 0      # 리스트에서 현재 몇 번째 이미지를 그릴지 인덱스
+        
+        # 🎬 콤보 애니메이션 제어 확장 (콤보 타수별 프레임 재생 딜레이 개별 설정)
+        self.state_delays = {
+            "IDLE": 8,
+            "WALK": 6,
+            "RUN": 4,
+            "ATTACK": 5,
+            "ATTACK_1": 5,
+            "ATTACK_2": 5,
+            "ATTACK_3": 5
+        }
+        
+        # 🚀 점프 선딜레이 타이머 (W 누른 순간 5프레임 동안만 READY_JUMP 유지)
+        self.ready_jump_timer = 0
 
-        # 🎯 [치명적 결합도 수정] vars_obj.x에 속도를 직접 더해 워프시키던 하드코딩 완전 삭제.
-        # 방향성 플래그와 이동 의사(is_moving)만 토글하여 넘겨주면, player_main.py가 dt와 결합해 물리 이동을 처리합니다.
-        if keys[pygame.K_a]:
-            vars_obj.is_moving = True
-            if not vars_obj.is_attacking:
-                vars_obj.facing_right = False
-                
-        if keys[pygame.K_d]:
-            vars_obj.is_moving = True
-            if not vars_obj.is_attacking:
-                vars_obj.facing_right = True
+        # ❤️ HP 및 생존 관련 변수
+        self.max_hp = 100
+        self.hp = 100
+        self.is_dead = False
 
-    def trigger_attack(self, vars_obj):
-        """공격 버튼을 눌렀을 때 실행되는 콤보 전환 프로세서"""
-        if vars_obj.is_attacking:
+    def take_damage(self, amount):
+        """데미지를 입어 hp를 감소시키고, 0 이하가 되면 사망 처리합니다."""
+        if self.is_dead or amount <= 0:
             return
-            
-        vars_obj.is_attacking = True
-        vars_obj.attack_timer = vars_obj.attack_duration
-        vars_obj.has_hit_enemy = False
-        
-        # 콤보 단계 순환 처리 (1타 -> 2타 -> 3타)
-        if vars_obj.combo_step >= 3 or vars_obj.combo_timer <= 0:
-            vars_obj.combo_step = 1
-        else:
-            vars_obj.combo_step += 1
-            
-        vars_obj.combo_timer = vars_obj.combo_expire_time
+        self.hp = max(0, self.hp - amount)
+        if self.hp <= 0:
+            self.is_dead = True
+
+    def heal(self, amount):
+        """체력을 회복시키되, 최대 체력을초과하지 않도록 합니다."""
+        if self.is_dead or amount <= 0:
+            return
+        self.hp = min(self.max_hp, self.hp + amount)
 ```
 
 --------------------------------------------------

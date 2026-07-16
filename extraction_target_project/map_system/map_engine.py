@@ -45,12 +45,12 @@ class EntityRegistry:
         cls._registry[type_name] = class_obj
 
     @classmethod
-    def create(cls, type_name, x, y):
-        # 1. 기존에 이미 캐싱/등록된 엔티티가 있다면 즉시 반환 (기존 무결성 유지)
+    def create(cls, type_name, x, y, **kwargs):
+        # 1. 기존에 이미 캐싱/등록된 엔티티가 있다면 전달된 kwargs를 포함해 인스턴스 생성
         if type_name in cls._registry:
-            return cls._registry[type_name](x, y)
-
-        # 2. 🚀 [자동 동적 탐색 추가] 등록되지 않은 타입인 경우, 폴더 규칙을 기반으로 실시간 임포트 시도
+            return cls._registry[type_name](x, y, **kwargs)
+        
+        # 2. 🚀 [자동 동적 탐색] 등록되지 않은 타입인 경우, 폴더 규칙을 기반으로 실시간 임포트 시도
         try:
             # 예: "test_enemy1" -> enemy.enemys.test_enemy1.test_enemy1_main
             # "dummy" -> enemy.enemys.dummy.dummy_main
@@ -71,7 +71,8 @@ class EntityRegistry:
                 # 성능을 위해 다음 호출부터는 캐싱되도록 등록
                 cls.register(type_name, class_obj)
                 cls.register(class_obj.__name__, class_obj)
-                return class_obj(x, y)
+                # 새로 임포트한 클래스를 인스턴스화할 때도 **kwargs를 안전하게 넘겨줌
+                return class_obj(x, y, **kwargs)
                 
         except Exception as e:
             print(f"⚠️ [EntityRegistry] '{type_name}' 동적 생성 실패: {e}")
