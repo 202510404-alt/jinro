@@ -121,8 +121,8 @@
       "start_line": 238,
       "end_line": 262,
       "calls": [
-        "run_game",
-        "run_main_menu"
+        "run_main_menu",
+        "run_game"
       ],
       "used_by": []
     },
@@ -960,9 +960,9 @@
       "start_line": 19,
       "end_line": 46,
       "calls": [
-        "screen_to_world",
         "snap",
-        "handle_mouse_down"
+        "handle_mouse_down",
+        "screen_to_world"
       ],
       "used_by": []
     },
@@ -1229,10 +1229,10 @@
       "start_line": 6,
       "end_line": 12,
       "calls": [
-        "draw_selection",
-        "draw_sidebar",
         "draw_status",
-        "draw_grid"
+        "draw_sidebar",
+        "draw_grid",
+        "draw_selection"
       ],
       "used_by": []
     },
@@ -1291,11 +1291,11 @@
       "start_line": 77,
       "end_line": 104,
       "calls": [
-        "draw_help",
-        "draw_inspector",
+        "text",
         "draw_tool_button",
+        "draw_help",
         "draw_button",
-        "text"
+        "draw_inspector"
       ],
       "used_by": []
     },
@@ -1321,8 +1321,8 @@
       "start_line": 118,
       "end_line": 177,
       "calls": [
-        "draw_type_btn",
-        "text"
+        "text",
+        "draw_type_btn"
       ],
       "used_by": []
     },
@@ -1441,8 +1441,8 @@
       "end_line": 75,
       "calls": [
         "_serialize_platform",
-        "_serialize_entity",
         "_serialize_trigger",
+        "_serialize_entity",
         "_serialize_structure"
       ],
       "used_by": []

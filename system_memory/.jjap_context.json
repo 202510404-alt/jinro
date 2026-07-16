@@ -166,7 +166,7 @@
       "skeleton": ""
     },
     "extraction_target_project/map_system/maps/map_1.json": {
-      "hash": "93867aba71b3790f4b6069c178762b7a40344b55fac85666c6cc8a70955b2bde",
+      "hash": "a4532e1491348da1774594c100c7bff22c4bdb1b4e5ca08ee6a32bd10f9bae33",
       "symbols_summary": "💡 📦 json_keys: 12개 포착 | 🔑 \"schema_version\" [int] | 🔑 \"map_id\" [str] | 🔑 \"map_width\" [int] | 🔑 \"map_height\" [int] | 🔑 \"background_type\" [str] | ...외 7개",
       "skeleton": "📦 [JSON STRUCTURE MAP]\n  ├── \"schema_version\": int (val: 2)\n  ├── \"map_id\": str (val: 1)\n  ├── \"map_width\": int (val: 3200)\n  ├── \"map_height\": int (val: 1800)\n  ├── \"background_type\": str (val: bg_sky)\n  ├── \"ground_type\": str (val: ground_dirt)\n  ├── \"ground_y\": float (val: 1800.0)\n  ├── \"platforms\": List (len: 0)\n  ├── \"structures\": List (len: 4)\n  ├── \"entities\": List (len: 6)\n  ├── \"triggers\": List (len: 0)\n  ├── \"editor_metadata\": Dict (keys: ['source_map', 'file_name', 'object_registry']...)"
     },
