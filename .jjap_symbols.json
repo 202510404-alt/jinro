@@ -1,0 +1,4626 @@
+{
+  "symbols": [
+    {
+      "symbol_id": "src/camera.py::ElasticCamera",
+      "full_name": "ElasticCamera",
+      "name": "ElasticCamera",
+      "type": "class",
+      "parent": null,
+      "file": "src/camera.py",
+      "start_line": 4,
+      "end_line": 118,
+      "range": [
+        4,
+        118
+      ],
+      "decorators": [],
+      "signature": "class ElasticCamera",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/camera.py::ElasticCamera.__init__",
+      "full_name": "ElasticCamera.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "ElasticCamera",
+      "file": "src/camera.py",
+      "start_line": 12,
+      "end_line": 34,
+      "range": [
+        12,
+        34
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [
+        "float",
+        "int"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/camera.py::ElasticCamera.set_center",
+      "full_name": "ElasticCamera.set_center",
+      "name": "set_center",
+      "type": "method",
+      "parent": "ElasticCamera",
+      "file": "src/camera.py",
+      "start_line": 36,
+      "end_line": 38,
+      "range": [
+        36,
+        38
+      ],
+      "decorators": [],
+      "signature": "def set_center(...)",
+      "calls": [
+        "float"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/camera.py::ElasticCamera._frame_lerp",
+      "full_name": "ElasticCamera._frame_lerp",
+      "name": "_frame_lerp",
+      "type": "method",
+      "parent": "ElasticCamera",
+      "file": "src/camera.py",
+      "start_line": 41,
+      "end_line": 45,
+      "range": [
+        41,
+        45
+      ],
+      "decorators": [
+        "Name(id='staticmethod', ctx=Load())"
+      ],
+      "signature": "def _frame_lerp(...)",
+      "calls": [
+        "float",
+        "min",
+        "pow",
+        "max"
+      ],
+      "used_by": [
+        "src/camera.py::ElasticCamera.update"
+      ]
+    },
+    {
+      "symbol_id": "src/camera.py::ElasticCamera.update",
+      "full_name": "ElasticCamera.update",
+      "name": "update",
+      "type": "method",
+      "parent": "ElasticCamera",
+      "file": "src/camera.py",
+      "start_line": 47,
+      "end_line": 115,
+      "range": [
+        47,
+        115
+      ],
+      "decorators": [],
+      "signature": "def update(...)",
+      "calls": [
+        "float",
+        "min",
+        "_frame_lerp",
+        "hypot"
+      ],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.update",
+        "src/map_system/map_main.py::GameMap.update",
+        "src/player/player_main.py::Player.update"
+      ]
+    },
+    {
+      "symbol_id": "src/camera.py::ElasticCamera.get_offset",
+      "full_name": "ElasticCamera.get_offset",
+      "name": "get_offset",
+      "type": "method",
+      "parent": "ElasticCamera",
+      "file": "src/camera.py",
+      "start_line": 117,
+      "end_line": 118,
+      "range": [
+        117,
+        118
+      ],
+      "decorators": [],
+      "signature": "def get_offset(...)",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/main.py::AppState",
+      "full_name": "AppState",
+      "name": "AppState",
+      "type": "class",
+      "parent": null,
+      "file": "src/main.py",
+      "start_line": 16,
+      "end_line": 19,
+      "range": [
+        16,
+        19
+      ],
+      "decorators": [],
+      "signature": "class AppState",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/main.py::draw_player_hp_hud",
+      "full_name": "draw_player_hp_hud",
+      "name": "draw_player_hp_hud",
+      "type": "function",
+      "parent": null,
+      "file": "src/main.py",
+      "start_line": 21,
+      "end_line": 27,
+      "range": [
+        21,
+        27
+      ],
+      "decorators": [],
+      "signature": "def draw_player_hp_hud(...)",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/main.py::run_game",
+      "full_name": "run_game",
+      "name": "run_game",
+      "type": "function",
+      "parent": null,
+      "file": "src/main.py",
+      "start_line": 29,
+      "end_line": 103,
+      "range": [
+        29,
+        103
+      ],
+      "decorators": [],
+      "signature": "def run_game(...)",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/main.py::run_main_menu",
+      "full_name": "run_main_menu",
+      "name": "run_main_menu",
+      "type": "function",
+      "parent": null,
+      "file": "src/main.py",
+      "start_line": 105,
+      "end_line": 189,
+      "range": [
+        105,
+        189
+      ],
+      "decorators": [],
+      "signature": "def run_main_menu(...)",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/main.py::main",
+      "full_name": "main",
+      "name": "main",
+      "type": "function",
+      "parent": null,
+      "file": "src/main.py",
+      "start_line": 191,
+      "end_line": 215,
+      "range": [
+        191,
+        215
+      ],
+      "decorators": [],
+      "signature": "def main(...)",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/dialogue_system/dialogue_manager.py::DialogueManager",
+      "full_name": "DialogueManager",
+      "name": "DialogueManager",
+      "type": "class",
+      "parent": null,
+      "file": "src/dialogue_system/dialogue_manager.py",
+      "start_line": 7,
+      "end_line": 156,
+      "range": [
+        7,
+        156
+      ],
+      "decorators": [],
+      "signature": "class DialogueManager",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/dialogue_system/dialogue_manager.py::DialogueManager.__init__",
+      "full_name": "DialogueManager.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "DialogueManager",
+      "file": "src/dialogue_system/dialogue_manager.py",
+      "start_line": 12,
+      "end_line": 39,
+      "range": [
+        12,
+        39
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [
+        "SysFont",
+        "abspath",
+        "dirname",
+        "init",
+        "Font"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/dialogue_system/dialogue_manager.py::DialogueManager.load_dialogues",
+      "full_name": "DialogueManager.load_dialogues",
+      "name": "load_dialogues",
+      "type": "method",
+      "parent": "DialogueManager",
+      "file": "src/dialogue_system/dialogue_manager.py",
+      "start_line": 41,
+      "end_line": 52,
+      "range": [
+        41,
+        52
+      ],
+      "decorators": [],
+      "signature": "def load_dialogues(...)",
+      "calls": [
+        "join",
+        "open",
+        "print",
+        "len",
+        "load"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/dialogue_system/dialogue_manager.py::DialogueManager.start_dialogue",
+      "full_name": "DialogueManager.start_dialogue",
+      "name": "start_dialogue",
+      "type": "method",
+      "parent": "DialogueManager",
+      "file": "src/dialogue_system/dialogue_manager.py",
+      "start_line": 54,
+      "end_line": 67,
+      "range": [
+        54,
+        67
+      ],
+      "decorators": [],
+      "signature": "def start_dialogue(...)",
+      "calls": [
+        "_trigger_current_action",
+        "print",
+        "len"
+      ],
+      "used_by": [
+        "src/map_system/map_main.py::GameMap.update"
+      ]
+    },
+    {
+      "symbol_id": "src/dialogue_system/dialogue_manager.py::DialogueManager.next_line",
+      "full_name": "DialogueManager.next_line",
+      "name": "next_line",
+      "type": "method",
+      "parent": "DialogueManager",
+      "file": "src/dialogue_system/dialogue_manager.py",
+      "start_line": 69,
+      "end_line": 78,
+      "range": [
+        69,
+        78
+      ],
+      "decorators": [],
+      "signature": "def next_line(...)",
+      "calls": [
+        "_trigger_current_action",
+        "end_dialogue",
+        "len"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/dialogue_system/dialogue_manager.py::DialogueManager.end_dialogue",
+      "full_name": "DialogueManager.end_dialogue",
+      "name": "end_dialogue",
+      "type": "method",
+      "parent": "DialogueManager",
+      "file": "src/dialogue_system/dialogue_manager.py",
+      "start_line": 80,
+      "end_line": 85,
+      "range": [
+        80,
+        85
+      ],
+      "decorators": [],
+      "signature": "def end_dialogue(...)",
+      "calls": [
+        "print"
+      ],
+      "used_by": [
+        "src/dialogue_system/dialogue_manager.py::DialogueManager.next_line"
+      ]
+    },
+    {
+      "symbol_id": "src/dialogue_system/dialogue_manager.py::DialogueManager._trigger_current_action",
+      "full_name": "DialogueManager._trigger_current_action",
+      "name": "_trigger_current_action",
+      "type": "method",
+      "parent": "DialogueManager",
+      "file": "src/dialogue_system/dialogue_manager.py",
+      "start_line": 87,
+      "end_line": 95,
+      "range": [
+        87,
+        95
+      ],
+      "decorators": [],
+      "signature": "def _trigger_current_action(...)",
+      "calls": [
+        "print",
+        "len",
+        "get"
+      ],
+      "used_by": [
+        "src/dialogue_system/dialogue_manager.py::DialogueManager.next_line",
+        "src/dialogue_system/dialogue_manager.py::DialogueManager.start_dialogue"
+      ]
+    },
+    {
+      "symbol_id": "src/dialogue_system/dialogue_manager.py::DialogueManager.draw",
+      "full_name": "DialogueManager.draw",
+      "name": "draw",
+      "type": "method",
+      "parent": "DialogueManager",
+      "file": "src/dialogue_system/dialogue_manager.py",
+      "start_line": 97,
+      "end_line": 140,
+      "range": [
+        97,
+        140
+      ],
+      "decorators": [],
+      "signature": "def draw(...)",
+      "calls": [
+        "fill",
+        "rect",
+        "render",
+        "Surface",
+        "get",
+        "join",
+        "get_image",
+        "Rect",
+        "blit",
+        "scale",
+        "_wrap_text"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.draw",
+        "src/map_editor_tool/map_editor.py::MapEditor._draw",
+        "src/map_system/map_engine.py::MapManager.draw",
+        "src/map_system/map_main.py::GameMap.draw"
+      ]
+    },
+    {
+      "symbol_id": "src/dialogue_system/dialogue_manager.py::DialogueManager._wrap_text",
+      "full_name": "DialogueManager._wrap_text",
+      "name": "_wrap_text",
+      "type": "method",
+      "parent": "DialogueManager",
+      "file": "src/dialogue_system/dialogue_manager.py",
+      "start_line": 142,
+      "end_line": 156,
+      "range": [
+        142,
+        156
+      ],
+      "decorators": [],
+      "signature": "def _wrap_text(...)",
+      "calls": [
+        "append",
+        "size"
+      ],
+      "used_by": [
+        "src/dialogue_system/dialogue_manager.py::DialogueManager.draw"
+      ]
+    },
+    {
+      "symbol_id": "src/enemy/enemys/dummy/dummy_main.py::DummyEnemy",
+      "full_name": "DummyEnemy",
+      "name": "DummyEnemy",
+      "type": "class",
+      "parent": null,
+      "file": "src/enemy/enemys/dummy/dummy_main.py",
+      "start_line": 7,
+      "end_line": 163,
+      "range": [
+        7,
+        163
+      ],
+      "decorators": [],
+      "signature": "class DummyEnemy",
+      "calls": [],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.place_selected"
+      ]
+    },
+    {
+      "symbol_id": "src/enemy/enemys/dummy/dummy_main.py::DummyEnemy.__init__",
+      "full_name": "DummyEnemy.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "DummyEnemy",
+      "file": "src/enemy/enemys/dummy/dummy_main.py",
+      "start_line": 8,
+      "end_line": 22,
+      "range": [
+        8,
+        22
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [
+        "load_images",
+        "isinstance",
+        "get",
+        "Rect",
+        "DummyVariables"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/enemy/enemys/dummy/dummy_main.py::DummyEnemy.load_images",
+      "full_name": "DummyEnemy.load_images",
+      "name": "load_images",
+      "type": "method",
+      "parent": "DummyEnemy",
+      "file": "src/enemy/enemys/dummy/dummy_main.py",
+      "start_line": 24,
+      "end_line": 57,
+      "range": [
+        24,
+        57
+      ],
+      "decorators": [],
+      "signature": "def load_images(...)",
+      "calls": [
+        "convert_alpha",
+        "fill",
+        "abspath",
+        "load",
+        "join",
+        "Surface",
+        "print",
+        "scale"
+      ],
+      "used_by": [
+        "src/enemy/enemys/dummy/dummy_main.py::DummyEnemy.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/enemy/enemys/dummy/dummy_main.py::DummyEnemy.check_player_attack",
+      "full_name": "DummyEnemy.check_player_attack",
+      "name": "check_player_attack",
+      "type": "method",
+      "parent": "DummyEnemy",
+      "file": "src/enemy/enemys/dummy/dummy_main.py",
+      "start_line": 59,
+      "end_line": 74,
+      "range": [
+        59,
+        74
+      ],
+      "decorators": [],
+      "signature": "def check_player_attack(...)",
+      "calls": [
+        "hasattr",
+        "colliderect",
+        "print",
+        "Rect"
+      ],
+      "used_by": [
+        "src/enemy/enemys/dummy/dummy_main.py::DummyEnemy.update"
+      ]
+    },
+    {
+      "symbol_id": "src/enemy/enemys/dummy/dummy_main.py::DummyEnemy.update",
+      "full_name": "DummyEnemy.update",
+      "name": "update",
+      "type": "method",
+      "parent": "DummyEnemy",
+      "file": "src/enemy/enemys/dummy/dummy_main.py",
+      "start_line": 76,
+      "end_line": 91,
+      "range": [
+        76,
+        91
+      ],
+      "decorators": [],
+      "signature": "def update(...)",
+      "calls": [
+        "apply_gravity_and_physics",
+        "check_player_attack"
+      ],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.update",
+        "src/map_system/map_main.py::GameMap.update",
+        "src/player/player_main.py::Player.update"
+      ]
+    },
+    {
+      "symbol_id": "src/enemy/enemys/dummy/dummy_main.py::DummyEnemy.apply_gravity_and_physics",
+      "full_name": "DummyEnemy.apply_gravity_and_physics",
+      "name": "apply_gravity_and_physics",
+      "type": "method",
+      "parent": "DummyEnemy",
+      "file": "src/enemy/enemys/dummy/dummy_main.py",
+      "start_line": 93,
+      "end_line": 149,
+      "range": [
+        93,
+        149
+      ],
+      "decorators": [],
+      "signature": "def apply_gravity_and_physics(...)",
+      "calls": [
+        "hasattr",
+        "colliderect",
+        "getattr",
+        "Rect"
+      ],
+      "used_by": [
+        "src/enemy/enemys/dummy/dummy_main.py::DummyEnemy.update"
+      ]
+    },
+    {
+      "symbol_id": "src/enemy/enemys/dummy/dummy_main.py::DummyEnemy.draw",
+      "full_name": "DummyEnemy.draw",
+      "name": "draw",
+      "type": "method",
+      "parent": "DummyEnemy",
+      "file": "src/enemy/enemys/dummy/dummy_main.py",
+      "start_line": 151,
+      "end_line": 163,
+      "range": [
+        151,
+        163
+      ],
+      "decorators": [],
+      "signature": "def draw(...)",
+      "calls": [
+        "blit",
+        "get"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.draw",
+        "src/map_editor_tool/map_editor.py::MapEditor._draw",
+        "src/map_system/map_engine.py::MapManager.draw",
+        "src/map_system/map_main.py::GameMap.draw"
+      ]
+    },
+    {
+      "symbol_id": "src/enemy/enemys/dummy/dummy_main.py::auto_register_entity",
+      "full_name": "auto_register_entity",
+      "name": "auto_register_entity",
+      "type": "function",
+      "parent": null,
+      "file": "src/enemy/enemys/dummy/dummy_main.py",
+      "start_line": 169,
+      "end_line": 179,
+      "range": [
+        169,
+        179
+      ],
+      "decorators": [],
+      "signature": "def auto_register_entity(...)",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/enemy/enemys/dummy/variables.py::DummyVariables",
+      "full_name": "DummyVariables",
+      "name": "DummyVariables",
+      "type": "class",
+      "parent": null,
+      "file": "src/enemy/enemys/dummy/variables.py",
+      "start_line": 1,
+      "end_line": 26,
+      "range": [
+        1,
+        26
+      ],
+      "decorators": [],
+      "signature": "class DummyVariables",
+      "calls": [],
+      "used_by": [
+        "src/enemy/enemys/dummy/dummy_main.py::DummyEnemy.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/enemy/enemys/dummy/variables.py::DummyVariables.__init__",
+      "full_name": "DummyVariables.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "DummyVariables",
+      "file": "src/enemy/enemys/dummy/variables.py",
+      "start_line": 2,
+      "end_line": 26,
+      "range": [
+        2,
+        26
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/enemy/enemys/test_enemy1/test_enemy1_main.py::TestEnemy1",
+      "full_name": "TestEnemy1",
+      "name": "TestEnemy1",
+      "type": "class",
+      "parent": null,
+      "file": "src/enemy/enemys/test_enemy1/test_enemy1_main.py",
+      "start_line": 5,
+      "end_line": 64,
+      "range": [
+        5,
+        64
+      ],
+      "decorators": [],
+      "signature": "class TestEnemy1",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/enemy/enemys/test_enemy1/test_enemy1_main.py::TestEnemy1.__init__",
+      "full_name": "TestEnemy1.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "TestEnemy1",
+      "file": "src/enemy/enemys/test_enemy1/test_enemy1_main.py",
+      "start_line": 6,
+      "end_line": 7,
+      "range": [
+        6,
+        7
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [
+        "TestEnemy1Variables"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/enemy/enemys/test_enemy1/test_enemy1_main.py::TestEnemy1.update",
+      "full_name": "TestEnemy1.update",
+      "name": "update",
+      "type": "method",
+      "parent": "TestEnemy1",
+      "file": "src/enemy/enemys/test_enemy1/test_enemy1_main.py",
+      "start_line": 9,
+      "end_line": 42,
+      "range": [
+        9,
+        42
+      ],
+      "decorators": [],
+      "signature": "def update(...)",
+      "calls": [
+        "perform_attack",
+        "sqrt"
+      ],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.update",
+        "src/map_system/map_main.py::GameMap.update",
+        "src/player/player_main.py::Player.update"
+      ]
+    },
+    {
+      "symbol_id": "src/enemy/enemys/test_enemy1/test_enemy1_main.py::TestEnemy1.perform_attack",
+      "full_name": "TestEnemy1.perform_attack",
+      "name": "perform_attack",
+      "type": "method",
+      "parent": "TestEnemy1",
+      "file": "src/enemy/enemys/test_enemy1/test_enemy1_main.py",
+      "start_line": 44,
+      "end_line": 49,
+      "range": [
+        44,
+        49
+      ],
+      "decorators": [],
+      "signature": "def perform_attack(...)",
+      "calls": [
+        "hasattr",
+        "take_damage"
+      ],
+      "used_by": [
+        "src/enemy/enemys/test_enemy1/test_enemy1_main.py::TestEnemy1.update"
+      ]
+    },
+    {
+      "symbol_id": "src/enemy/enemys/test_enemy1/test_enemy1_main.py::TestEnemy1.draw",
+      "full_name": "TestEnemy1.draw",
+      "name": "draw",
+      "type": "method",
+      "parent": "TestEnemy1",
+      "file": "src/enemy/enemys/test_enemy1/test_enemy1_main.py",
+      "start_line": 51,
+      "end_line": 64,
+      "range": [
+        51,
+        64
+      ],
+      "decorators": [],
+      "signature": "def draw(...)",
+      "calls": [
+        "rect",
+        "move"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.draw",
+        "src/map_editor_tool/map_editor.py::MapEditor._draw",
+        "src/map_system/map_engine.py::MapManager.draw",
+        "src/map_system/map_main.py::GameMap.draw"
+      ]
+    },
+    {
+      "symbol_id": "src/enemy/enemys/test_enemy1/variables.py::TestEnemy1Variables",
+      "full_name": "TestEnemy1Variables",
+      "name": "TestEnemy1Variables",
+      "type": "class",
+      "parent": null,
+      "file": "src/enemy/enemys/test_enemy1/variables.py",
+      "start_line": 3,
+      "end_line": 21,
+      "range": [
+        3,
+        21
+      ],
+      "decorators": [],
+      "signature": "class TestEnemy1Variables",
+      "calls": [],
+      "used_by": [
+        "src/enemy/enemys/test_enemy1/test_enemy1_main.py::TestEnemy1.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/enemy/enemys/test_enemy1/variables.py::TestEnemy1Variables.__init__",
+      "full_name": "TestEnemy1Variables.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "TestEnemy1Variables",
+      "file": "src/enemy/enemys/test_enemy1/variables.py",
+      "start_line": 4,
+      "end_line": 21,
+      "range": [
+        4,
+        21
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [
+        "Rect"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_editor_tool/editor_main.py::MapEditor",
+      "full_name": "MapEditor",
+      "name": "MapEditor",
+      "type": "class",
+      "parent": null,
+      "file": "src/map_editor_tool/editor_main.py",
+      "start_line": 11,
+      "end_line": 154,
+      "range": [
+        11,
+        154
+      ],
+      "decorators": [],
+      "signature": "class MapEditor",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_editor_tool/editor_main.py::MapEditor.__init__",
+      "full_name": "MapEditor.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/editor_main.py",
+      "start_line": 16,
+      "end_line": 42,
+      "range": [
+        16,
+        42
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [
+        "EditorEventDiscoverer",
+        "EditorRenderer",
+        "EditorInputHandler",
+        "GameMap"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_editor_tool/editor_main.py::MapEditor.handle_events",
+      "full_name": "MapEditor.handle_events",
+      "name": "handle_events",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/editor_main.py",
+      "start_line": 44,
+      "end_line": 122,
+      "range": [
+        44,
+        122
+      ],
+      "decorators": [],
+      "signature": "def handle_events(...)",
+      "calls": [
+        "shift_action",
+        "shift_trigger",
+        "add_trigger_box",
+        "add_platform",
+        "get_pressed",
+        "get_snapped_world_mouse",
+        "get",
+        "remove_at_position",
+        "get_current_pair",
+        "handle_brush_resize",
+        "save_map",
+        "get_pos",
+        "load_map"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_editor_tool/editor_main.py::MapEditor.update",
+      "full_name": "MapEditor.update",
+      "name": "update",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/editor_main.py",
+      "start_line": 124,
+      "end_line": 128,
+      "range": [
+        124,
+        128
+      ],
+      "decorators": [],
+      "signature": "def update(...)",
+      "calls": [
+        "handle_continuous_camera_pan"
+      ],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.update",
+        "src/map_system/map_main.py::GameMap.update",
+        "src/player/player_main.py::Player.update"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/editor_main.py::MapEditor.draw",
+      "full_name": "MapEditor.draw",
+      "name": "draw",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/editor_main.py",
+      "start_line": 130,
+      "end_line": 154,
+      "range": [
+        130,
+        154
+      ],
+      "decorators": [],
+      "signature": "def draw(...)",
+      "calls": [
+        "draw_sidebar_panel",
+        "draw_gizmo_preview",
+        "get_snapped_world_mouse",
+        "draw_status_bar",
+        "draw",
+        "get_current_pair",
+        "get_pos"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._draw",
+        "src/map_system/map_engine.py::MapManager.draw",
+        "src/map_system/map_main.py::GameMap.draw"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/event_discover.py::EditorEventDiscoverer",
+      "full_name": "EditorEventDiscoverer",
+      "name": "EditorEventDiscoverer",
+      "type": "class",
+      "parent": null,
+      "file": "src/map_editor_tool/event_discover.py",
+      "start_line": 4,
+      "end_line": 61,
+      "range": [
+        4,
+        61
+      ],
+      "decorators": [],
+      "signature": "class EditorEventDiscoverer",
+      "calls": [],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/event_discover.py::EditorEventDiscoverer.__init__",
+      "full_name": "EditorEventDiscoverer.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "EditorEventDiscoverer",
+      "file": "src/map_editor_tool/event_discover.py",
+      "start_line": 9,
+      "end_line": 14,
+      "range": [
+        9,
+        14
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [
+        "discover_modules"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_editor_tool/event_discover.py::EditorEventDiscoverer.discover_modules",
+      "full_name": "EditorEventDiscoverer.discover_modules",
+      "name": "discover_modules",
+      "type": "method",
+      "parent": "EditorEventDiscoverer",
+      "file": "src/map_editor_tool/event_discover.py",
+      "start_line": 16,
+      "end_line": 40,
+      "range": [
+        16,
+        40
+      ],
+      "decorators": [],
+      "signature": "def discover_modules(...)",
+      "calls": [
+        "endswith",
+        "listdir",
+        "join",
+        "replace",
+        "exists"
+      ],
+      "used_by": [
+        "src/map_editor_tool/event_discover.py::EditorEventDiscoverer.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/event_discover.py::EditorEventDiscoverer.get_current_pair",
+      "full_name": "EditorEventDiscoverer.get_current_pair",
+      "name": "get_current_pair",
+      "type": "method",
+      "parent": "EditorEventDiscoverer",
+      "file": "src/map_editor_tool/event_discover.py",
+      "start_line": 42,
+      "end_line": 47,
+      "range": [
+        42,
+        47
+      ],
+      "decorators": [],
+      "signature": "def get_current_pair(...)",
+      "calls": [
+        "len"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.draw",
+        "src/map_editor_tool/editor_main.py::MapEditor.handle_events"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/event_discover.py::EditorEventDiscoverer.shift_trigger",
+      "full_name": "EditorEventDiscoverer.shift_trigger",
+      "name": "shift_trigger",
+      "type": "method",
+      "parent": "EditorEventDiscoverer",
+      "file": "src/map_editor_tool/event_discover.py",
+      "start_line": 49,
+      "end_line": 54,
+      "range": [
+        49,
+        54
+      ],
+      "decorators": [],
+      "signature": "def shift_trigger(...)",
+      "calls": [
+        "len"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.handle_events"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/event_discover.py::EditorEventDiscoverer.shift_action",
+      "full_name": "EditorEventDiscoverer.shift_action",
+      "name": "shift_action",
+      "type": "method",
+      "parent": "EditorEventDiscoverer",
+      "file": "src/map_editor_tool/event_discover.py",
+      "start_line": 56,
+      "end_line": 61,
+      "range": [
+        56,
+        61
+      ],
+      "decorators": [],
+      "signature": "def shift_action(...)",
+      "calls": [
+        "len"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.handle_events"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/input_handler.py::EditorInputHandler",
+      "full_name": "EditorInputHandler",
+      "name": "EditorInputHandler",
+      "type": "class",
+      "parent": null,
+      "file": "src/map_editor_tool/input_handler.py",
+      "start_line": 5,
+      "end_line": 87,
+      "range": [
+        5,
+        87
+      ],
+      "decorators": [],
+      "signature": "class EditorInputHandler",
+      "calls": [],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/input_handler.py::EditorInputHandler.__init__",
+      "full_name": "EditorInputHandler.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "EditorInputHandler",
+      "file": "src/map_editor_tool/input_handler.py",
+      "start_line": 10,
+      "end_line": 11,
+      "range": [
+        10,
+        11
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_editor_tool/input_handler.py::EditorInputHandler.get_snapped_world_mouse",
+      "full_name": "EditorInputHandler.get_snapped_world_mouse",
+      "name": "get_snapped_world_mouse",
+      "type": "method",
+      "parent": "EditorInputHandler",
+      "file": "src/map_editor_tool/input_handler.py",
+      "start_line": 13,
+      "end_line": 43,
+      "range": [
+        13,
+        43
+      ],
+      "decorators": [],
+      "signature": "def get_snapped_world_mouse(...)",
+      "calls": [
+        "Info",
+        "int"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.draw",
+        "src/map_editor_tool/editor_main.py::MapEditor.handle_events"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/input_handler.py::EditorInputHandler.handle_continuous_camera_pan",
+      "full_name": "EditorInputHandler.handle_continuous_camera_pan",
+      "name": "handle_continuous_camera_pan",
+      "type": "method",
+      "parent": "EditorInputHandler",
+      "file": "src/map_editor_tool/input_handler.py",
+      "start_line": 45,
+      "end_line": 67,
+      "range": [
+        45,
+        67
+      ],
+      "decorators": [],
+      "signature": "def handle_continuous_camera_pan(...)",
+      "calls": [
+        "get_pressed",
+        "int"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.update"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/input_handler.py::EditorInputHandler.handle_brush_resize",
+      "full_name": "EditorInputHandler.handle_brush_resize",
+      "name": "handle_brush_resize",
+      "type": "method",
+      "parent": "EditorInputHandler",
+      "file": "src/map_editor_tool/input_handler.py",
+      "start_line": 69,
+      "end_line": 87,
+      "range": [
+        69,
+        87
+      ],
+      "decorators": [],
+      "signature": "def handle_brush_resize(...)",
+      "calls": [
+        "min",
+        "max"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.handle_events"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::EditorObjectDefinition",
+      "full_name": "EditorObjectDefinition",
+      "name": "EditorObjectDefinition",
+      "type": "class",
+      "parent": null,
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 14,
+      "end_line": 20,
+      "range": [
+        14,
+        20
+      ],
+      "decorators": [
+        "Name(id='dataclass', ctx=Load())"
+      ],
+      "signature": "class EditorObjectDefinition",
+      "calls": [],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::EditorObjectRegistry.discover_fabric_definitions",
+        "src/map_editor_tool/map_editor.py::EditorObjectRegistry.ensure_defaults"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::EditorObjectRegistry",
+      "full_name": "EditorObjectRegistry",
+      "name": "EditorObjectRegistry",
+      "type": "class",
+      "parent": null,
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 23,
+      "end_line": 122,
+      "range": [
+        23,
+        122
+      ],
+      "decorators": [],
+      "signature": "class EditorObjectRegistry",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::EditorObjectRegistry.register",
+      "full_name": "EditorObjectRegistry.register",
+      "name": "register",
+      "type": "method",
+      "parent": "EditorObjectRegistry",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 27,
+      "end_line": 28,
+      "range": [
+        27,
+        28
+      ],
+      "decorators": [
+        "Name(id='classmethod', ctx=Load())"
+      ],
+      "signature": "def register(...)",
+      "calls": [],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::EditorObjectRegistry.discover_fabric_definitions",
+        "src/map_editor_tool/map_editor.py::EditorObjectRegistry.ensure_defaults"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::EditorObjectRegistry.definitions",
+      "full_name": "EditorObjectRegistry.definitions",
+      "name": "definitions",
+      "type": "method",
+      "parent": "EditorObjectRegistry",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 31,
+      "end_line": 32,
+      "range": [
+        31,
+        32
+      ],
+      "decorators": [
+        "Name(id='classmethod', ctx=Load())"
+      ],
+      "signature": "def definitions(...)",
+      "calls": [
+        "values",
+        "list"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::EditorObjectRegistry.get",
+      "full_name": "EditorObjectRegistry.get",
+      "name": "get",
+      "type": "method",
+      "parent": "EditorObjectRegistry",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 35,
+      "end_line": 36,
+      "range": [
+        35,
+        36
+      ],
+      "decorators": [
+        "Name(id='classmethod', ctx=Load())"
+      ],
+      "signature": "def get(...)",
+      "calls": [
+        "get"
+      ],
+      "used_by": [
+        "src/dialogue_system/dialogue_manager.py::DialogueManager._trigger_current_action",
+        "src/dialogue_system/dialogue_manager.py::DialogueManager.draw",
+        "src/enemy/enemys/dummy/dummy_main.py::DummyEnemy.__init__",
+        "src/enemy/enemys/dummy/dummy_main.py::DummyEnemy.draw",
+        "src/map_editor_tool/editor_main.py::MapEditor.handle_events",
+        "src/map_editor_tool/map_editor.py::EditorObjectRegistry.discover_fabric_definitions",
+        "src/map_editor_tool/map_editor.py::MapEditor._serialize_trigger",
+        "src/map_editor_tool/map_editor.py::MapEditor.place_selected",
+        "src/map_editor_tool/map_editor.py::MapEditor.run",
+        "src/map_system/map_engine.py::MapManager._create_entity_from_data",
+        "src/map_system/map_engine.py::MapManager.execute_trigger_action",
+        "src/map_system/map_engine.py::MapManager.load_map_data",
+        "src/map_system/map_main.py::GameMap.build_map",
+        "src/map_system/map_main.py::GameMap.execute_trigger_action",
+        "src/map_system/map_main.py::GameMap.load_map_from_json",
+        "src/map_system/map_main.py::GameMap.save_map",
+        "src/map_system/map_main.py::GameMap.update",
+        "src/map_system/variables.py::MapVariables.__init__",
+        "src/player/player_main.py::Player.draw",
+        "src/player/player_main.py::Player.update"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::EditorObjectRegistry.ensure_defaults",
+      "full_name": "EditorObjectRegistry.ensure_defaults",
+      "name": "ensure_defaults",
+      "type": "method",
+      "parent": "EditorObjectRegistry",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 39,
+      "end_line": 71,
+      "range": [
+        39,
+        71
+      ],
+      "decorators": [
+        "Name(id='classmethod', ctx=Load())"
+      ],
+      "signature": "def ensure_defaults(...)",
+      "calls": [
+        "EditorObjectDefinition",
+        "register"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::EditorObjectRegistry.discover_fabric_definitions",
+      "full_name": "EditorObjectRegistry.discover_fabric_definitions",
+      "name": "discover_fabric_definitions",
+      "type": "method",
+      "parent": "EditorObjectRegistry",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 73,
+      "end_line": 96,
+      "range": [
+        73,
+        96
+      ],
+      "decorators": [],
+      "signature": "def discover_fabric_definitions(...)",
+      "calls": [
+        "abspath",
+        "dirname",
+        "register",
+        "get",
+        "join",
+        "open",
+        "EditorObjectDefinition",
+        "print",
+        "load",
+        "exists"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::EditorObjectRegistry.discover_fabric_definitions",
+      "full_name": "EditorObjectRegistry.discover_fabric_definitions",
+      "name": "discover_fabric_definitions",
+      "type": "method",
+      "parent": "EditorObjectRegistry",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 99,
+      "end_line": 122,
+      "range": [
+        99,
+        122
+      ],
+      "decorators": [
+        "Name(id='classmethod', ctx=Load())"
+      ],
+      "signature": "def discover_fabric_definitions(...)",
+      "calls": [
+        "abspath",
+        "dirname",
+        "register",
+        "get",
+        "join",
+        "open",
+        "EditorObjectDefinition",
+        "print",
+        "load",
+        "exists"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor",
+      "full_name": "MapEditor",
+      "name": "MapEditor",
+      "type": "class",
+      "parent": null,
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 123,
+      "end_line": 824,
+      "range": [
+        123,
+        824
+      ],
+      "decorators": [],
+      "signature": "class MapEditor",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor.__init__",
+      "full_name": "MapEditor.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 129,
+      "end_line": 153,
+      "range": [
+        129,
+        153
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [
+        "_map_name_to_file",
+        "discover_fabric_definitions",
+        "ensure_defaults",
+        "scan_map_files",
+        "SysFont",
+        "Vector2",
+        "_ensure_maps_dir",
+        "definitions",
+        "load_map",
+        "_build_map_selection_buttons"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._ensure_maps_dir",
+      "full_name": "MapEditor._ensure_maps_dir",
+      "name": "_ensure_maps_dir",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 155,
+      "end_line": 158,
+      "range": [
+        155,
+        158
+      ],
+      "decorators": [],
+      "signature": "def _ensure_maps_dir(...)",
+      "calls": [
+        "abspath",
+        "dirname",
+        "makedirs",
+        "join"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor.scan_map_files",
+      "full_name": "MapEditor.scan_map_files",
+      "name": "scan_map_files",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 160,
+      "end_line": 165,
+      "range": [
+        160,
+        165
+      ],
+      "decorators": [],
+      "signature": "def scan_map_files(...)",
+      "calls": [
+        "endswith",
+        "listdir",
+        "join",
+        "sorted",
+        "isfile",
+        "lower"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._build_map_selection_buttons",
+      "full_name": "MapEditor._build_map_selection_buttons",
+      "name": "_build_map_selection_buttons",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 167,
+      "end_line": 184,
+      "range": [
+        167,
+        184
+      ],
+      "decorators": [],
+      "signature": "def _build_map_selection_buttons(...)",
+      "calls": [
+        "append",
+        "len",
+        "Rect",
+        "enumerate",
+        "max"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor.get_object_visibility",
+      "full_name": "MapEditor.get_object_visibility",
+      "name": "get_object_visibility",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 187,
+      "end_line": 191,
+      "range": [
+        187,
+        191
+      ],
+      "decorators": [],
+      "signature": "def get_object_visibility(...)",
+      "calls": [
+        "hasattr",
+        "getattr"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor.calculate_placement_pos",
+      "full_name": "MapEditor.calculate_placement_pos",
+      "name": "calculate_placement_pos",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 193,
+      "end_line": 201,
+      "range": [
+        193,
+        201
+      ],
+      "decorators": [],
+      "signature": "def calculate_placement_pos(...)",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._handle_select_event",
+      "full_name": "MapEditor._handle_select_event",
+      "name": "_handle_select_event",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 203,
+      "end_line": 221,
+      "range": [
+        203,
+        221
+      ],
+      "decorators": [],
+      "signature": "def _handle_select_event(...)",
+      "calls": [
+        "_file_to_map_name",
+        "collidepoint",
+        "_app_state",
+        "load_map",
+        "_next_new_map_file"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_event"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor.load_map",
+      "full_name": "MapEditor.load_map",
+      "name": "load_map",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 223,
+      "end_line": 239,
+      "range": [
+        223,
+        239
+      ],
+      "decorators": [],
+      "signature": "def load_map(...)",
+      "calls": [
+        "_map_name_to_file",
+        "GameMap",
+        "hasattr"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.handle_events",
+        "src/map_editor_tool/map_editor.py::MapEditor.__init__",
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_select_event"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._file_to_map_name",
+      "full_name": "MapEditor._file_to_map_name",
+      "name": "_file_to_map_name",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 241,
+      "end_line": 247,
+      "range": [
+        241,
+        247
+      ],
+      "decorators": [],
+      "signature": "def _file_to_map_name(...)",
+      "calls": [
+        "startswith",
+        "splitext",
+        "isdigit"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_select_event"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._map_name_to_file",
+      "full_name": "MapEditor._map_name_to_file",
+      "name": "_map_name_to_file",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 249,
+      "end_line": 257,
+      "range": [
+        249,
+        257
+      ],
+      "decorators": [],
+      "signature": "def _map_name_to_file(...)",
+      "calls": [
+        "isdigit",
+        "endswith",
+        "str",
+        "startswith"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.__init__",
+        "src/map_editor_tool/map_editor.py::MapEditor.load_map",
+        "src/map_editor_tool/map_editor.py::MapEditor.save_map"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._next_new_map_file",
+      "full_name": "MapEditor._next_new_map_file",
+      "name": "_next_new_map_file",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 259,
+      "end_line": 268,
+      "range": [
+        259,
+        268
+      ],
+      "decorators": [],
+      "signature": "def _next_new_map_file(...)",
+      "calls": [
+        "join",
+        "exists"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_select_event"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor.run",
+      "full_name": "MapEditor.run",
+      "name": "run",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 270,
+      "end_line": 291,
+      "range": [
+        270,
+        291
+      ],
+      "decorators": [],
+      "signature": "def run(...)",
+      "calls": [
+        "get_pos",
+        "smoothscale",
+        "_update_camera",
+        "flip",
+        "_draw",
+        "get",
+        "_draw_map_select",
+        "tick",
+        "_handle_event",
+        "_window_to_virtual",
+        "blit",
+        "set_caption"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._handle_event",
+      "full_name": "MapEditor._handle_event",
+      "name": "_handle_event",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 293,
+      "end_line": 309,
+      "range": [
+        293,
+        309
+      ],
+      "decorators": [],
+      "signature": "def _handle_event(...)",
+      "calls": [
+        "_handle_select_event",
+        "_snap",
+        "_screen_to_world",
+        "_handle_keydown",
+        "_app_state",
+        "_handle_mouse_down"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.run"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._handle_keydown",
+      "full_name": "MapEditor._handle_keydown",
+      "name": "_handle_keydown",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 311,
+      "end_line": 331,
+      "range": [
+        311,
+        331
+      ],
+      "decorators": [],
+      "signature": "def _handle_keydown(...)",
+      "calls": [
+        "load_saved_or_source",
+        "_handle_selected_shortcuts",
+        "len",
+        "save_map",
+        "delete_selected",
+        "_app_state"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_event"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._handle_selected_shortcuts",
+      "full_name": "MapEditor._handle_selected_shortcuts",
+      "name": "_handle_selected_shortcuts",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 333,
+      "end_line": 350,
+      "range": [
+        333,
+        350
+      ],
+      "decorators": [],
+      "signature": "def _handle_selected_shortcuts(...)",
+      "calls": [
+        "getattr",
+        "load_image",
+        "max"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_keydown"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._handle_mouse_down",
+      "full_name": "MapEditor._handle_mouse_down",
+      "name": "_handle_mouse_down",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 352,
+      "end_line": 388,
+      "range": [
+        352,
+        388
+      ],
+      "decorators": [],
+      "signature": "def _handle_mouse_down(...)",
+      "calls": [
+        "_handle_sidebar_click",
+        "remove",
+        "hasattr",
+        "Vector2",
+        "find_platform_at",
+        "_screen_to_world",
+        "place_selected",
+        "max"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_event"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._handle_sidebar_click",
+      "full_name": "MapEditor._handle_sidebar_click",
+      "name": "_handle_sidebar_click",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 390,
+      "end_line": 415,
+      "range": [
+        390,
+        415
+      ],
+      "decorators": [],
+      "signature": "def _handle_sidebar_click(...)",
+      "calls": [
+        "collidepoint",
+        "save_map",
+        "Rect",
+        "_app_state",
+        "enumerate"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_mouse_down"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._update_camera",
+      "full_name": "MapEditor._update_camera",
+      "name": "_update_camera",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 417,
+      "end_line": 432,
+      "range": [
+        417,
+        432
+      ],
+      "decorators": [],
+      "signature": "def _update_camera(...)",
+      "calls": [
+        "get_pressed",
+        "min",
+        "max"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.run"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor.place_selected",
+      "full_name": "MapEditor.place_selected",
+      "name": "place_selected",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 434,
+      "end_line": 500,
+      "range": [
+        434,
+        500
+      ],
+      "decorators": [],
+      "signature": "def place_selected(...)",
+      "calls": [
+        "append",
+        "dict",
+        "_snap",
+        "hasattr",
+        "Platform",
+        "setdefault",
+        "get",
+        "DummyEnemy",
+        "create"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_mouse_down"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor.find_platform_at",
+      "full_name": "MapEditor.find_platform_at",
+      "name": "find_platform_at",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 502,
+      "end_line": 522,
+      "range": [
+        502,
+        522
+      ],
+      "decorators": [],
+      "signature": "def find_platform_at(...)",
+      "calls": [
+        "hasattr",
+        "getattr",
+        "reversed",
+        "collidepoint",
+        "Rect"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_mouse_down"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor.delete_selected",
+      "full_name": "MapEditor.delete_selected",
+      "name": "delete_selected",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 524,
+      "end_line": 540,
+      "range": [
+        524,
+        540
+      ],
+      "decorators": [],
+      "signature": "def delete_selected(...)",
+      "calls": [
+        "hasattr",
+        "remove"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_keydown"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor.save_map",
+      "full_name": "MapEditor.save_map",
+      "name": "save_map",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 542,
+      "end_line": 562,
+      "range": [
+        542,
+        562
+      ],
+      "decorators": [],
+      "signature": "def save_map(...)",
+      "calls": [
+        "_map_name_to_file",
+        "remove",
+        "write",
+        "dump",
+        "join",
+        "open",
+        "makedirs",
+        "serialize_map",
+        "replace",
+        "exists"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.handle_events",
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_keydown",
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_sidebar_click"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor.load_saved_or_source",
+      "full_name": "MapEditor.load_saved_or_source",
+      "name": "load_saved_or_source",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 564,
+      "end_line": 571,
+      "range": [
+        564,
+        571
+      ],
+      "decorators": [],
+      "signature": "def load_saved_or_source(...)",
+      "calls": [
+        "hasattr",
+        "GameMap"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_keydown"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor.serialize_map",
+      "full_name": "MapEditor.serialize_map",
+      "name": "serialize_map",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 573,
+      "end_line": 608,
+      "range": [
+        573,
+        608
+      ],
+      "decorators": [],
+      "signature": "def serialize_map(...)",
+      "calls": [
+        "hasattr",
+        "_serialize_platform",
+        "getattr",
+        "_serialize_structure",
+        "_serialize_entity",
+        "_serialize_trigger"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.save_map"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._serialize_platform",
+      "full_name": "MapEditor._serialize_platform",
+      "name": "_serialize_platform",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 610,
+      "end_line": 621,
+      "range": [
+        610,
+        621
+      ],
+      "decorators": [],
+      "signature": "def _serialize_platform(...)",
+      "calls": [
+        "getattr",
+        "bool",
+        "int"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.serialize_map"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._serialize_structure",
+      "full_name": "MapEditor._serialize_structure",
+      "name": "_serialize_structure",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 623,
+      "end_line": 634,
+      "range": [
+        623,
+        634
+      ],
+      "decorators": [],
+      "signature": "def _serialize_structure(...)",
+      "calls": [
+        "getattr",
+        "bool",
+        "int"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.serialize_map"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._serialize_entity",
+      "full_name": "MapEditor._serialize_entity",
+      "name": "_serialize_entity",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 636,
+      "end_line": 649,
+      "range": [
+        636,
+        649
+      ],
+      "decorators": [],
+      "signature": "def _serialize_entity(...)",
+      "calls": [
+        "getattr",
+        "int",
+        "_infer_entity_type"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.serialize_map"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._serialize_trigger",
+      "full_name": "MapEditor._serialize_trigger",
+      "name": "_serialize_trigger",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 651,
+      "end_line": 663,
+      "range": [
+        651,
+        663
+      ],
+      "decorators": [],
+      "signature": "def _serialize_trigger(...)",
+      "calls": [
+        "Rect",
+        "get",
+        "bool"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.serialize_map"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._infer_entity_type",
+      "full_name": "MapEditor._infer_entity_type",
+      "name": "_infer_entity_type",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 665,
+      "end_line": 670,
+      "range": [
+        665,
+        670
+      ],
+      "decorators": [],
+      "signature": "def _infer_entity_type(...)",
+      "calls": [
+        "lower",
+        "getattr"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._serialize_entity",
+        "src/map_system/map_main.py::GameMap.save_map"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._draw",
+      "full_name": "MapEditor._draw",
+      "name": "_draw",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 672,
+      "end_line": 678,
+      "range": [
+        672,
+        678
+      ],
+      "decorators": [],
+      "signature": "def _draw(...)",
+      "calls": [
+        "fill",
+        "_draw_sidebar",
+        "_draw_status",
+        "draw",
+        "_draw_grid",
+        "_draw_selection"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.run"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._draw_map_select",
+      "full_name": "MapEditor._draw_map_select",
+      "name": "_draw_map_select",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 680,
+      "end_line": 700,
+      "range": [
+        680,
+        700
+      ],
+      "decorators": [],
+      "signature": "def _draw_map_select(...)",
+      "calls": [
+        "fill",
+        "_draw_button",
+        "get_rect",
+        "render",
+        "collidepoint",
+        "len",
+        "blit"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.run"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._draw_button",
+      "full_name": "MapEditor._draw_button",
+      "name": "_draw_button",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 702,
+      "end_line": 708,
+      "range": [
+        702,
+        708
+      ],
+      "decorators": [],
+      "signature": "def _draw_button(...)",
+      "calls": [
+        "rect",
+        "blit",
+        "render",
+        "get_rect"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._draw_map_select",
+        "src/map_editor_tool/map_editor.py::MapEditor._draw_sidebar"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._draw_grid",
+      "full_name": "MapEditor._draw_grid",
+      "name": "_draw_grid",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 710,
+      "end_line": 724,
+      "range": [
+        710,
+        724
+      ],
+      "decorators": [],
+      "signature": "def _draw_grid(...)",
+      "calls": [
+        "Surface",
+        "line",
+        "int",
+        "blit",
+        "range"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._draw"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._draw_selection",
+      "full_name": "MapEditor._draw_selection",
+      "name": "_draw_selection",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 726,
+      "end_line": 736,
+      "range": [
+        726,
+        736
+      ],
+      "decorators": [],
+      "signature": "def _draw_selection(...)",
+      "calls": [
+        "rect",
+        "Rect"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._draw"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._draw_sidebar",
+      "full_name": "MapEditor._draw_sidebar",
+      "name": "_draw_sidebar",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 738,
+      "end_line": 764,
+      "range": [
+        738,
+        764
+      ],
+      "decorators": [],
+      "signature": "def _draw_sidebar(...)",
+      "calls": [
+        "rect",
+        "_draw_button",
+        "_text",
+        "line",
+        "collidepoint",
+        "_window_to_virtual",
+        "_draw_inspector",
+        "_draw_help",
+        "Rect",
+        "get_pos",
+        "enumerate",
+        "_draw_tool_button"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._draw"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._draw_tool_button",
+      "full_name": "MapEditor._draw_tool_button",
+      "name": "_draw_tool_button",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 766,
+      "end_line": 771,
+      "range": [
+        766,
+        771
+      ],
+      "decorators": [],
+      "signature": "def _draw_tool_button(...)",
+      "calls": [
+        "rect",
+        "Rect",
+        "_text"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._draw_sidebar"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._draw_inspector",
+      "full_name": "MapEditor._draw_inspector",
+      "name": "_draw_inspector",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 773,
+      "end_line": 787,
+      "range": [
+        773,
+        787
+      ],
+      "decorators": [],
+      "signature": "def _draw_inspector(...)",
+      "calls": [
+        "int",
+        "getattr",
+        "enumerate",
+        "_text"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._draw_sidebar"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._draw_help",
+      "full_name": "MapEditor._draw_help",
+      "name": "_draw_help",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 789,
+      "end_line": 799,
+      "range": [
+        789,
+        799
+      ],
+      "decorators": [],
+      "signature": "def _draw_help(...)",
+      "calls": [
+        "enumerate",
+        "_text"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._draw_sidebar"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._draw_status",
+      "full_name": "MapEditor._draw_status",
+      "name": "_draw_status",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 801,
+      "end_line": 803,
+      "range": [
+        801,
+        803
+      ],
+      "decorators": [],
+      "signature": "def _draw_status(...)",
+      "calls": [
+        "rect",
+        "_text"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._draw"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._text",
+      "full_name": "MapEditor._text",
+      "name": "_text",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 805,
+      "end_line": 806,
+      "range": [
+        805,
+        806
+      ],
+      "decorators": [],
+      "signature": "def _text(...)",
+      "calls": [
+        "blit",
+        "str",
+        "render"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._draw_help",
+        "src/map_editor_tool/map_editor.py::MapEditor._draw_inspector",
+        "src/map_editor_tool/map_editor.py::MapEditor._draw_sidebar",
+        "src/map_editor_tool/map_editor.py::MapEditor._draw_status",
+        "src/map_editor_tool/map_editor.py::MapEditor._draw_tool_button"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._window_to_virtual",
+      "full_name": "MapEditor._window_to_virtual",
+      "name": "_window_to_virtual",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 808,
+      "end_line": 810,
+      "range": [
+        808,
+        810
+      ],
+      "decorators": [],
+      "signature": "def _window_to_virtual(...)",
+      "calls": [
+        "int"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._draw_sidebar",
+        "src/map_editor_tool/map_editor.py::MapEditor.run"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._screen_to_world",
+      "full_name": "MapEditor._screen_to_world",
+      "name": "_screen_to_world",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 812,
+      "end_line": 814,
+      "range": [
+        812,
+        814
+      ],
+      "decorators": [],
+      "signature": "def _screen_to_world(...)",
+      "calls": [
+        "Vector2"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_event",
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_mouse_down"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._snap",
+      "full_name": "MapEditor._snap",
+      "name": "_snap",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 816,
+      "end_line": 817,
+      "range": [
+        816,
+        817
+      ],
+      "decorators": [],
+      "signature": "def _snap(...)",
+      "calls": [
+        "float",
+        "round",
+        "int"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_event",
+        "src/map_editor_tool/map_editor.py::MapEditor.place_selected"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/map_editor.py::MapEditor._app_state",
+      "full_name": "MapEditor._app_state",
+      "name": "_app_state",
+      "type": "method",
+      "parent": "MapEditor",
+      "file": "src/map_editor_tool/map_editor.py",
+      "start_line": 819,
+      "end_line": 824,
+      "range": [
+        819,
+        824
+      ],
+      "decorators": [],
+      "signature": "def _app_state(...)",
+      "calls": [],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_event",
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_keydown",
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_select_event",
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_sidebar_click"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/renderer.py::EditorRenderer",
+      "full_name": "EditorRenderer",
+      "name": "EditorRenderer",
+      "type": "class",
+      "parent": null,
+      "file": "src/map_editor_tool/renderer.py",
+      "start_line": 5,
+      "end_line": 108,
+      "range": [
+        5,
+        108
+      ],
+      "decorators": [],
+      "signature": "class EditorRenderer",
+      "calls": [],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/renderer.py::EditorRenderer.__init__",
+      "full_name": "EditorRenderer.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "EditorRenderer",
+      "file": "src/map_editor_tool/renderer.py",
+      "start_line": 10,
+      "end_line": 16,
+      "range": [
+        10,
+        16
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [
+        "init",
+        "SysFont"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_editor_tool/renderer.py::EditorRenderer.draw_text",
+      "full_name": "EditorRenderer.draw_text",
+      "name": "draw_text",
+      "type": "method",
+      "parent": "EditorRenderer",
+      "file": "src/map_editor_tool/renderer.py",
+      "start_line": 18,
+      "end_line": 21,
+      "range": [
+        18,
+        21
+      ],
+      "decorators": [],
+      "signature": "def draw_text(...)",
+      "calls": [
+        "blit",
+        "str",
+        "render"
+      ],
+      "used_by": [
+        "src/map_editor_tool/renderer.py::EditorRenderer.draw_sidebar_panel",
+        "src/map_editor_tool/renderer.py::EditorRenderer.draw_status_bar"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/renderer.py::EditorRenderer.draw_gizmo_preview",
+      "full_name": "EditorRenderer.draw_gizmo_preview",
+      "name": "draw_gizmo_preview",
+      "type": "method",
+      "parent": "EditorRenderer",
+      "file": "src/map_editor_tool/renderer.py",
+      "start_line": 23,
+      "end_line": 48,
+      "range": [
+        23,
+        48
+      ],
+      "decorators": [],
+      "signature": "def draw_gizmo_preview(...)",
+      "calls": [
+        "blit",
+        "rect",
+        "Surface"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.draw"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/renderer.py::EditorRenderer.draw_sidebar_panel",
+      "full_name": "EditorRenderer.draw_sidebar_panel",
+      "name": "draw_sidebar_panel",
+      "type": "method",
+      "parent": "EditorRenderer",
+      "file": "src/map_editor_tool/renderer.py",
+      "start_line": 50,
+      "end_line": 94,
+      "range": [
+        50,
+        94
+      ],
+      "decorators": [],
+      "signature": "def draw_sidebar_panel(...)",
+      "calls": [
+        "rect",
+        "upper",
+        "line",
+        "draw_text",
+        "enumerate"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.draw"
+      ]
+    },
+    {
+      "symbol_id": "src/map_editor_tool/renderer.py::EditorRenderer.draw_status_bar",
+      "full_name": "EditorRenderer.draw_status_bar",
+      "name": "draw_status_bar",
+      "type": "method",
+      "parent": "EditorRenderer",
+      "file": "src/map_editor_tool/renderer.py",
+      "start_line": 96,
+      "end_line": 108,
+      "range": [
+        96,
+        108
+      ],
+      "decorators": [],
+      "signature": "def draw_status_bar(...)",
+      "calls": [
+        "draw_text",
+        "rect"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.draw"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::AssetManager",
+      "full_name": "AssetManager",
+      "name": "AssetManager",
+      "type": "class",
+      "parent": null,
+      "file": "src/map_system/map_engine.py",
+      "start_line": 9,
+      "end_line": 32,
+      "range": [
+        9,
+        32
+      ],
+      "decorators": [],
+      "signature": "class AssetManager",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::AssetManager.get_image",
+      "full_name": "AssetManager.get_image",
+      "name": "get_image",
+      "type": "method",
+      "parent": "AssetManager",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 17,
+      "end_line": 32,
+      "range": [
+        17,
+        32
+      ],
+      "decorators": [
+        "Name(id='classmethod', ctx=Load())"
+      ],
+      "signature": "def get_image(...)",
+      "calls": [
+        "convert_alpha",
+        "fill",
+        "abspath",
+        "load",
+        "Surface",
+        "print",
+        "convert"
+      ],
+      "used_by": [
+        "src/dialogue_system/dialogue_manager.py::DialogueManager.draw",
+        "src/map_system/map_engine.py::MapManager.load_assets"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::EntityRegistry",
+      "full_name": "EntityRegistry",
+      "name": "EntityRegistry",
+      "type": "class",
+      "parent": null,
+      "file": "src/map_system/map_engine.py",
+      "start_line": 35,
+      "end_line": 56,
+      "range": [
+        35,
+        56
+      ],
+      "decorators": [],
+      "signature": "class EntityRegistry",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::EntityRegistry.register",
+      "full_name": "EntityRegistry.register",
+      "name": "register",
+      "type": "method",
+      "parent": "EntityRegistry",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 43,
+      "end_line": 45,
+      "range": [
+        43,
+        45
+      ],
+      "decorators": [
+        "Name(id='classmethod', ctx=Load())"
+      ],
+      "signature": "def register(...)",
+      "calls": [
+        "print"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::EditorObjectRegistry.discover_fabric_definitions",
+        "src/map_editor_tool/map_editor.py::EditorObjectRegistry.ensure_defaults"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::EntityRegistry.create",
+      "full_name": "EntityRegistry.create",
+      "name": "create",
+      "type": "method",
+      "parent": "EntityRegistry",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 48,
+      "end_line": 56,
+      "range": [
+        48,
+        56
+      ],
+      "decorators": [
+        "Name(id='classmethod', ctx=Load())"
+      ],
+      "signature": "def create(...)",
+      "calls": [
+        "print"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.place_selected",
+        "src/map_system/map_engine.py::MapManager._create_entity_from_data",
+        "src/map_system/map_engine.py::MapManager.execute_trigger_action",
+        "src/map_system/map_engine.py::MapManager.load_map_data",
+        "src/map_system/map_main.py::GameMap.add_platform",
+        "src/map_system/map_main.py::GameMap.execute_trigger_action",
+        "src/map_system/map_main.py::GameMap.load_map_from_json"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::TriggerBoxInstance",
+      "full_name": "TriggerBoxInstance",
+      "name": "TriggerBoxInstance",
+      "type": "class",
+      "parent": null,
+      "file": "src/map_system/map_engine.py",
+      "start_line": 58,
+      "end_line": 73,
+      "range": [
+        58,
+        73
+      ],
+      "decorators": [],
+      "signature": "class TriggerBoxInstance",
+      "calls": [],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.add_trigger_box",
+        "src/map_system/map_engine.py::MapManager.load_map_data",
+        "src/map_system/map_main.py::GameMap.add_trigger_box",
+        "src/map_system/map_main.py::GameMap.load_map_from_json"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::TriggerBoxInstance.__init__",
+      "full_name": "TriggerBoxInstance.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "TriggerBoxInstance",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 59,
+      "end_line": 63,
+      "range": [
+        59,
+        63
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [
+        "Rect"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::TriggerBoxInstance.to_dict",
+      "full_name": "TriggerBoxInstance.to_dict",
+      "name": "to_dict",
+      "type": "method",
+      "parent": "TriggerBoxInstance",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 65,
+      "end_line": 73,
+      "range": [
+        65,
+        73
+      ],
+      "decorators": [],
+      "signature": "def to_dict(...)",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::MapManager",
+      "full_name": "MapManager",
+      "name": "MapManager",
+      "type": "class",
+      "parent": null,
+      "file": "src/map_system/map_engine.py",
+      "start_line": 75,
+      "end_line": 511,
+      "range": [
+        75,
+        511
+      ],
+      "decorators": [],
+      "signature": "class MapManager",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::MapManager.__init__",
+      "full_name": "MapManager.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "MapManager",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 81,
+      "end_line": 106,
+      "range": [
+        81,
+        106
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [
+        "load_assets",
+        "load_map_data"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::MapManager.add_trigger_box",
+      "full_name": "MapManager.add_trigger_box",
+      "name": "add_trigger_box",
+      "type": "method",
+      "parent": "MapManager",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 109,
+      "end_line": 115,
+      "range": [
+        109,
+        115
+      ],
+      "decorators": [],
+      "signature": "def add_trigger_box(...)",
+      "calls": [
+        "append",
+        "TriggerBoxInstance"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.handle_events"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::MapManager.remove_at_position",
+      "full_name": "MapManager.remove_at_position",
+      "name": "remove_at_position",
+      "type": "method",
+      "parent": "MapManager",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 118,
+      "end_line": 121,
+      "range": [
+        118,
+        121
+      ],
+      "decorators": [],
+      "signature": "def remove_at_position(...)",
+      "calls": [
+        "hasattr",
+        "collidepoint"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.handle_events"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::MapManager.load_map_data",
+      "full_name": "MapManager.load_map_data",
+      "name": "load_map_data",
+      "type": "method",
+      "parent": "MapManager",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 123,
+      "end_line": 266,
+      "range": [
+        123,
+        266
+      ],
+      "decorators": [],
+      "signature": "def load_map_data(...)",
+      "calls": [
+        "isinstance",
+        "str",
+        "dirname",
+        "fallback_default_map",
+        "exists",
+        "_create_entity_from_data",
+        "int",
+        "isdigit",
+        "float",
+        "append",
+        "abspath",
+        "get",
+        "TriggerBoxInstance",
+        "print_exc",
+        "Rect",
+        "join",
+        "open",
+        "print",
+        "create",
+        "extend",
+        "load"
+      ],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::MapManager._create_entity_from_data",
+      "full_name": "MapManager._create_entity_from_data",
+      "name": "_create_entity_from_data",
+      "type": "method",
+      "parent": "MapManager",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 268,
+      "end_line": 299,
+      "range": [
+        268,
+        299
+      ],
+      "decorators": [],
+      "signature": "def _create_entity_from_data(...)",
+      "calls": [
+        "append",
+        "hasattr",
+        "getattr",
+        "get",
+        "create"
+      ],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.load_map_data"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::MapManager.fallback_default_map",
+      "full_name": "MapManager.fallback_default_map",
+      "name": "fallback_default_map",
+      "type": "method",
+      "parent": "MapManager",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 301,
+      "end_line": 311,
+      "range": [
+        301,
+        311
+      ],
+      "decorators": [],
+      "signature": "def fallback_default_map(...)",
+      "calls": [],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.load_map_data",
+        "src/map_system/map_main.py::GameMap.load_map_from_json"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::MapManager.load_assets",
+      "full_name": "MapManager.load_assets",
+      "name": "load_assets",
+      "type": "method",
+      "parent": "MapManager",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 313,
+      "end_line": 334,
+      "range": [
+        313,
+        334
+      ],
+      "decorators": [],
+      "signature": "def load_assets(...)",
+      "calls": [
+        "get_width",
+        "abspath",
+        "dirname",
+        "get_height",
+        "join",
+        "get_image",
+        "int",
+        "scale"
+      ],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::MapManager.register_action_handler",
+      "full_name": "MapManager.register_action_handler",
+      "name": "register_action_handler",
+      "type": "method",
+      "parent": "MapManager",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 336,
+      "end_line": 338,
+      "range": [
+        336,
+        338
+      ],
+      "decorators": [],
+      "signature": "def register_action_handler(...)",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::MapManager.execute_trigger_action",
+      "full_name": "MapManager.execute_trigger_action",
+      "name": "execute_trigger_action",
+      "type": "method",
+      "parent": "MapManager",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 340,
+      "end_line": 358,
+      "range": [
+        340,
+        358
+      ],
+      "decorators": [],
+      "signature": "def execute_trigger_action(...)",
+      "calls": [
+        "print",
+        "append",
+        "get",
+        "create"
+      ],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.update"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::MapManager.update",
+      "full_name": "MapManager.update",
+      "name": "update",
+      "type": "method",
+      "parent": "MapManager",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 360,
+      "end_line": 412,
+      "range": [
+        360,
+        412
+      ],
+      "decorators": [],
+      "signature": "def update(...)",
+      "calls": [
+        "append",
+        "destroy",
+        "colliderect",
+        "hasattr",
+        "getattr",
+        "execute_trigger_action",
+        "print",
+        "Rect",
+        "update_trigger_system",
+        "on_remove",
+        "update"
+      ],
+      "used_by": [
+        "src/map_system/map_main.py::GameMap.update",
+        "src/player/player_main.py::Player.update"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::MapManager.update_trigger_system",
+      "full_name": "MapManager.update_trigger_system",
+      "name": "update_trigger_system",
+      "type": "method",
+      "parent": "MapManager",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 414,
+      "end_line": 441,
+      "range": [
+        414,
+        441
+      ],
+      "decorators": [],
+      "signature": "def update_trigger_system(...)",
+      "calls": [
+        "hasattr",
+        "getattr",
+        "execute",
+        "print",
+        "condition_check",
+        "import_module"
+      ],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.update"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::MapManager.draw",
+      "full_name": "MapManager.draw",
+      "name": "draw",
+      "type": "method",
+      "parent": "MapManager",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 443,
+      "end_line": 486,
+      "range": [
+        443,
+        486
+      ],
+      "decorators": [],
+      "signature": "def draw(...)",
+      "calls": [
+        "float",
+        "append",
+        "_draw_x_tiled",
+        "get_width",
+        "sort",
+        "hasattr",
+        "get_height",
+        "_draw_2d_tiled",
+        "getattr",
+        "int",
+        "draw",
+        "ceil",
+        "floor",
+        "blit",
+        "range"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.draw",
+        "src/map_editor_tool/map_editor.py::MapEditor._draw",
+        "src/map_system/map_main.py::GameMap.draw"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::MapManager._draw_x_tiled",
+      "full_name": "MapManager._draw_x_tiled",
+      "name": "_draw_x_tiled",
+      "type": "method",
+      "parent": "MapManager",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 488,
+      "end_line": 496,
+      "range": [
+        488,
+        496
+      ],
+      "decorators": [],
+      "signature": "def _draw_x_tiled(...)",
+      "calls": [
+        "blit",
+        "range",
+        "ceil",
+        "get_width"
+      ],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.draw",
+        "src/map_system/map_main.py::GameMap.draw"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_engine.py::MapManager._draw_2d_tiled",
+      "full_name": "MapManager._draw_2d_tiled",
+      "name": "_draw_2d_tiled",
+      "type": "method",
+      "parent": "MapManager",
+      "file": "src/map_system/map_engine.py",
+      "start_line": 498,
+      "end_line": 511,
+      "range": [
+        498,
+        511
+      ],
+      "decorators": [],
+      "signature": "def _draw_2d_tiled(...)",
+      "calls": [
+        "float",
+        "get_width",
+        "get_height",
+        "ceil",
+        "blit",
+        "range"
+      ],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.draw",
+        "src/map_system/map_main.py::GameMap.draw"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap",
+      "full_name": "GameMap",
+      "name": "GameMap",
+      "type": "class",
+      "parent": null,
+      "file": "src/map_system/map_main.py",
+      "start_line": 21,
+      "end_line": 683,
+      "range": [
+        21,
+        683
+      ],
+      "decorators": [],
+      "signature": "class GameMap",
+      "calls": [],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.__init__",
+        "src/map_editor_tool/map_editor.py::MapEditor.load_map",
+        "src/map_editor_tool/map_editor.py::MapEditor.load_saved_or_source"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap.__init__",
+      "full_name": "GameMap.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "GameMap",
+      "file": "src/map_system/map_main.py",
+      "start_line": 22,
+      "end_line": 45,
+      "range": [
+        22,
+        45
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [
+        "load_map_assets",
+        "build_map",
+        "load_map_from_json"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap.load_map_from_json",
+      "full_name": "GameMap.load_map_from_json",
+      "name": "load_map_from_json",
+      "type": "method",
+      "parent": "GameMap",
+      "file": "src/map_system/map_main.py",
+      "start_line": 47,
+      "end_line": 121,
+      "range": [
+        47,
+        121
+      ],
+      "decorators": [],
+      "signature": "def load_map_from_json(...)",
+      "calls": [
+        "isinstance",
+        "str",
+        "dirname",
+        "startswith",
+        "exit",
+        "fallback_default_map",
+        "isdigit",
+        "float",
+        "append",
+        "abspath",
+        "get",
+        "TriggerBoxInstance",
+        "normpath",
+        "print_exc",
+        "MapVariables",
+        "join",
+        "open",
+        "print",
+        "create",
+        "load"
+      ],
+      "used_by": [
+        "src/map_system/map_main.py::GameMap.__init__",
+        "src/map_system/map_main.py::GameMap.load_map"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap.register_action_handler",
+      "full_name": "GameMap.register_action_handler",
+      "name": "register_action_handler",
+      "type": "method",
+      "parent": "GameMap",
+      "file": "src/map_system/map_main.py",
+      "start_line": 123,
+      "end_line": 125,
+      "range": [
+        123,
+        125
+      ],
+      "decorators": [],
+      "signature": "def register_action_handler(...)",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap.load_map_assets",
+      "full_name": "GameMap.load_map_assets",
+      "name": "load_map_assets",
+      "type": "method",
+      "parent": "GameMap",
+      "file": "src/map_system/map_main.py",
+      "start_line": 127,
+      "end_line": 167,
+      "range": [
+        127,
+        167
+      ],
+      "decorators": [],
+      "signature": "def load_map_assets(...)",
+      "calls": [
+        "convert_alpha",
+        "float",
+        "fill",
+        "get_width",
+        "convert",
+        "dirname",
+        "abspath",
+        "get_height",
+        "load",
+        "join",
+        "int",
+        "Surface",
+        "print",
+        "scale"
+      ],
+      "used_by": [
+        "src/map_system/map_main.py::GameMap.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap.build_map",
+      "full_name": "GameMap.build_map",
+      "name": "build_map",
+      "type": "method",
+      "parent": "GameMap",
+      "file": "src/map_system/map_main.py",
+      "start_line": 169,
+      "end_line": 242,
+      "range": [
+        169,
+        242
+      ],
+      "decorators": [],
+      "signature": "def build_map(...)",
+      "calls": [
+        "float",
+        "isinstance",
+        "append",
+        "str",
+        "get_width",
+        "hasattr",
+        "get_height",
+        "Platform",
+        "get",
+        "int",
+        "print",
+        "extend",
+        "ceil",
+        "bool",
+        "Rect",
+        "range"
+      ],
+      "used_by": [
+        "src/map_system/map_main.py::GameMap.__init__",
+        "src/map_system/map_main.py::GameMap.load_map"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap.register_action_handler",
+      "full_name": "GameMap.register_action_handler",
+      "name": "register_action_handler",
+      "type": "method",
+      "parent": "GameMap",
+      "file": "src/map_system/map_main.py",
+      "start_line": 244,
+      "end_line": 245,
+      "range": [
+        244,
+        245
+      ],
+      "decorators": [],
+      "signature": "def register_action_handler(...)",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap.execute_trigger_action",
+      "full_name": "GameMap.execute_trigger_action",
+      "name": "execute_trigger_action",
+      "type": "method",
+      "parent": "GameMap",
+      "file": "src/map_system/map_main.py",
+      "start_line": 247,
+      "end_line": 259,
+      "range": [
+        247,
+        259
+      ],
+      "decorators": [],
+      "signature": "def execute_trigger_action(...)",
+      "calls": [
+        "append",
+        "get",
+        "create"
+      ],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.update"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap.update",
+      "full_name": "GameMap.update",
+      "name": "update",
+      "type": "method",
+      "parent": "GameMap",
+      "file": "src/map_system/map_main.py",
+      "start_line": 261,
+      "end_line": 327,
+      "range": [
+        261,
+        327
+      ],
+      "decorators": [],
+      "signature": "def update(...)",
+      "calls": [
+        "start_dialogue",
+        "colliderect",
+        "hasattr",
+        "getattr",
+        "get",
+        "update_with_dt",
+        "print",
+        "Rect",
+        "get_instance",
+        "update"
+      ],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.update",
+        "src/player/player_main.py::Player.update"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap.draw",
+      "full_name": "GameMap.draw",
+      "name": "draw",
+      "type": "method",
+      "parent": "GameMap",
+      "file": "src/map_system/map_main.py",
+      "start_line": 329,
+      "end_line": 473,
+      "range": [
+        329,
+        473
+      ],
+      "decorators": [],
+      "signature": "def draw(...)",
+      "calls": [
+        "float",
+        "append",
+        "_draw_x_tiled",
+        "get_width",
+        "sort",
+        "hasattr",
+        "get_height",
+        "_draw_2d_tiled",
+        "getattr",
+        "int",
+        "draw",
+        "ceil",
+        "floor",
+        "blit",
+        "range"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.draw",
+        "src/map_editor_tool/map_editor.py::MapEditor._draw",
+        "src/map_system/map_engine.py::MapManager.draw"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap.update_trigger_system",
+      "full_name": "GameMap.update_trigger_system",
+      "name": "update_trigger_system",
+      "type": "method",
+      "parent": "GameMap",
+      "file": "src/map_system/map_main.py",
+      "start_line": 475,
+      "end_line": 493,
+      "range": [
+        475,
+        493
+      ],
+      "decorators": [],
+      "signature": "def update_trigger_system(...)",
+      "calls": [
+        "hasattr",
+        "getattr",
+        "execute",
+        "print",
+        "condition_check",
+        "import_module"
+      ],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.update"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap.fallback_default_map",
+      "full_name": "GameMap.fallback_default_map",
+      "name": "fallback_default_map",
+      "type": "method",
+      "parent": "GameMap",
+      "file": "src/map_system/map_main.py",
+      "start_line": 495,
+      "end_line": 517,
+      "range": [
+        495,
+        517
+      ],
+      "decorators": [],
+      "signature": "def fallback_default_map(...)",
+      "calls": [
+        "MapVariables"
+      ],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.load_map_data",
+        "src/map_system/map_main.py::GameMap.load_map_from_json"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap.add_platform",
+      "full_name": "GameMap.add_platform",
+      "name": "add_platform",
+      "type": "method",
+      "parent": "GameMap",
+      "file": "src/map_system/map_main.py",
+      "start_line": 519,
+      "end_line": 549,
+      "range": [
+        519,
+        549
+      ],
+      "decorators": [],
+      "signature": "def add_platform(...)",
+      "calls": [
+        "hasattr",
+        "Platform",
+        "append",
+        "create"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.handle_events"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap.add_trigger_box",
+      "full_name": "GameMap.add_trigger_box",
+      "name": "add_trigger_box",
+      "type": "method",
+      "parent": "GameMap",
+      "file": "src/map_system/map_main.py",
+      "start_line": 551,
+      "end_line": 561,
+      "range": [
+        551,
+        561
+      ],
+      "decorators": [],
+      "signature": "def add_trigger_box(...)",
+      "calls": [
+        "hasattr",
+        "append",
+        "TriggerBoxInstance"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.handle_events"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap.remove_at_position",
+      "full_name": "GameMap.remove_at_position",
+      "name": "remove_at_position",
+      "type": "method",
+      "parent": "GameMap",
+      "file": "src/map_system/map_main.py",
+      "start_line": 563,
+      "end_line": 569,
+      "range": [
+        563,
+        569
+      ],
+      "decorators": [],
+      "signature": "def remove_at_position(...)",
+      "calls": [
+        "hasattr",
+        "collidepoint"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.handle_events"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap._infer_entity_type",
+      "full_name": "GameMap._infer_entity_type",
+      "name": "_infer_entity_type",
+      "type": "method",
+      "parent": "GameMap",
+      "file": "src/map_system/map_main.py",
+      "start_line": 571,
+      "end_line": 574,
+      "range": [
+        571,
+        574
+      ],
+      "decorators": [],
+      "signature": "def _infer_entity_type(...)",
+      "calls": [
+        "lower"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._serialize_entity",
+        "src/map_system/map_main.py::GameMap.save_map"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap.save_map",
+      "full_name": "GameMap.save_map",
+      "name": "save_map",
+      "type": "method",
+      "parent": "GameMap",
+      "file": "src/map_system/map_main.py",
+      "start_line": 576,
+      "end_line": 677,
+      "range": [
+        576,
+        677
+      ],
+      "decorators": [],
+      "signature": "def save_map(...)",
+      "calls": [
+        "isinstance",
+        "str",
+        "dirname",
+        "startswith",
+        "dump",
+        "bool",
+        "replace",
+        "exists",
+        "int",
+        "isdigit",
+        "abspath",
+        "hasattr",
+        "getattr",
+        "get",
+        "makedirs",
+        "remove",
+        "write",
+        "join",
+        "_infer_entity_type",
+        "open"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.handle_events",
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_keydown",
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_sidebar_click"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/map_main.py::GameMap.load_map",
+      "full_name": "GameMap.load_map",
+      "name": "load_map",
+      "type": "method",
+      "parent": "GameMap",
+      "file": "src/map_system/map_main.py",
+      "start_line": 679,
+      "end_line": 683,
+      "range": [
+        679,
+        683
+      ],
+      "decorators": [],
+      "signature": "def load_map(...)",
+      "calls": [
+        "build_map",
+        "load_map_from_json"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.handle_events",
+        "src/map_editor_tool/map_editor.py::MapEditor.__init__",
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_select_event"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/variables.py::MapVariables",
+      "full_name": "MapVariables",
+      "name": "MapVariables",
+      "type": "class",
+      "parent": null,
+      "file": "src/map_system/variables.py",
+      "start_line": 6,
+      "end_line": 49,
+      "range": [
+        6,
+        49
+      ],
+      "decorators": [],
+      "signature": "class MapVariables",
+      "calls": [],
+      "used_by": [
+        "src/map_system/map_main.py::GameMap.fallback_default_map",
+        "src/map_system/map_main.py::GameMap.load_map_from_json"
+      ]
+    },
+    {
+      "symbol_id": "src/map_system/variables.py::MapVariables.__init__",
+      "full_name": "MapVariables.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "MapVariables",
+      "file": "src/map_system/variables.py",
+      "start_line": 7,
+      "end_line": 49,
+      "range": [
+        7,
+        49
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [
+        "float",
+        "isinstance",
+        "getattr",
+        "get",
+        "ceil"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/platform_system/platform_main.py::Platform",
+      "full_name": "Platform",
+      "name": "Platform",
+      "type": "class",
+      "parent": null,
+      "file": "src/platform_system/platform_main.py",
+      "start_line": 7,
+      "end_line": 33,
+      "range": [
+        7,
+        33
+      ],
+      "decorators": [],
+      "signature": "class Platform",
+      "calls": [],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor.place_selected",
+        "src/map_system/map_main.py::GameMap.add_platform",
+        "src/map_system/map_main.py::GameMap.build_map"
+      ]
+    },
+    {
+      "symbol_id": "src/platform_system/platform_main.py::Platform.__init__",
+      "full_name": "Platform.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "Platform",
+      "file": "src/platform_system/platform_main.py",
+      "start_line": 8,
+      "end_line": 10,
+      "range": [
+        8,
+        10
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [
+        "PlatformVariables",
+        "load_image"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/platform_system/platform_main.py::Platform.load_image",
+      "full_name": "Platform.load_image",
+      "name": "load_image",
+      "type": "method",
+      "parent": "Platform",
+      "file": "src/platform_system/platform_main.py",
+      "start_line": 12,
+      "end_line": 24,
+      "range": [
+        12,
+        24
+      ],
+      "decorators": [],
+      "signature": "def load_image(...)",
+      "calls": [
+        "convert_alpha",
+        "abspath",
+        "dirname",
+        "load",
+        "join",
+        "print",
+        "exit",
+        "scale",
+        "quit"
+      ],
+      "used_by": [
+        "src/map_editor_tool/map_editor.py::MapEditor._handle_selected_shortcuts",
+        "src/platform_system/platform_main.py::Platform.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/platform_system/platform_main.py::Platform.update",
+      "full_name": "Platform.update",
+      "name": "update",
+      "type": "method",
+      "parent": "Platform",
+      "file": "src/platform_system/platform_main.py",
+      "start_line": 26,
+      "end_line": 27,
+      "range": [
+        26,
+        27
+      ],
+      "decorators": [],
+      "signature": "def update(...)",
+      "calls": [],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.update",
+        "src/map_system/map_main.py::GameMap.update",
+        "src/player/player_main.py::Player.update"
+      ]
+    },
+    {
+      "symbol_id": "src/platform_system/platform_main.py::Platform.draw",
+      "full_name": "Platform.draw",
+      "name": "draw",
+      "type": "method",
+      "parent": "Platform",
+      "file": "src/platform_system/platform_main.py",
+      "start_line": 29,
+      "end_line": 33,
+      "range": [
+        29,
+        33
+      ],
+      "decorators": [],
+      "signature": "def draw(...)",
+      "calls": [
+        "blit"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.draw",
+        "src/map_editor_tool/map_editor.py::MapEditor._draw",
+        "src/map_system/map_engine.py::MapManager.draw",
+        "src/map_system/map_main.py::GameMap.draw"
+      ]
+    },
+    {
+      "symbol_id": "src/platform_system/variables.py::PlatformVariables",
+      "full_name": "PlatformVariables",
+      "name": "PlatformVariables",
+      "type": "class",
+      "parent": null,
+      "file": "src/platform_system/variables.py",
+      "start_line": 4,
+      "end_line": 33,
+      "range": [
+        4,
+        33
+      ],
+      "decorators": [],
+      "signature": "class PlatformVariables",
+      "calls": [],
+      "used_by": [
+        "src/platform_system/platform_main.py::Platform.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/platform_system/variables.py::PlatformVariables.__init__",
+      "full_name": "PlatformVariables.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "PlatformVariables",
+      "file": "src/platform_system/variables.py",
+      "start_line": 5,
+      "end_line": 33,
+      "range": [
+        5,
+        33
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/player/asset_loader.py::PlayerAssetLoader",
+      "full_name": "PlayerAssetLoader",
+      "name": "PlayerAssetLoader",
+      "type": "class",
+      "parent": null,
+      "file": "src/player/asset_loader.py",
+      "start_line": 6,
+      "end_line": 70,
+      "range": [
+        6,
+        70
+      ],
+      "decorators": [],
+      "signature": "class PlayerAssetLoader",
+      "calls": [],
+      "used_by": [
+        "src/player/player_main.py::Player.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/player/asset_loader.py::PlayerAssetLoader.__init__",
+      "full_name": "PlayerAssetLoader.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "PlayerAssetLoader",
+      "file": "src/player/asset_loader.py",
+      "start_line": 7,
+      "end_line": 10,
+      "range": [
+        7,
+        10
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [
+        "load_all_assets"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/player/asset_loader.py::PlayerAssetLoader.load_all_assets",
+      "full_name": "PlayerAssetLoader.load_all_assets",
+      "name": "load_all_assets",
+      "type": "method",
+      "parent": "PlayerAssetLoader",
+      "file": "src/player/asset_loader.py",
+      "start_line": 12,
+      "end_line": 60,
+      "range": [
+        12,
+        60
+      ],
+      "decorators": [],
+      "signature": "def load_all_assets(...)",
+      "calls": [
+        "convert_alpha",
+        "abspath",
+        "dirname",
+        "load",
+        "join",
+        "_load_series",
+        "print",
+        "exit",
+        "scale",
+        "quit"
+      ],
+      "used_by": [
+        "src/player/asset_loader.py::PlayerAssetLoader.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/player/asset_loader.py::PlayerAssetLoader._load_series",
+      "full_name": "PlayerAssetLoader._load_series",
+      "name": "_load_series",
+      "type": "method",
+      "parent": "PlayerAssetLoader",
+      "file": "src/player/asset_loader.py",
+      "start_line": 62,
+      "end_line": 70,
+      "range": [
+        62,
+        70
+      ],
+      "decorators": [],
+      "signature": "def _load_series(...)",
+      "calls": [
+        "convert_alpha",
+        "scale",
+        "append",
+        "join",
+        "load"
+      ],
+      "used_by": [
+        "src/player/asset_loader.py::PlayerAssetLoader.load_all_assets"
+      ]
+    },
+    {
+      "symbol_id": "src/player/combat_processor.py::PlayerCombatProcessor",
+      "full_name": "PlayerCombatProcessor",
+      "name": "PlayerCombatProcessor",
+      "type": "class",
+      "parent": null,
+      "file": "src/player/combat_processor.py",
+      "start_line": 4,
+      "end_line": 31,
+      "range": [
+        4,
+        31
+      ],
+      "decorators": [],
+      "signature": "class PlayerCombatProcessor",
+      "calls": [],
+      "used_by": [
+        "src/player/player_main.py::Player.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/player/combat_processor.py::PlayerCombatProcessor.process",
+      "full_name": "PlayerCombatProcessor.process",
+      "name": "process",
+      "type": "method",
+      "parent": "PlayerCombatProcessor",
+      "file": "src/player/combat_processor.py",
+      "start_line": 5,
+      "end_line": 31,
+      "range": [
+        5,
+        31
+      ],
+      "decorators": [],
+      "signature": "def process(...)",
+      "calls": [
+        "Rect"
+      ],
+      "used_by": [
+        "src/player/player_main.py::Player.update"
+      ]
+    },
+    {
+      "symbol_id": "src/player/input_handler.py::PlayerInputHandler",
+      "full_name": "PlayerInputHandler",
+      "name": "PlayerInputHandler",
+      "type": "class",
+      "parent": null,
+      "file": "src/player/input_handler.py",
+      "start_line": 4,
+      "end_line": 66,
+      "range": [
+        4,
+        66
+      ],
+      "decorators": [],
+      "signature": "class PlayerInputHandler",
+      "calls": [],
+      "used_by": [
+        "src/player/player_main.py::Player.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/player/input_handler.py::PlayerInputHandler.__init__",
+      "full_name": "PlayerInputHandler.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "PlayerInputHandler",
+      "file": "src/player/input_handler.py",
+      "start_line": 5,
+      "end_line": 6,
+      "range": [
+        5,
+        6
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/player/input_handler.py::PlayerInputHandler.update",
+      "full_name": "PlayerInputHandler.update",
+      "name": "update",
+      "type": "method",
+      "parent": "PlayerInputHandler",
+      "file": "src/player/input_handler.py",
+      "start_line": 8,
+      "end_line": 48,
+      "range": [
+        8,
+        48
+      ],
+      "decorators": [],
+      "signature": "def update(...)",
+      "calls": [
+        "get_pressed",
+        "trigger_attack"
+      ],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.update",
+        "src/map_system/map_main.py::GameMap.update",
+        "src/player/player_main.py::Player.update"
+      ]
+    },
+    {
+      "symbol_id": "src/player/input_handler.py::PlayerInputHandler.trigger_attack",
+      "full_name": "PlayerInputHandler.trigger_attack",
+      "name": "trigger_attack",
+      "type": "method",
+      "parent": "PlayerInputHandler",
+      "file": "src/player/input_handler.py",
+      "start_line": 50,
+      "end_line": 66,
+      "range": [
+        50,
+        66
+      ],
+      "decorators": [],
+      "signature": "def trigger_attack(...)",
+      "calls": [],
+      "used_by": [
+        "src/player/input_handler.py::PlayerInputHandler.update"
+      ]
+    },
+    {
+      "symbol_id": "src/player/physics_processor.py::PlayerPhysicsProcessor",
+      "full_name": "PlayerPhysicsProcessor",
+      "name": "PlayerPhysicsProcessor",
+      "type": "class",
+      "parent": null,
+      "file": "src/player/physics_processor.py",
+      "start_line": 5,
+      "end_line": 43,
+      "range": [
+        5,
+        43
+      ],
+      "decorators": [],
+      "signature": "class PlayerPhysicsProcessor",
+      "calls": [],
+      "used_by": [
+        "src/player/player_main.py::Player.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/player/physics_processor.py::PlayerPhysicsProcessor.process",
+      "full_name": "PlayerPhysicsProcessor.process",
+      "name": "process",
+      "type": "method",
+      "parent": "PlayerPhysicsProcessor",
+      "file": "src/player/physics_processor.py",
+      "start_line": 6,
+      "end_line": 43,
+      "range": [
+        6,
+        43
+      ],
+      "decorators": [],
+      "signature": "def process(...)",
+      "calls": [
+        "hasattr",
+        "colliderect",
+        "Rect"
+      ],
+      "used_by": [
+        "src/player/player_main.py::Player.update"
+      ]
+    },
+    {
+      "symbol_id": "src/player/player_main.py::Player",
+      "full_name": "Player",
+      "name": "Player",
+      "type": "class",
+      "parent": null,
+      "file": "src/player/player_main.py",
+      "start_line": 12,
+      "end_line": 117,
+      "range": [
+        12,
+        117
+      ],
+      "decorators": [],
+      "signature": "class Player",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/player/player_main.py::Player.__init__",
+      "full_name": "Player.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "Player",
+      "file": "src/player/player_main.py",
+      "start_line": 13,
+      "end_line": 27,
+      "range": [
+        13,
+        27
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [
+        "PlayerAssetLoader",
+        "PlayerCombatProcessor",
+        "PlayerVariables",
+        "PlayerInputHandler",
+        "PlayerPhysicsProcessor",
+        "AirMotions",
+        "GroundMotions",
+        "AttackMotions"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/player/player_main.py::Player.update_animation_state",
+      "full_name": "Player.update_animation_state",
+      "name": "update_animation_state",
+      "type": "method",
+      "parent": "Player",
+      "file": "src/player/player_main.py",
+      "start_line": 29,
+      "end_line": 40,
+      "range": [
+        29,
+        40
+      ],
+      "decorators": [],
+      "signature": "def update_animation_state(...)",
+      "calls": [
+        "handle_state"
+      ],
+      "used_by": [
+        "src/player/player_main.py::Player.update"
+      ]
+    },
+    {
+      "symbol_id": "src/player/player_main.py::Player.update",
+      "full_name": "Player.update",
+      "name": "update",
+      "type": "method",
+      "parent": "Player",
+      "file": "src/player/player_main.py",
+      "start_line": 42,
+      "end_line": 88,
+      "range": [
+        42,
+        88
+      ],
+      "decorators": [],
+      "signature": "def update(...)",
+      "calls": [
+        "update_animation_state",
+        "get_pressed",
+        "getattr",
+        "get",
+        "update",
+        "len",
+        "process"
+      ],
+      "used_by": [
+        "src/map_system/map_engine.py::MapManager.update",
+        "src/map_system/map_main.py::GameMap.update"
+      ]
+    },
+    {
+      "symbol_id": "src/player/player_main.py::Player.draw",
+      "full_name": "Player.draw",
+      "name": "draw",
+      "type": "method",
+      "parent": "Player",
+      "file": "src/player/player_main.py",
+      "start_line": 90,
+      "end_line": 117,
+      "range": [
+        90,
+        117
+      ],
+      "decorators": [],
+      "signature": "def draw(...)",
+      "calls": [
+        "flip",
+        "get",
+        "len",
+        "blit",
+        "min"
+      ],
+      "used_by": [
+        "src/map_editor_tool/editor_main.py::MapEditor.draw",
+        "src/map_editor_tool/map_editor.py::MapEditor._draw",
+        "src/map_system/map_engine.py::MapManager.draw",
+        "src/map_system/map_main.py::GameMap.draw"
+      ]
+    },
+    {
+      "symbol_id": "src/player/variables.py::PlayerVariables",
+      "full_name": "PlayerVariables",
+      "name": "PlayerVariables",
+      "type": "class",
+      "parent": null,
+      "file": "src/player/variables.py",
+      "start_line": 4,
+      "end_line": 70,
+      "range": [
+        4,
+        70
+      ],
+      "decorators": [],
+      "signature": "class PlayerVariables",
+      "calls": [],
+      "used_by": [
+        "src/player/player_main.py::Player.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/player/variables.py::PlayerVariables.__init__",
+      "full_name": "PlayerVariables.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "PlayerVariables",
+      "file": "src/player/variables.py",
+      "start_line": 5,
+      "end_line": 56,
+      "range": [
+        5,
+        56
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/player/variables.py::PlayerVariables.take_damage",
+      "full_name": "PlayerVariables.take_damage",
+      "name": "take_damage",
+      "type": "method",
+      "parent": "PlayerVariables",
+      "file": "src/player/variables.py",
+      "start_line": 58,
+      "end_line": 64,
+      "range": [
+        58,
+        64
+      ],
+      "decorators": [],
+      "signature": "def take_damage(...)",
+      "calls": [
+        "max"
+      ],
+      "used_by": [
+        "src/enemy/enemys/test_enemy1/test_enemy1_main.py::TestEnemy1.perform_attack"
+      ]
+    },
+    {
+      "symbol_id": "src/player/variables.py::PlayerVariables.heal",
+      "full_name": "PlayerVariables.heal",
+      "name": "heal",
+      "type": "method",
+      "parent": "PlayerVariables",
+      "file": "src/player/variables.py",
+      "start_line": 66,
+      "end_line": 70,
+      "range": [
+        66,
+        70
+      ],
+      "decorators": [],
+      "signature": "def heal(...)",
+      "calls": [
+        "min"
+      ],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/player/motions/air_motions.py::AirMotions",
+      "full_name": "AirMotions",
+      "name": "AirMotions",
+      "type": "class",
+      "parent": null,
+      "file": "src/player/motions/air_motions.py",
+      "start_line": 4,
+      "end_line": 12,
+      "range": [
+        4,
+        12
+      ],
+      "decorators": [],
+      "signature": "class AirMotions",
+      "calls": [],
+      "used_by": [
+        "src/player/player_main.py::Player.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/player/motions/air_motions.py::AirMotions.handle_state",
+      "full_name": "AirMotions.handle_state",
+      "name": "handle_state",
+      "type": "method",
+      "parent": "AirMotions",
+      "file": "src/player/motions/air_motions.py",
+      "start_line": 5,
+      "end_line": 12,
+      "range": [
+        5,
+        12
+      ],
+      "decorators": [],
+      "signature": "def handle_state(...)",
+      "calls": [],
+      "used_by": [
+        "src/player/player_main.py::Player.update_animation_state"
+      ]
+    },
+    {
+      "symbol_id": "src/player/motions/attack_motions.py::AttackMotions",
+      "full_name": "AttackMotions",
+      "name": "AttackMotions",
+      "type": "class",
+      "parent": null,
+      "file": "src/player/motions/attack_motions.py",
+      "start_line": 4,
+      "end_line": 14,
+      "range": [
+        4,
+        14
+      ],
+      "decorators": [],
+      "signature": "class AttackMotions",
+      "calls": [],
+      "used_by": [
+        "src/player/player_main.py::Player.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/player/motions/attack_motions.py::AttackMotions.handle_state",
+      "full_name": "AttackMotions.handle_state",
+      "name": "handle_state",
+      "type": "method",
+      "parent": "AttackMotions",
+      "file": "src/player/motions/attack_motions.py",
+      "start_line": 5,
+      "end_line": 14,
+      "range": [
+        5,
+        14
+      ],
+      "decorators": [],
+      "signature": "def handle_state(...)",
+      "calls": [],
+      "used_by": [
+        "src/player/player_main.py::Player.update_animation_state"
+      ]
+    },
+    {
+      "symbol_id": "src/player/motions/ground_motions.py::GroundMotions",
+      "full_name": "GroundMotions",
+      "name": "GroundMotions",
+      "type": "class",
+      "parent": null,
+      "file": "src/player/motions/ground_motions.py",
+      "start_line": 4,
+      "end_line": 13,
+      "range": [
+        4,
+        13
+      ],
+      "decorators": [],
+      "signature": "class GroundMotions",
+      "calls": [],
+      "used_by": [
+        "src/player/player_main.py::Player.__init__"
+      ]
+    },
+    {
+      "symbol_id": "src/player/motions/ground_motions.py::GroundMotions.handle_state",
+      "full_name": "GroundMotions.handle_state",
+      "name": "handle_state",
+      "type": "method",
+      "parent": "GroundMotions",
+      "file": "src/player/motions/ground_motions.py",
+      "start_line": 5,
+      "end_line": 13,
+      "range": [
+        5,
+        13
+      ],
+      "decorators": [],
+      "signature": "def handle_state(...)",
+      "calls": [],
+      "used_by": [
+        "src/player/player_main.py::Player.update_animation_state"
+      ]
+    },
+    {
+      "symbol_id": "src/player/motions/motion_base.py::MotionBase",
+      "full_name": "MotionBase",
+      "name": "MotionBase",
+      "type": "class",
+      "parent": null,
+      "file": "src/player/motions/motion_base.py",
+      "start_line": 2,
+      "end_line": 8,
+      "range": [
+        2,
+        8
+      ],
+      "decorators": [],
+      "signature": "class MotionBase",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/player/motions/motion_base.py::MotionBase.__init__",
+      "full_name": "MotionBase.__init__",
+      "name": "__init__",
+      "type": "method",
+      "parent": "MotionBase",
+      "file": "src/player/motions/motion_base.py",
+      "start_line": 3,
+      "end_line": 4,
+      "range": [
+        3,
+        4
+      ],
+      "decorators": [],
+      "signature": "def __init__(...)",
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "src/player/motions/motion_base.py::MotionBase.handle_state",
+      "full_name": "MotionBase.handle_state",
+      "name": "handle_state",
+      "type": "method",
+      "parent": "MotionBase",
+      "file": "src/player/motions/motion_base.py",
+      "start_line": 6,
+      "end_line": 8,
+      "range": [
+        6,
+        8
+      ],
+      "decorators": [],
+      "signature": "def handle_state(...)",
+      "calls": [],
+      "used_by": [
+        "src/player/player_main.py::Player.update_animation_state"
+      ]
+    }
+  ]
+}

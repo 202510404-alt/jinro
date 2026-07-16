@@ -1,0 +1,53 @@
+{
+  "schema_version": 2,
+  "map_id": 1,
+  "map_width": 2400,
+  "map_height": 1200,
+  "background_type": "bg_sky",
+  "ground_type": "ground_dirt",
+  "ground_y": 1080,
+  "platforms": [],
+  "entities": [],
+  "triggers": [
+    {
+      "type": "enter_area",
+      "bounds": {
+        "x": 800,
+        "y": 400,
+        "width": 300,
+        "height": 600
+      },
+      "action": {
+        "type": "spawn_enemy",
+        "entity_type": "dummy",
+        "spawn_x": 950,
+        "spawn_y": 0
+      },
+      "triggered": false
+    }
+  ],
+  "editor_metadata": {
+    "source_map": "stage1",
+    "file_name": "map_stage1.json",
+    "object_registry": [
+      {
+        "type_id": "platform.basic",
+        "category": "platform",
+        "factory_type": "platform"
+      },
+      {
+        "type_id": "enemy.dummy",
+        "category": "enemy",
+        "factory_type": "dummy"
+      },
+      {
+        "type_id": "npc.merchant",
+        "category": "npc",
+        "factory_type": "merchant"
+      }
+    ],
+    "future_layers": {
+      "fabric": []
+    }
+  }
+}

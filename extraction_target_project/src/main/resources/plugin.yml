@@ -1,0 +1,10 @@
+name: desertcore
+version: '${version}'
+
+main: com.desertcore.DesertCore
+api-version: '1.21'
+load: POSTWORLD
+commands:
+  lobby:
+    description: "Operator-only lobby return command"
+    permission: "desertcore.op"

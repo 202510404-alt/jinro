@@ -1,0 +1,41 @@
+{
+  "stage1_start_chat": [
+    {
+      "speaker": "Player",
+      "text": "여기가 훈련 구역인가? 생각보다 조용하군. 움직일 준비를 해야겠어.",
+      "portrait": "player_idle",
+      "action": null
+    },
+    {
+      "speaker": "Operator",
+      "text": "조심하십시오. 앞쪽에 훈련용 더미 봇들이 다수 감지되었습니다.",
+      "portrait": "operator_normal",
+      "action": {
+        "type": "camera_shake",
+        "intensity": 5
+      }
+    },
+    {
+      "speaker": "Player",
+      "text": "좋아, 가볍게 몸 좀 풀어볼까.",
+      "portrait": "player_confident",
+      "action": null
+    }
+  ],
+  "stage1_clear_chat": [
+    {
+      "speaker": "Operator",
+      "text": "훈련 구역의 더미 봇들을 모두 무력화했습니다! 훌륭하군요.",
+      "portrait": "operator_smile",
+      "action": null
+    },
+    {
+      "speaker": "Player",
+      "text": "아직 준비 운동도 채 되지 않았는데 벌써 끝이라니 아쉽군. 다음 구역으로 넘어가도록 하지.",
+      "portrait": "player_smile",
+      "action": {
+        "type": "game_clear"
+      }
+    }
+  ]
+}

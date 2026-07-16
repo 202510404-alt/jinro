@@ -1,0 +1,105 @@
+{
+  "schema_version": 2,
+  "map_id": "1",
+  "map_width": 3200,
+  "map_height": 1800,
+  "background_type": "bg_sky",
+  "ground_type": "ground_dirt",
+  "ground_y": 1800.0,
+  "platforms": [],
+  "structures": [
+    {
+      "type": "platform",
+      "x": 1000,
+      "y": 1680,
+      "width": 240,
+      "height": 40,
+      "is_visible": true,
+      "can_pass_through": false,
+      "z_index": 2
+    },
+    {
+      "type": "platform",
+      "x": 1200,
+      "y": 1560,
+      "width": 240,
+      "height": 40,
+      "is_visible": true,
+      "can_pass_through": false,
+      "z_index": 2
+    },
+    {
+      "type": "platform",
+      "x": 1120,
+      "y": 1400,
+      "width": 240,
+      "height": 40,
+      "is_visible": true,
+      "can_pass_through": false,
+      "z_index": 2
+    }
+  ],
+  "entities": [
+    {
+      "type": "dummy",
+      "x": 560,
+      "y": 1720,
+      "z_index": 3
+    },
+    {
+      "type": "dummy",
+      "x": 840,
+      "y": 1720,
+      "z_index": 3
+    },
+    {
+      "type": "dummy",
+      "x": 440,
+      "y": 1480,
+      "z_index": 3
+    },
+    {
+      "type": "dummy",
+      "x": 720,
+      "y": 1440,
+      "z_index": 3
+    },
+    {
+      "type": "dummy",
+      "x": 1080,
+      "y": 1480,
+      "z_index": 3
+    },
+    {
+      "type": "dummy",
+      "x": 1000,
+      "y": 1600,
+      "z_index": 3
+    }
+  ],
+  "triggers": [],
+  "editor_metadata": {
+    "source_map": "1",
+    "file_name": "map_1.json",
+    "object_registry": [
+      {
+        "type_id": "platform.basic",
+        "category": "platform",
+        "factory_type": "platform"
+      },
+      {
+        "type_id": "enemy.dummy",
+        "category": "enemy",
+        "factory_type": "dummy"
+      },
+      {
+        "type_id": "npc.merchant",
+        "category": "npc",
+        "factory_type": "merchant"
+      }
+    ],
+    "future_layers": {
+      "fabric": []
+    }
+  }
+}

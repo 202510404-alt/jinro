@@ -1,0 +1,24 @@
+{
+  "objects": [
+    {
+      "type_id": "enemy.dummy",
+      "label": "Dummy Enemy",
+      "category": "enemy",
+      "factory_type": "dummy",
+      "defaults": {
+        "z_index": 3,
+        "hp": 100
+      }
+    },
+    {
+      "type_id": "npc.merchant",
+      "label": "Village Merchant",
+      "category": "npc",
+      "factory_type": "merchant",
+      "defaults": {
+        "z_index": 3,
+        "is_interactive": true
+      }
+    }
+  ]
+}

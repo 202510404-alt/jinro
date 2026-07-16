@@ -1,0 +1,27 @@
+{
+    "terminal.integrated.sendKeybindingsToShell": true,
+    "accessibility.verbosity.terminal": false,
+    "git.autofetch": true,
+    "explorer.confirmDelete": false,
+    "git.openRepositoryInParentFolders": "always",
+    "terminal.integrated.enableMultiLinePasteWarning": "never",
+    "workbench.editor.empty.hint": "hidden",
+    "maven.terminal.useJavaHome": true,
+    "git.confirmSync": false,
+    "explorer.confirmDragAndDrop": false,
+    "java.configuration.runtimes": [
+        {
+            "name": "JavaSE-25",
+            "path": "C:/Program Files/Eclipse Adoptium/jdk-25.0.2.10-hotspot",
+            "default": true
+        }
+    ],
+    "java.jdt.ls.java.home": "C:/Program Files/Eclipse Adoptium/jdk-25.0.2.10-hotspot",
+    "roo-cline.debug": true,
+    "roo-cline.allowedCommands": [],
+    "roo-cline.deniedCommands": [],
+    "files.exclude": {
+        "**/__pycache__": true
+    },
+    "python.createEnvironment.trigger": "external"
+}
