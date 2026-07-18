@@ -83,15 +83,19 @@ class Player:
         keys = pygame.key.get_pressed()
         self.input_handler.update(self.vars, keys)
 
-        # 🪐 [관성 물리 메커니즘 통합]
+  # 🪐 [관성 물리 메커니즘 통합]
         if self.vars.is_attacking:
-            # ⚔️ [끊김 없는 이동 보장] 일반 공격 모드전개 중 사용자가 AD 이동키를 입력 중인 경우
-            # 가속도 입력을 물리적으로 완전 차단하던 기존 구조를 파쇄하고 미끄러지듯 이동 가속을 허용합니다.
             if getattr(self.vars, 'attack_mode', 'NORMAL') == 'NORMAL':
                 if self.vars.is_moving:
+                    # 현재 move_state("RUN" 또는 "WALK")에 맞는 속도를 가져옵니다.
                     target_speed = self.vars.run_speed if self.vars.move_state == "RUN" else self.vars.walk_speed
                     direction = 1 if self.vars.facing_right else -1
-                    target_vx = target_speed * direction * 0.4
+                    
+                    # 💡 감속 비율을 0.4에서 0.7~0.8 정도로 올려주거나, 
+                    # 아예 1.0으로 만들면 공격 중에도 대시 속도가 시원하게 유지됩니다!
+                    vars_target_modifier = 0.75  # 75% 속도 유지 (원하는 대로 조절 가능)
+                    target_vx = target_speed * direction * vars_target_modifier
+                    
                     self.vars.vx += (target_vx - self.vars.vx) * min(1.0, 0.25 * fps_scale)
                 else:
                     self.vars.vx *= max(0.0, 1.0 - (0.35 * fps_scale))

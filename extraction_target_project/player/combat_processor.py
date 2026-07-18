@@ -90,8 +90,8 @@ class PlayerCombatProcessor:
             # [B 트랙] 우클릭 신규 대쉬 공격 초기화
             # -------------------------------------------------------------
             elif vars_obj.attack_mode == "DASH":
-                vars_obj.attack_timer = 12
-                dash_speed = 75.0
+                vars_obj.attack_timer = 6
+                dash_speed = 40.0
 
                 # 🎯 대쉬 트랙 내 독립 레이더 가동 (공격 범위 2배 탐색)
                 target_enemy = None
@@ -179,8 +179,8 @@ class PlayerCombatProcessor:
                     dir_x = 1.0 if vars_obj.facing_right else -1.0
                     dir_y = 0.0
 
-                half_len = (seg_len * 0.5) + (vars_obj.attack_range_width * 0.5)
-                half_wid = vars_obj.attack_range_height * 0.5
+                half_len = (seg_len * 0.5) + (vars_obj.attack_range_width * 0.5) + 80
+                half_wid = (vars_obj.attack_range_height * 0.5) * 1.5
                 obb_cx = (start_cx + cur_cx) * 0.5
                 obb_cy = (start_cy + cur_cy) * 0.5
 
