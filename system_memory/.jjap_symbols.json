@@ -132,8 +132,8 @@
       "start_line": 307,
       "end_line": 331,
       "calls": [
-        "run_main_menu",
-        "run_game"
+        "run_game",
+        "run_main_menu"
       ],
       "used_by": []
     },
@@ -994,8 +994,8 @@
       "end_line": 46,
       "calls": [
         "handle_mouse_down",
-        "screen_to_world",
-        "snap"
+        "snap",
+        "screen_to_world"
       ],
       "used_by": []
     },
@@ -1262,10 +1262,10 @@
       "start_line": 6,
       "end_line": 12,
       "calls": [
-        "draw_status",
         "draw_grid",
-        "draw_sidebar",
-        "draw_selection"
+        "draw_selection",
+        "draw_status",
+        "draw_sidebar"
       ],
       "used_by": []
     },
@@ -1324,11 +1324,11 @@
       "start_line": 77,
       "end_line": 104,
       "calls": [
-        "text",
-        "draw_button",
+        "draw_inspector",
         "draw_tool_button",
+        "draw_button",
         "draw_help",
-        "draw_inspector"
+        "text"
       ],
       "used_by": []
     },
@@ -1354,8 +1354,8 @@
       "start_line": 118,
       "end_line": 177,
       "calls": [
-        "text",
-        "draw_type_btn"
+        "draw_type_btn",
+        "text"
       ],
       "used_by": []
     },
@@ -1473,9 +1473,9 @@
       "start_line": 40,
       "end_line": 75,
       "calls": [
-        "_serialize_structure",
         "_serialize_trigger",
         "_serialize_platform",
+        "_serialize_structure",
         "_serialize_entity"
       ],
       "used_by": []
@@ -2540,8 +2540,8 @@
       "full_name": "_obb_vs_aabb_collide",
       "type": "function",
       "path": "extraction_target_project/player/combat_processor.py",
-      "start_line": 6,
-      "end_line": 50,
+      "start_line": 9,
+      "end_line": 47,
       "calls": [],
       "used_by": []
     },
@@ -2551,8 +2551,8 @@
       "full_name": "PlayerCombatProcessor",
       "type": "class",
       "path": "extraction_target_project/player/combat_processor.py",
-      "start_line": 53,
-      "end_line": 243,
+      "start_line": 50,
+      "end_line": 287,
       "calls": [],
       "used_by": []
     },
@@ -2562,8 +2562,8 @@
       "full_name": "PlayerCombatProcessor.__init__",
       "type": "method",
       "path": "extraction_target_project/player/combat_processor.py",
-      "start_line": 54,
-      "end_line": 55,
+      "start_line": 51,
+      "end_line": 52,
       "calls": [],
       "used_by": []
     },
@@ -2573,8 +2573,8 @@
       "full_name": "PlayerCombatProcessor.process",
       "type": "method",
       "path": "extraction_target_project/player/combat_processor.py",
-      "start_line": 57,
-      "end_line": 243,
+      "start_line": 54,
+      "end_line": 287,
       "calls": [
         "_obb_vs_aabb_collide"
       ],
@@ -2586,8 +2586,8 @@
       "full_name": "PlayerInputHandler",
       "type": "class",
       "path": "extraction_target_project/player/input_handler.py",
-      "start_line": 5,
-      "end_line": 86,
+      "start_line": 4,
+      "end_line": 81,
       "calls": [],
       "used_by": []
     },
@@ -2597,8 +2597,8 @@
       "full_name": "PlayerInputHandler.__init__",
       "type": "method",
       "path": "extraction_target_project/player/input_handler.py",
-      "start_line": 6,
-      "end_line": 9,
+      "start_line": 5,
+      "end_line": 7,
       "calls": [],
       "used_by": []
     },
@@ -2608,8 +2608,8 @@
       "full_name": "PlayerInputHandler.update",
       "type": "method",
       "path": "extraction_target_project/player/input_handler.py",
-      "start_line": 11,
-      "end_line": 60,
+      "start_line": 9,
+      "end_line": 57,
       "calls": [],
       "used_by": []
     },
@@ -2619,8 +2619,8 @@
       "full_name": "PlayerInputHandler.trigger_attack",
       "type": "method",
       "path": "extraction_target_project/player/input_handler.py",
-      "start_line": 62,
-      "end_line": 86,
+      "start_line": 59,
+      "end_line": 81,
       "calls": [],
       "used_by": []
     },
@@ -2654,6 +2654,72 @@
       "path": "extraction_target_project/player/physics_processor.py",
       "start_line": 9,
       "end_line": 77,
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "extraction_target_project/player/player_main.py::Player",
+      "name": "Player",
+      "full_name": "Player",
+      "type": "class",
+      "path": "extraction_target_project/player/player_main.py",
+      "start_line": 14,
+      "end_line": 197,
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "extraction_target_project/player/player_main.py::Player.__init__",
+      "name": "__init__",
+      "full_name": "Player.__init__",
+      "type": "method",
+      "path": "extraction_target_project/player/player_main.py",
+      "start_line": 15,
+      "end_line": 29,
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "extraction_target_project/player/player_main.py::Player.update_animation_state",
+      "name": "update_animation_state",
+      "full_name": "Player.update_animation_state",
+      "type": "method",
+      "path": "extraction_target_project/player/player_main.py",
+      "start_line": 31,
+      "end_line": 42,
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "extraction_target_project/player/player_main.py::Player.update",
+      "name": "update",
+      "full_name": "Player.update",
+      "type": "method",
+      "path": "extraction_target_project/player/player_main.py",
+      "start_line": 44,
+      "end_line": 135,
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "extraction_target_project/player/player_main.py::Player.update_with_dt",
+      "name": "update_with_dt",
+      "full_name": "Player.update_with_dt",
+      "type": "method",
+      "path": "extraction_target_project/player/player_main.py",
+      "start_line": 137,
+      "end_line": 139,
+      "calls": [],
+      "used_by": []
+    },
+    {
+      "symbol_id": "extraction_target_project/player/player_main.py::Player.draw",
+      "name": "draw",
+      "full_name": "Player.draw",
+      "type": "method",
+      "path": "extraction_target_project/player/player_main.py",
+      "start_line": 141,
+      "end_line": 197,
       "calls": [],
       "used_by": []
     },

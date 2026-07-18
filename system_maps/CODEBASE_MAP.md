@@ -1,6 +1,6 @@
 # 🏗️ 짭커서 프로젝트 CODEBASE MAP
 
-현재 인덱싱된 총 파일 수: **51개**
+현재 인덱싱된 총 파일 수: **52개**
 
 ## 🗂️ [Module Index]
 - `extraction_target_project/assets/data/dialogues.json`
@@ -52,6 +52,7 @@
 - `extraction_target_project/player/motions/ground_motions.py`
 - `extraction_target_project/player/motions/motion_base.py`
 - `extraction_target_project/player/physics_processor.py`
+- `extraction_target_project/player/player_main.py`
 - `extraction_target_project/player/variables.py`
 - `extraction_target_project/settings.py`
 
@@ -3910,46 +3911,40 @@ def _obb_vs_aabb_collide(cx, cy, half_len, half_wid, dir_x, dir_y, ax, ay, aw, a
     """
     돌진 궤적 기반 OBB(중심 cx,cy / 장축 half_len / 단축 half_wid / 방향 dir_x,dir_y)와
     적 히트박스 AABB(ax,ay,aw,ah) 간의 SAT(분리축 정리) 충돌 판정.
-    필요한 분리축은 OBB의 두 축(dir, perp)과 AABB의 두 축(world X, world Y)뿐이며,
-    전부 스칼라 연산으로 처리되어 프레임당 객체 생성이 발생하지 않아 GC 부하가 없다.
     """
-    # 적 AABB의 중심 및 반경(half extent) 계산
     a_half_w = aw * 0.5
     a_half_h = ah * 0.5
     a_cx = ax + a_half_w
     a_cy = ay + a_half_h
 
-    # 두 중심 사이 벡터
     tx = a_cx - cx
     ty = a_cy - cy
 
-    # OBB 수직축(장축에 대한 법선) 계산
     perp_x = -dir_y
     perp_y = dir_x
 
-    # [축 1] OBB 장축(dir) 위로 투영하여 겹침 검사
+    # [축 1] OBB 장축
     proj_len = tx * dir_x + ty * dir_y
     r_aabb_on_dir = a_half_w * abs(dir_x) + a_half_h * abs(dir_y)
     if abs(proj_len) > half_len + r_aabb_on_dir:
         return False
 
-    # [축 2] OBB 단축(perp) 위로 투영하여 겹침 검사
+    # [축 2] OBB 단축
     proj_wid = tx * perp_x + ty * perp_y
     r_aabb_on_perp = a_half_w * abs(perp_x) + a_half_h * abs(perp_y)
     if abs(proj_wid) > half_wid + r_aabb_on_perp:
         return False
 
-    # [축 3] 월드 X축 위로 투영하여 겹침 검사
+    # [축 3] 월드 X축
     r_obb_on_x = half_len * abs(dir_x) + half_wid * abs(perp_x)
     if abs(tx) > a_half_w + r_obb_on_x:
         return False
 
-    # [축 4] 월드 Y축 위로 투영하여 겹침 검사
+    # [축 4] 월드 Y축
     r_obb_on_y = half_len * abs(dir_y) + half_wid * abs(perp_y)
     if abs(ty) > a_half_h + r_obb_on_y:
         return False
 
-    # 4개 분리축 전부에서 겹침이 확인되었으므로 충돌 확정
     return True
 
 class PlayerCombatProcessor:
@@ -3957,6 +3952,9 @@ class PlayerCombatProcessor:
         pass
 
     def process(self, vars_obj, entities=None, dt=0.0):
+        # 가변 프레임 환경에 대응하기 위한 프레임 스케일러 보정값 계산
+        fps_scale = dt * 60.0
+
         # 안전장치: 변수 객체에 쿨타임 필드가 없을 경우 동적 확보
         if not hasattr(vars_obj, 'attack_cooldown_timer'):
             vars_obj.attack_cooldown_timer = 0.0
@@ -3967,19 +3965,40 @@ class PlayerCombatProcessor:
             if vars_obj.attack_cooldown_timer < 0.0:
                 vars_obj.attack_cooldown_timer = 0.0
 
-        # 2. 새로운 공격 모션 프레임 개시 시점
+        # 2. 새로운 공격 모션 프레임 개시 시점 (트리거)
         if vars_obj.is_attacking and getattr(vars_obj, 'attack_timer', 0) == 0:
-            if not hasattr(vars_obj, 'combo_step') or vars_obj.combo_step == 0:
-                vars_obj.combo_step = 1
+            if not hasattr(vars_obj, 'attack_mode'):
+                vars_obj.attack_mode = "NORMAL"
 
-            # 📐 [OBB 축 A점] 돌진이 시작되는 현재 좌표를 궤적선의 시작점으로 기록
+            # 📐 [OBB 축 A점] 돌진/공격 개시 원점 박제
             vars_obj.attack_start_x = vars_obj.x
             vars_obj.attack_start_y = vars_obj.y
+            vars_obj.has_hit_enemy = False
 
-            # 🎯 [타겟팅] 좌클릭(is_targeting=True)일 때만 자동 타겟팅 수행, 우클릭은 비타겟팅 고정
-            target_enemy = None
-            if getattr(vars_obj, 'is_targeting', False):
-                # 좌클릭 자동 타겟팅 사거리: 공격 판정 폭의 2배 거리 (스펙 규격 준수)
+            # -------------------------------------------------------------
+            # [A 트랙] 좌클릭 일반 제자리 콤보 공격 초기화
+            # -------------------------------------------------------------
+            if vars_obj.attack_mode == "NORMAL":
+                if not hasattr(vars_obj, 'combo_step') or vars_obj.combo_step == 0:
+                    vars_obj.combo_step = 1
+
+                # 완전한 제자리 공격 구현을 위한 관성 제동 (가속 0 처리)
+                vars_obj.vx = 0.0
+                vars_obj.vy = 0.0
+                
+                # 타수별 프레임 차등 제어
+                vars_obj.attack_timer = 12 if vars_obj.combo_step in [1, 2] else 18
+                vars_obj.target_enemy = None
+
+            # -------------------------------------------------------------
+            # [B 트랙] 우클릭 신규 대쉬 공격 초기화
+            # -------------------------------------------------------------
+            elif vars_obj.attack_mode == "DASH":
+                vars_obj.attack_timer = 12
+                dash_speed = 75.0
+
+                # 🎯 대쉬 트랙 내 독립 레이더 가동 (공격 범위 2배 탐색)
+                target_enemy = None
                 max_target_distance = vars_obj.attack_range_width * 2.0
                 min_dist_sq = max_target_distance * max_target_distance
 
@@ -3999,14 +4018,9 @@ class PlayerCombatProcessor:
                             min_dist_sq = dist_sq
                             target_enemy = entity
 
-            vars_obj.target_enemy = target_enemy
+                vars_obj.target_enemy = target_enemy
 
-            # 3. 콤보 분기 및 돌진 속도 적용
-            dash_speed = 75.0
-            vars_obj.attack_timer = 12 if vars_obj.combo_step in [1, 2] else 18
-
-            if vars_obj.combo_step in [1, 2]:
-                # [1타/2타 공통] 돌진 방향 결정 로직
+                # 대쉬 물리 구동 벡터 계산
                 if target_enemy:
                     te_vars = target_enemy.vars
                     dx = te_vars.x - vars_obj.x
@@ -4018,31 +4032,38 @@ class PlayerCombatProcessor:
                     y_margin = 25
 
                     if abs(dy) > y_margin:
-                        # Y축 미중첩: 적을 직접 향해 대각선으로 돌진
                         vars_obj.vx = (dx / dist) * dash_speed
                         vars_obj.vy = (dy / dist) * dash_speed
                     else:
-                        # Y축 중첩: 가로 일직선으로 돌진
-                        vars_obj.vx = dash_speed if dx > 0 else -dash_speed
+                        vars_obj.vx = dash_speed if vars_obj.facing_right else -dash_speed
                         vars_obj.vy = 0.0
                 else:
-                    # 비타겟팅(우클릭 또는 타겟 없음): 바라보는 방향으로 가로 돌진
                     vars_obj.vx = dash_speed if vars_obj.facing_right else -dash_speed
                     vars_obj.vy = 0.0
 
-            elif vars_obj.combo_step == 3:
-                # [3타] 제자리 오버랩 범위 공격
-                vars_obj.vx = 0.0
-                vars_obj.vy = 0.0
+            if DEBUG:
+                print(f"[combat_processor.py] process() -> Attack Initialized: mode={vars_obj.attack_mode}, step={getattr(vars_obj, 'combo_step', 0)}, target={vars_obj.target_enemy}")
 
-            vars_obj.has_hit_enemy = False
-
-        # 4. 공격 액션 진행 중
+        # -------------------------------------------------------------
+        # 3. 공격 액션 진행 및 실시간 히트박스 / 피격 판정 루프 (완벽 복원)
+        # -------------------------------------------------------------
         if vars_obj.is_attacking:
+            # 원본 정수형 타이머 시스템에 맞추어 1프레임씩 감쇄 일관성 유지
             vars_obj.attack_timer -= 1
 
-            if vars_obj.combo_step in [1, 2]:
-                # 📐 [OBB 계산] 시작점(A)과 현재점(B)을 잇는 궤적선을 축으로 회전된 판정 영역 생성
+            # 🛠️ [멈춤 현상 완전 해결 핵심 핵심 영역] 
+            # 공격 판정 프레임 후반부(마지막 4프레임) 혹은 후딜레이 진입 직전 상태인 경우,
+            # 애니메이션 컨텍스트 유지를 위해 `is_attacking = True` 상태는 그대로 가두어 두되,
+            # 사용자의 이동 키 입력 여부에 맞춰 물리 속도 벡터(`vx`)를 사전 개방하여 경직을 파쇄합니다.
+            if vars_obj.attack_mode == "NORMAL" and vars_obj.attack_timer <= 4:
+                if getattr(vars_obj, 'is_moving', False):
+                    target_speed = vars_obj.run_speed if vars_obj.move_state == "RUN" else vars_obj.walk_speed
+                    direction = 1 if vars_obj.facing_right else -1
+                    vars_obj.vx = target_speed * direction
+
+            # 3-1. 공격 모드 및 콤보 스텝별 히트박스 갱신 생성
+            if vars_obj.attack_mode == "DASH":
+                # 대쉬 공격은 무조건 이동 궤적 기반 OBB 판정 영역 사용
                 start_x = getattr(vars_obj, 'attack_start_x', vars_obj.x)
                 start_y = getattr(vars_obj, 'attack_start_y', vars_obj.y)
 
@@ -4059,35 +4080,48 @@ class PlayerCombatProcessor:
                     dir_x = seg_dx / seg_len
                     dir_y = seg_dy / seg_len
                 else:
-                    # 이동량이 거의 없는 프레임(대시 시작 직후 등)은 바라보는 방향을 축으로 대체
                     dir_x = 1.0 if vars_obj.facing_right else -1.0
                     dir_y = 0.0
 
-                # 장축 절반 길이 = 이동 거리 절반 + 판정 폭 절반(칼날 길이 보정)
                 half_len = (seg_len * 0.5) + (vars_obj.attack_range_width * 0.5)
                 half_wid = vars_obj.attack_range_height * 0.5
                 obb_cx = (start_cx + cur_cx) * 0.5
                 obb_cy = (start_cy + cur_cy) * 0.5
 
-                # 실제 판정에 쓰이는 OBB 파라미터 (튜플 1개만 재사용, GC 부하 최소화)
                 vars_obj.attack_obb = (obb_cx, obb_cy, half_len, half_wid, dir_x, dir_y)
-
-                # 디버그 표시/기존 인터페이스 호환용 AABB 근사 사각형 (실제 판정에는 미사용)
                 vars_obj.attack_rect = pygame.Rect(
                     int(obb_cx - half_len), int(obb_cy - half_wid),
                     int(half_len * 2), int(half_wid * 2)
                 )
-            else:
-                # 3타: 제자리 오버랩 범위 (몸 중심 기준 확장된 AABB)
-                attack_w = vars_obj.attack_range_width * 1.6
-                attack_h = vars_obj.attack_range_height * 1.6
-                ax = vars_obj.x - (attack_w - vars_obj.width) * 0.5
-                ay = vars_obj.y - (attack_h - vars_obj.height) * 0.5
 
-                vars_obj.attack_obb = None
-                vars_obj.attack_rect = pygame.Rect(int(ax), int(ay), int(attack_w), int(attack_h))
+            elif vars_obj.attack_mode == "NORMAL":
+                if vars_obj.combo_step in [1, 2]:
+                    # 제자리 일반 공격 1, 2타: 플레이어 중심 기준 전방 지향 OBB 정적 구성
+                    dir_x = 1.0 if vars_obj.facing_right else -1.0
+                    dir_y = 0.0
+                    half_len = vars_obj.attack_range_width * 0.5
+                    half_wid = vars_obj.attack_range_height * 0.5
+                    
+                    # 시선 방향으로 판정 중심 약간 오프셋
+                    obb_cx = (vars_obj.x + vars_obj.width * 0.5) + (dir_x * half_len * 0.5)
+                    obb_cy = vars_obj.y + vars_obj.height * 0.5
 
-            # 실시간 피격 감지 루프
+                    vars_obj.attack_obb = (obb_cx, obb_cy, half_len, half_wid, dir_x, dir_y)
+                    vars_obj.attack_rect = pygame.Rect(
+                        int(obb_cx - half_len), int(obb_cy - half_wid),
+                        int(half_len * 2), int(half_wid * 2)
+                    )
+                else:
+                    # 제자리 일반 공격 3타: 몸 중심 기준 확장 사양 고정 AABB 범위 공격
+                    attack_w = vars_obj.attack_range_width * 1.6
+                    attack_h = vars_obj.attack_range_height * 1.6
+                    ax = vars_obj.x - (attack_w - vars_obj.width) * 0.5
+                    ay = vars_obj.y - (attack_h - vars_obj.height) * 0.5
+
+                    vars_obj.attack_obb = None
+                    vars_obj.attack_rect = pygame.Rect(int(ax), int(ay), int(attack_w), int(attack_h))
+
+            # 3-2. 실시간 피격 감지 및 대미지 인가 세션
             if entities and not vars_obj.has_hit_enemy:
                 for entity in entities:
                     if entity is self or getattr(entity, 'vars', None) is vars_obj:
@@ -4096,7 +4130,8 @@ class PlayerCombatProcessor:
                     if not e_vars or getattr(e_vars, 'is_dead', False) or getattr(e_vars, 'is_hit', False):
                         continue
 
-                    if vars_obj.combo_step in [1, 2]:
+                    # 충돌 기하 연산 분기
+                    if vars_obj.attack_obb is not None:
                         obb_cx, obb_cy, half_len, half_wid, dir_x, dir_y = vars_obj.attack_obb
                         hit = _obb_vs_aabb_collide(
                             obb_cx, obb_cy, half_len, half_wid, dir_x, dir_y,
@@ -4111,8 +4146,8 @@ class PlayerCombatProcessor:
                         damage = getattr(vars_obj, 'attack_damage', 15)
                         attack_dir = 1 if vars_obj.facing_right else -1
 
-                        if vars_obj.combo_step == 3:
-                            # 3타 시전 시에만 소형 넉백 효과 부여 (스펙 규격 준수)
+                        # 대미지 및 넉백 계수 판정 처리
+                        if vars_obj.attack_mode == "NORMAL" and vars_obj.combo_step == 3:
                             damage = int(damage * 1.5)
                             if hasattr(entity, 'take_damage'):
                                 entity.take_damage(damage, knockback_dir=attack_dir * 0.3)
@@ -4120,24 +4155,31 @@ class PlayerCombatProcessor:
                             if hasattr(entity, 'take_damage'):
                                 entity.take_damage(damage, knockback_dir=attack_dir * 0.0)
 
-                        # 한 프레임 내 콜리전 갱신 플래그 중복 계산 방지: 적중 확정 즉시 루프 종료
+                        if DEBUG:
+                            print(f"[combat_processor.py] process() -> Hit Registered: Target={entity}, Damage={damage}")
                         break
 
-            # 공격 모션 지속 프레임 종료 시 정산 루프
+            # 3-3. 공격 모션 시간 종료 시 상태 자원 정산 및 데이터 동기화
             if vars_obj.attack_timer <= 0:
+                vars_obj.attack_timer = 0
                 vars_obj.is_attacking = False
                 vars_obj.attack_rect = None
                 vars_obj.attack_obb = None
 
-                # 공용 변수인 vars_obj.attack_cooldown_timer를 직접 세팅하여 인풋 핸들러와 데이터 동기화
-                if vars_obj.combo_step in [1, 2]:
-                    vars_obj.attack_cooldown_timer = 0.15  # 1, 2타 후 조작 대기 쿨타임
-                elif vars_obj.combo_step == 3:
-                    vars_obj.attack_cooldown_timer = 0.25  # 3타 후 조작 대기 쿨타임
+                # 트랙별 재사용 대기시간 독립 주입
+                if vars_obj.attack_mode == "NORMAL":
+                    if vars_obj.combo_step in [1, 2]:
+                        vars_obj.attack_cooldown_timer = 0.15
+                    elif vars_obj.combo_step == 3:
+                        vars_obj.attack_cooldown_timer = 0.25
 
-                # ⚔️ [OnHit 전용 콤보 전환] 이번 타수가 적중하지 못했거나 3타가 끝났다면 콤보 완전 초기화.
-                # 다음 클릭 시 input_handler.trigger_attack()이 combo_step==0을 보고 1타부터 재시작하도록 강제한다.
-                if vars_obj.combo_step == 3 or not vars_obj.has_hit_enemy:
+                    # 일반 공격 후속 연계 판정 정산 (적을 맞추지 못했거나 마지막 타수인 경우 콤보 리셋)
+                    if vars_obj.combo_step == 3 or not vars_obj.has_hit_enemy:
+                        vars_obj.combo_step = 0
+                        vars_obj.combo_timer = 0
+                else:
+                    # DASH 모드는 고정 후딜레이 부여 후 연계 콤보 스텝 초기화 가드
+                    vars_obj.attack_cooldown_timer = 0.2
                     vars_obj.combo_step = 0
                     vars_obj.combo_timer = 0
         else:
@@ -4152,29 +4194,28 @@ class PlayerCombatProcessor:
 ```python
 class PlayerInputHandler:
     def __init__(self):
-        # 좌/우클릭을 각각 단발성으로 판정하기 위한 분리된 상태 플래그
         self.mouse_left_was_pressed = False
         self.mouse_right_was_pressed = False
 
     def update(self, vars_obj, keys, dt=0.0):
         mouse_state = pygame.mouse.get_pressed()
 
-        # ⚔️ 1-A. 좌클릭: 2배 거리 자동 타겟팅이 조건부로 작동하는 공격 입력
+        # ⚔️ 1-A. 좌클릭: 제자리 일반 공격 콤보 트랙 (NORMAL)
         if mouse_state[0]:
             if not self.mouse_left_was_pressed:
                 cooldown = getattr(vars_obj, 'attack_cooldown_timer', 0.0)
                 if cooldown <= 0.0:
-                    self.trigger_attack(vars_obj, is_targeting_click=True)
+                    self.trigger_attack(vars_obj, attack_mode="NORMAL")
             self.mouse_left_was_pressed = True
         else:
             self.mouse_left_was_pressed = False
 
-        # ⚔️ 1-B. 우클릭: 자동 타겟팅을 사용하지 않는 비타겟팅 고정 공격 입력
+        # ⚔️ 1-B. 우클릭: 독립된 단발성 돌진 공격 트랙 (DASH)
         if mouse_state[2]:
             if not self.mouse_right_was_pressed:
                 cooldown = getattr(vars_obj, 'attack_cooldown_timer', 0.0)
                 if cooldown <= 0.0:
-                    self.trigger_attack(vars_obj, is_targeting_click=False)
+                    self.trigger_attack(vars_obj, attack_mode="DASH")
             self.mouse_right_was_pressed = True
         else:
             self.mouse_right_was_pressed = False
@@ -4189,16 +4230,15 @@ class PlayerInputHandler:
             vars_obj.move_state = "WALK"
 
         # 🎯 [무결성 수정] A/D 동시 입력 방지 (if-elif 구조 적용)
-        # 공격 중(`is_attacking`)일 때는 시선 방향(facing_right) 전환을 차단하여 돌진 방향 유지
+        # 이펙트 출력 및 공격 도중에도 사용자의 즉각적인 이동 전환 역동성을 보장하기 위해
+        # 이동 입력 플래그(is_moving)와 시선 방향(facing_right) 전환 가드를 전면 개방합니다.
         if keys[pygame.K_a]:
             vars_obj.is_moving = True
-            if not vars_obj.is_attacking:
-                vars_obj.facing_right = False
+            vars_obj.facing_right = False
 
         elif keys[pygame.K_d]:
             vars_obj.is_moving = True
-            if not vars_obj.is_attacking:
-                vars_obj.facing_right = True
+            vars_obj.facing_right = True
 
         # 🚀 3. 점프 입력 제어 (공격 중 대각선 돌진 중일 때 점프가 입력되어 궤적이 깨지는 것을 안전 방지)
         if (keys[pygame.K_w] or keys[pygame.K_SPACE]) and not vars_obj.is_jumping:
@@ -4207,31 +4247,29 @@ class PlayerInputHandler:
                 vars_obj.vertical_velocity = -vars_obj.jump_power
                 vars_obj.is_jumping = True
 
-    def trigger_attack(self, vars_obj, is_targeting_click):
+    def trigger_attack(self, vars_obj, attack_mode):
         # 공격 중인 애니메이션 세션이 도는 동안에는 중복 입력 방지
         if vars_obj.is_attacking:
             return
 
         vars_obj.is_attacking = True
-        # 이번 타수가 좌클릭(자동 타겟팅) 유래인지, 우클릭(비타겟팅 고정) 유래인지 기록
-        vars_obj.is_targeting = is_targeting_click
+        vars_obj.attack_mode = attack_mode
 
-        # ⚔️ [OnHit 전용 콤보 전환]
-        # combat_processor.process()는 직전 타수가 적을 맞추지 못했을 경우(has_hit_enemy == False)
-        # 정산 시점에 combo_step을 반드시 0으로 되돌려 놓는다.
-        # 따라서 여기서는 combo_step이 0인지(=직전 타수가 적중하지 못했거나 최초 공격)만 검사하면
-        # "적중 시에만 다음 타수로 전환"이라는 스펙이 자연스럽게 보장된다.
-        if getattr(vars_obj, 'combo_timer', 0) <= 0 or vars_obj.combo_step == 0:
-            vars_obj.combo_step = 1
-        else:
-            if vars_obj.combo_step == 1:
-                vars_obj.combo_step = 2
-            elif vars_obj.combo_step == 2:
-                vars_obj.combo_step = 3
-            else:
+        if attack_mode == "NORMAL":
+            # ⚔️ [OnHit 전용 콤보 전환] - 일반 공격 트랙 전용으로 완전 격리
+            if getattr(vars_obj, 'combo_timer', 0) <= 0 or getattr(vars_obj, 'combo_step', 0) == 0:
                 vars_obj.combo_step = 1
-
-        vars_obj.combo_timer = vars_obj.combo_expire_time
+            else:
+                if vars_obj.combo_step == 1:
+                    vars_obj.combo_step = 2
+                elif vars_obj.combo_step == 2:
+                    vars_obj.combo_step = 3
+                else:
+                    vars_obj.combo_step = 1
+            vars_obj.combo_timer = vars_obj.combo_expire_time
+        else:
+            # DASH 모드는 콤보 단계와 연동하지 않으며 단발성으로 작동
+            vars_obj.combo_step = 0
 ```
 
 --------------------------------------------------
@@ -4382,6 +4420,197 @@ class PlayerPhysicsProcessor:
         max_width = game_map.width if game_map else SCREEN_WIDTH
         if vars_obj.x > max_width - vars_obj.width:
             vars_obj.x = max_width - vars_obj.width
+```
+
+--------------------------------------------------
+
+### 📄 extraction_target_project/player/player_main.py
+#### 🧱 Code Skeleton:
+```python
+class Player:
+    def __init__(self, x, y):
+        # 데이터 및 입력 핸들러 초기화
+        self.vars = PlayerVariables(x, y)
+        self.vars_obj = self.vars  # 하위 호환성 및 외부 접근 편의를 위해 vars_obj 연결
+        self.input_handler = PlayerInputHandler()
+        
+        # 🌟 분리된 컴포넌트 조립 (경로 수정이 완료된 에셋 로더 가동)
+        self.assets = PlayerAssetLoader(self.vars)
+        self.physics_engine = PlayerPhysicsProcessor()
+        self.combat_engine = PlayerCombatProcessor()
+        
+        # 애니메이션 모션 판독기들 조립
+        self.ground_motion_processor = GroundMotions()
+        self.air_motion_processor = AirMotions()
+        self.attack_motion_processor = AttackMotions()
+
+    def update_animation_state(self):
+        """현재 플레이어 변수를 분석해 상태 문자열(애니메이션 키)을 결정합니다."""
+        state = None
+        if self.vars.is_attacking:
+            state = self.attack_motion_processor.handle_state(self.vars)
+        elif self.vars.is_jumping or self.vars.vertical_velocity != 0:
+            state = self.air_motion_processor.handle_state(self.vars)
+        else:
+            state = self.ground_motion_processor.handle_state(self.vars)
+            
+        if state is not None:
+            self.vars.current_state = state
+
+    def update(self, platforms, entities=None, game_map=None, dt=1.0/60.0):
+        """플레이어의 모든 입력, 이동, 충돌, 애니메이션 프레임을 실시간 업데이트합니다."""
+
+        # 가변 프레임 환경에 대응하기 위한 프레임 스케일러 보정값 계산
+        fps_scale = dt * 60.0
+
+        # ⏱️ [누락 해결] 콤보 유효 타이머 감소 연산 (시간 경과 시 콤보 리셋 보장)
+        if getattr(self.vars, 'combo_timer', 0) > 0:
+            self.vars.combo_timer -= fps_scale
+            if self.vars.combo_timer < 0:
+                self.vars.combo_timer = 0
+
+        # 💀 사망 상태(is_dead == True) 예외 처리 및 기초 동작 제한
+        if self.vars.is_dead:
+            self.vars.is_moving = False
+            self.vars.is_attacking = False
+            self.vars.attack_rect = None
+            self.vars.attack_obb = None
+
+            # 최소한의 물리 엔진(중력, 충돌 판정)만 처리하여 바닥에 떨어질 수 있게 함 (dt 반영)
+            self.physics_engine.process(self.vars, platforms, game_map=game_map, dt=dt)
+
+            # 사망 애니메이션 상태 적용 (DEAD 에셋이 없는 경우 기본 IDLE 대기 상태 유지)
+            if "DEAD" in self.assets.images:
+                self.vars.current_state = "DEAD"
+            else:
+                self.vars.current_state = "IDLE"
+
+            # 애니메이션 프레임 업데이트 (fps_scale 반영)
+            anim_list = self.assets.images.get(self.vars.current_state, [])
+            if anim_list:
+                self.vars.anim_timer += fps_scale
+                delay = getattr(self.vars, 'state_delays', {}).get(self.vars.current_state, self.vars.anim_speed)
+                if self.vars.anim_timer >= delay:
+                    self.vars.anim_timer = 0
+                    self.vars.current_frame_idx = (self.vars.current_frame_idx + 1) % len(anim_list)
+            return
+
+        # 1. ⌨️ 사용자 키보드 입력 분석 (인자 전달 구조 유지)
+        keys = pygame.key.get_pressed()
+        self.input_handler.update(self.vars, keys)
+
+        # 🪐 [관성 물리 메커니즘 통합]
+        if self.vars.is_attacking:
+            # ⚔️ [끊김 없는 이동 보장] 일반 공격 모드전개 중 사용자가 AD 이동키를 입력 중인 경우
+            # 가속도 입력을 물리적으로 완전 차단하던 기존 구조를 파쇄하고 미끄러지듯 이동 가속을 허용합니다.
+            if getattr(self.vars, 'attack_mode', 'NORMAL') == 'NORMAL':
+                if self.vars.is_moving:
+                    target_speed = self.vars.run_speed if self.vars.move_state == "RUN" else self.vars.walk_speed
+                    direction = 1 if self.vars.facing_right else -1
+                    target_vx = target_speed * direction * 0.4
+                    self.vars.vx += (target_vx - self.vars.vx) * min(1.0, 0.25 * fps_scale)
+                else:
+                    self.vars.vx *= max(0.0, 1.0 - (0.35 * fps_scale))
+            else:
+                # DASH 모드는 전투 프로세서 내부의 고유 가속도 프로파일 유지를 위해 관성 보존 패스 처리합니다.
+                pass
+        else:
+            if self.vars.is_moving:
+                # 가속
+                target_speed = self.vars.run_speed if self.vars.move_state == "RUN" else self.vars.walk_speed
+                direction = 1 if self.vars.facing_right else -1
+                target_vx = target_speed * direction
+                # 가속률 적용하여 target_vx에 도달
+                self.vars.vx += (target_vx - self.vars.vx) * min(1.0, 0.25 * fps_scale)
+            else:
+                # 감속
+                self.vars.vx *= max(0.0, 1.0 - (0.35 * fps_scale))
+
+            # 공격 중이 아닐 때는 vy도 자연스럽게 감속
+            self.vars.vy *= max(0.0, 1.0 - (0.35 * fps_scale))
+
+        # 최종 물리 좌표(x, y) 업데이트
+        self.vars.x += self.vars.vx * fps_scale
+        self.vars.y += self.vars.vy * fps_scale
+
+        # 2. 🪐 [오류 수정] 분리된 엔진 컴포넌트 가동 (물리 및 전투 엔진 인터페이스 및 dt 결합 완벽 갱신)
+        self.physics_engine.process(self.vars, platforms, game_map=game_map, dt=dt)
+        self.combat_engine.process(self.vars, entities=entities, dt=dt)
+
+        # 3. 🎬 상태 기반 애니메이션 프레임 제어
+        self.update_animation_state()
+
+        anim_list = self.assets.images.get(self.vars.current_state, [])
+        if anim_list:
+            # [가변 보정] 델타 프레임 가중치를 더해 어떤 프레임에서도 일정한 속도로 애니메이션 재생
+            self.vars.anim_timer += fps_scale
+            # 각 상태(State)별로 지정된 프레임 딜레이 적용 (없으면 기본 anim_speed인 8 적용)
+            delay = getattr(self.vars, 'state_delays', {}).get(self.vars.current_state, self.vars.anim_speed)
+            if self.vars.anim_timer >= delay:
+                self.vars.anim_timer = 0
+                self.vars.current_frame_idx = (self.vars.current_frame_idx + 1) % len(anim_list)
+
+    def update_with_dt(self, platforms, game_map, dt, entities=None):
+        """main.py의 호출 인터페이스를 지원하기 위한 update 래퍼 메서드"""
+        self.update(platforms, entities=entities, game_map=game_map, dt=dt)
+
+    def draw(self, screen, camera_offset=(0, 0)):
+        """플레이어 본체 이미지와 공격 시 콤보 이펙트 및 임시 돌진 범위 시각화를 화면에 렌더링합니다."""
+        ox, oy = camera_offset
+        # 🎬 1. 캐릭터 본체 스프라이트 시퀀스 추출 및 출력
+        anim_list = self.assets.images.get(self.vars.current_state, [])
+        if not anim_list:
+            return
+            
+        # 혹시 모를 인덱스 바운드 에러를 막기 위한 최종 안전 필터링
+        idx = min(self.vars.current_frame_idx, len(anim_list) - 1)
+        player_image = anim_list[idx]
+        
+        # 왼쪽을 바라보고 있다면 이미지 좌우 반전
+        if not self.vars.facing_right:
+            player_image = pygame.transform.flip(player_image, True, False)
+            
+        screen.blit(player_image, (self.vars.x - ox, self.vars.y - oy))
+        
+        # 2. ⚔️ 공격 애니메이션 중일 때 콤보 검기 이펙트 출력 (원본 로직 완벽 보존)
+        if self.vars.is_attacking and self.vars.combo_step in self.assets.effect_images:
+            effect_img = self.assets.effect_images[self.vars.combo_step]
+            
+            # 플레이어가 바라보는 방향에 맞춰 이펙트도 반전 및 위치 정렬
+            if not self.vars.facing_right:
+                effect_img = pygame.transform.flip(effect_img, True, False)
+                screen.blit(effect_img, (self.vars.x - ox - 60, self.vars.y - oy))
+            else:
+                screen.blit(effect_img, (self.vars.x - ox + 30, self.vars.y - oy))
+
+        # 3. 🔴 [임시 이펙트] 돌진 공격(DASH) 범위 실시간 빨간색 렌더링
+        if self.vars.is_attacking and getattr(self.vars, 'attack_mode', 'NORMAL') == 'DASH':
+            attack_obb = getattr(self.vars, 'attack_obb', None)
+            if attack_obb is not None:
+                obb_cx, obb_cy, half_len, half_wid, dir_x, dir_y = attack_obb
+                
+                # 수직 방향 벡터 계산
+                perp_x = -dir_y
+                perp_y = dir_x
+
+                # 카메라도 함께 움직이므로 오프셋(ox, oy)을 빼서 실제 화면 좌표를 도출합니다.
+                corners = [
+                    (obb_cx + dir_x * half_len + perp_x * half_wid - ox, obb_cy + dir_y * half_len + perp_y * half_wid - oy),
+                    (obb_cx - dir_x * half_len + perp_x * half_wid - ox, obb_cy - dir_y * half_len + perp_y * half_wid - oy),
+                    (obb_cx - dir_x * half_len - perp_x * half_wid - ox, obb_cy - dir_y * half_len - perp_y * half_wid - oy),
+                    (obb_cx + dir_x * half_len - perp_x * half_wid - ox, obb_cy + dir_y * half_len - perp_y * half_wid - oy)
+                ]
+
+                # 알파 채우기를 위한 독립 서피스 생성 및 알파 채널 블릿 연산
+                overlay = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
+                pygame.draw.polygon(overlay, (255, 0, 0, 75), corners)  # 내부 반투명 레드 가이드라인
+                screen.blit(overlay, (0, 0))
+
+                # 경계선 실선 그리기
+                pygame.draw.polygon(screen, (255, 0, 0), corners, 2)  # 외곽 붉은색 경계선
+
+                if DEBUG:
+                    print(f"[player_main.py] draw() -> Rendered DASH OBB Area: center=({obb_cx}, {obb_cy}), len={half_len}, wid={half_wid}")
 ```
 
 --------------------------------------------------

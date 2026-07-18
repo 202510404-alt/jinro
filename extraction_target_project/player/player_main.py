@@ -9,6 +9,8 @@ from player.motions.ground_motions import GroundMotions
 from player.motions.air_motions import AirMotions
 from player.motions.attack_motions import AttackMotions
 
+DEBUG = False
+
 class Player:
     def __init__(self, x, y):
         # 데이터 및 입력 핸들러 초기화
@@ -83,12 +85,19 @@ class Player:
 
         # 🪐 [관성 물리 메커니즘 통합]
         if self.vars.is_attacking:
-            # ⚔️ [끊김 없는 돌진 이동 보장] 공격(돌진) 중에는 마찰 감쇠를 전혀 적용하지 않는다.
-            # vx/vy는 combat_processor.process()가 각 타수 개시 시점에 단 한 번 세팅하며,
-            # 그 값이 attack_timer가 만료될 때까지 그대로 유지되어야 "부드럽게 이동이 연결"되는
-            # 콤보 돌진 감각이 보장된다. 여기서 감쇠를 걸면 대시 도중 서서히 감속되어
-            # 궤적선(A-B) 기반 OBB의 길이가 프레임마다 들쭉날쭉해지고 이동감이 끊긴다.
-            pass
+            # ⚔️ [끊김 없는 이동 보장] 일반 공격 모드전개 중 사용자가 AD 이동키를 입력 중인 경우
+            # 가속도 입력을 물리적으로 완전 차단하던 기존 구조를 파쇄하고 미끄러지듯 이동 가속을 허용합니다.
+            if getattr(self.vars, 'attack_mode', 'NORMAL') == 'NORMAL':
+                if self.vars.is_moving:
+                    target_speed = self.vars.run_speed if self.vars.move_state == "RUN" else self.vars.walk_speed
+                    direction = 1 if self.vars.facing_right else -1
+                    target_vx = target_speed * direction * 0.4
+                    self.vars.vx += (target_vx - self.vars.vx) * min(1.0, 0.25 * fps_scale)
+                else:
+                    self.vars.vx *= max(0.0, 1.0 - (0.35 * fps_scale))
+            else:
+                # DASH 모드는 전투 프로세서 내부의 고유 가속도 프로파일 유지를 위해 관성 보존 패스 처리합니다.
+                pass
         else:
             if self.vars.is_moving:
                 # 가속
@@ -130,7 +139,7 @@ class Player:
         self.update(platforms, entities=entities, game_map=game_map, dt=dt)
 
     def draw(self, screen, camera_offset=(0, 0)):
-        """플레이어 본체 이미지와 공격 시 콤보 이펙트를 화면에 렌더링합니다."""
+        """플레이어 본체 이미지와 공격 시 콤보 이펙트 및 임시 돌진 범위 시각화를 화면에 렌더링합니다."""
         ox, oy = camera_offset
         # 🎬 1. 캐릭터 본체 스프라이트 시퀀스 추출 및 출력
         anim_list = self.assets.images.get(self.vars.current_state, [])
@@ -157,3 +166,32 @@ class Player:
                 screen.blit(effect_img, (self.vars.x - ox - 60, self.vars.y - oy))
             else:
                 screen.blit(effect_img, (self.vars.x - ox + 30, self.vars.y - oy))
+
+        # 3. 🔴 [임시 이펙트] 돌진 공격(DASH) 범위 실시간 빨간색 렌더링
+        if self.vars.is_attacking and getattr(self.vars, 'attack_mode', 'NORMAL') == 'DASH':
+            attack_obb = getattr(self.vars, 'attack_obb', None)
+            if attack_obb is not None:
+                obb_cx, obb_cy, half_len, half_wid, dir_x, dir_y = attack_obb
+                
+                # 수직 방향 벡터 계산
+                perp_x = -dir_y
+                perp_y = dir_x
+
+                # 카메라도 함께 움직이므로 오프셋(ox, oy)을 빼서 실제 화면 좌표를 도출합니다.
+                corners = [
+                    (obb_cx + dir_x * half_len + perp_x * half_wid - ox, obb_cy + dir_y * half_len + perp_y * half_wid - oy),
+                    (obb_cx - dir_x * half_len + perp_x * half_wid - ox, obb_cy - dir_y * half_len + perp_y * half_wid - oy),
+                    (obb_cx - dir_x * half_len - perp_x * half_wid - ox, obb_cy - dir_y * half_len - perp_y * half_wid - oy),
+                    (obb_cx + dir_x * half_len - perp_x * half_wid - ox, obb_cy + dir_y * half_len - perp_y * half_wid - oy)
+                ]
+
+                # 알파 채우기를 위한 독립 서피스 생성 및 알파 채널 블릿 연산
+                overlay = pygame.Surface((screen.get_width(), screen.get_height()), pygame.SRCALPHA)
+                pygame.draw.polygon(overlay, (255, 0, 0, 75), corners)  # 내부 반투명 레드 가이드라인
+                screen.blit(overlay, (0, 0))
+
+                # 경계선 실선 그리기
+                pygame.draw.polygon(screen, (255, 0, 0), corners, 2)  # 외곽 붉은색 경계선
+
+                if DEBUG:
+                    print(f"[player_main.py] draw() -> Rendered DASH OBB Area: center=({obb_cx}, {obb_cy}), len={half_len}, wid={half_wid}")
