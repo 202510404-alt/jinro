@@ -132,8 +132,8 @@
       "start_line": 307,
       "end_line": 331,
       "calls": [
-        "run_game",
-        "run_main_menu"
+        "run_main_menu",
+        "run_game"
       ],
       "used_by": []
     },
@@ -993,9 +993,9 @@
       "start_line": 19,
       "end_line": 46,
       "calls": [
-        "snap",
         "handle_mouse_down",
-        "screen_to_world"
+        "screen_to_world",
+        "snap"
       ],
       "used_by": []
     },
@@ -1030,8 +1030,8 @@
       "start_line": 146,
       "end_line": 186,
       "calls": [
-        "screen_to_world",
-        "handle_sidebar_click"
+        "handle_sidebar_click",
+        "screen_to_world"
       ],
       "used_by": []
     },
@@ -1262,10 +1262,10 @@
       "start_line": 6,
       "end_line": 12,
       "calls": [
-        "draw_selection",
-        "draw_sidebar",
+        "draw_status",
         "draw_grid",
-        "draw_status"
+        "draw_sidebar",
+        "draw_selection"
       ],
       "used_by": []
     },
@@ -1324,11 +1324,11 @@
       "start_line": 77,
       "end_line": 104,
       "calls": [
-        "draw_help",
         "text",
-        "draw_inspector",
         "draw_button",
-        "draw_tool_button"
+        "draw_tool_button",
+        "draw_help",
+        "draw_inspector"
       ],
       "used_by": []
     },
@@ -1354,8 +1354,8 @@
       "start_line": 118,
       "end_line": 177,
       "calls": [
-        "draw_type_btn",
-        "text"
+        "text",
+        "draw_type_btn"
       ],
       "used_by": []
     },
@@ -1474,9 +1474,9 @@
       "end_line": 75,
       "calls": [
         "_serialize_structure",
-        "_serialize_entity",
+        "_serialize_trigger",
         "_serialize_platform",
-        "_serialize_trigger"
+        "_serialize_entity"
       ],
       "used_by": []
     },
@@ -1902,8 +1902,8 @@
       "start_line": 358,
       "end_line": 502,
       "calls": [
-        "_draw_2d_tiled",
-        "_draw_x_tiled"
+        "_draw_x_tiled",
+        "_draw_2d_tiled"
       ],
       "used_by": []
     },
@@ -2535,13 +2535,24 @@
       "used_by": []
     },
     {
+      "symbol_id": "extraction_target_project/player/combat_processor.py::_obb_vs_aabb_collide",
+      "name": "_obb_vs_aabb_collide",
+      "full_name": "_obb_vs_aabb_collide",
+      "type": "function",
+      "path": "extraction_target_project/player/combat_processor.py",
+      "start_line": 6,
+      "end_line": 50,
+      "calls": [],
+      "used_by": []
+    },
+    {
       "symbol_id": "extraction_target_project/player/combat_processor.py::PlayerCombatProcessor",
       "name": "PlayerCombatProcessor",
       "full_name": "PlayerCombatProcessor",
       "type": "class",
       "path": "extraction_target_project/player/combat_processor.py",
-      "start_line": 5,
-      "end_line": 167,
+      "start_line": 53,
+      "end_line": 243,
       "calls": [],
       "used_by": []
     },
@@ -2551,8 +2562,8 @@
       "full_name": "PlayerCombatProcessor.__init__",
       "type": "method",
       "path": "extraction_target_project/player/combat_processor.py",
-      "start_line": 6,
-      "end_line": 7,
+      "start_line": 54,
+      "end_line": 55,
       "calls": [],
       "used_by": []
     },
@@ -2562,9 +2573,11 @@
       "full_name": "PlayerCombatProcessor.process",
       "type": "method",
       "path": "extraction_target_project/player/combat_processor.py",
-      "start_line": 9,
-      "end_line": 167,
-      "calls": [],
+      "start_line": 57,
+      "end_line": 243,
+      "calls": [
+        "_obb_vs_aabb_collide"
+      ],
       "used_by": []
     },
     {
@@ -2573,8 +2586,8 @@
       "full_name": "PlayerInputHandler",
       "type": "class",
       "path": "extraction_target_project/player/input_handler.py",
-      "start_line": 4,
-      "end_line": 67,
+      "start_line": 5,
+      "end_line": 86,
       "calls": [],
       "used_by": []
     },
@@ -2584,8 +2597,8 @@
       "full_name": "PlayerInputHandler.__init__",
       "type": "method",
       "path": "extraction_target_project/player/input_handler.py",
-      "start_line": 5,
-      "end_line": 6,
+      "start_line": 6,
+      "end_line": 9,
       "calls": [],
       "used_by": []
     },
@@ -2595,8 +2608,8 @@
       "full_name": "PlayerInputHandler.update",
       "type": "method",
       "path": "extraction_target_project/player/input_handler.py",
-      "start_line": 8,
-      "end_line": 47,
+      "start_line": 11,
+      "end_line": 60,
       "calls": [],
       "used_by": []
     },
@@ -2606,8 +2619,8 @@
       "full_name": "PlayerInputHandler.trigger_attack",
       "type": "method",
       "path": "extraction_target_project/player/input_handler.py",
-      "start_line": 49,
-      "end_line": 67,
+      "start_line": 62,
+      "end_line": 86,
       "calls": [],
       "used_by": []
     },
@@ -2645,79 +2658,13 @@
       "used_by": []
     },
     {
-      "symbol_id": "extraction_target_project/player/player_main.py::Player",
-      "name": "Player",
-      "full_name": "Player",
-      "type": "class",
-      "path": "extraction_target_project/player/player_main.py",
-      "start_line": 12,
-      "end_line": 155,
-      "calls": [],
-      "used_by": []
-    },
-    {
-      "symbol_id": "extraction_target_project/player/player_main.py::Player.__init__",
-      "name": "__init__",
-      "full_name": "Player.__init__",
-      "type": "method",
-      "path": "extraction_target_project/player/player_main.py",
-      "start_line": 13,
-      "end_line": 27,
-      "calls": [],
-      "used_by": []
-    },
-    {
-      "symbol_id": "extraction_target_project/player/player_main.py::Player.update_animation_state",
-      "name": "update_animation_state",
-      "full_name": "Player.update_animation_state",
-      "type": "method",
-      "path": "extraction_target_project/player/player_main.py",
-      "start_line": 29,
-      "end_line": 40,
-      "calls": [],
-      "used_by": []
-    },
-    {
-      "symbol_id": "extraction_target_project/player/player_main.py::Player.update",
-      "name": "update",
-      "full_name": "Player.update",
-      "type": "method",
-      "path": "extraction_target_project/player/player_main.py",
-      "start_line": 42,
-      "end_line": 122,
-      "calls": [],
-      "used_by": []
-    },
-    {
-      "symbol_id": "extraction_target_project/player/player_main.py::Player.update_with_dt",
-      "name": "update_with_dt",
-      "full_name": "Player.update_with_dt",
-      "type": "method",
-      "path": "extraction_target_project/player/player_main.py",
-      "start_line": 124,
-      "end_line": 126,
-      "calls": [],
-      "used_by": []
-    },
-    {
-      "symbol_id": "extraction_target_project/player/player_main.py::Player.draw",
-      "name": "draw",
-      "full_name": "Player.draw",
-      "type": "method",
-      "path": "extraction_target_project/player/player_main.py",
-      "start_line": 128,
-      "end_line": 155,
-      "calls": [],
-      "used_by": []
-    },
-    {
       "symbol_id": "extraction_target_project/player/variables.py::PlayerVariables",
       "name": "PlayerVariables",
       "full_name": "PlayerVariables",
       "type": "class",
       "path": "extraction_target_project/player/variables.py",
-      "start_line": 4,
-      "end_line": 85,
+      "start_line": 5,
+      "end_line": 92,
       "calls": [],
       "used_by": []
     },
@@ -2727,8 +2674,8 @@
       "full_name": "PlayerVariables.__init__",
       "type": "method",
       "path": "extraction_target_project/player/variables.py",
-      "start_line": 5,
-      "end_line": 71,
+      "start_line": 6,
+      "end_line": 78,
       "calls": [],
       "used_by": []
     },
@@ -2738,8 +2685,8 @@
       "full_name": "PlayerVariables.take_damage",
       "type": "method",
       "path": "extraction_target_project/player/variables.py",
-      "start_line": 73,
-      "end_line": 79,
+      "start_line": 80,
+      "end_line": 86,
       "calls": [],
       "used_by": []
     },
@@ -2749,8 +2696,8 @@
       "full_name": "PlayerVariables.heal",
       "type": "method",
       "path": "extraction_target_project/player/variables.py",
-      "start_line": 81,
-      "end_line": 85,
+      "start_line": 88,
+      "end_line": 92,
       "calls": [],
       "used_by": []
     },

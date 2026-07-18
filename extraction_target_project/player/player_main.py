@@ -41,7 +41,7 @@ class Player:
 
     def update(self, platforms, entities=None, game_map=None, dt=1.0/60.0):
         """플레이어의 모든 입력, 이동, 충돌, 애니메이션 프레임을 실시간 업데이트합니다."""
-        
+
         # 가변 프레임 환경에 대응하기 위한 프레임 스케일러 보정값 계산
         fps_scale = dt * 60.0
 
@@ -56,16 +56,17 @@ class Player:
             self.vars.is_moving = False
             self.vars.is_attacking = False
             self.vars.attack_rect = None
-            
+            self.vars.attack_obb = None
+
             # 최소한의 물리 엔진(중력, 충돌 판정)만 처리하여 바닥에 떨어질 수 있게 함 (dt 반영)
             self.physics_engine.process(self.vars, platforms, game_map=game_map, dt=dt)
-            
+
             # 사망 애니메이션 상태 적용 (DEAD 에셋이 없는 경우 기본 IDLE 대기 상태 유지)
             if "DEAD" in self.assets.images:
                 self.vars.current_state = "DEAD"
             else:
                 self.vars.current_state = "IDLE"
-                
+
             # 애니메이션 프레임 업데이트 (fps_scale 반영)
             anim_list = self.assets.images.get(self.vars.current_state, [])
             if anim_list:
@@ -82,9 +83,12 @@ class Player:
 
         # 🪐 [관성 물리 메커니즘 통합]
         if self.vars.is_attacking:
-            # 공격(돌진) 중일 때는 입력에 의한 속도 제어를 우회하고, 자연스러운 감속(마찰력)만 적용
-            self.vars.vx *= max(0.0, 1.0 - (0.35 * fps_scale))
-            self.vars.vy *= max(0.0, 1.0 - (0.35 * fps_scale))
+            # ⚔️ [끊김 없는 돌진 이동 보장] 공격(돌진) 중에는 마찰 감쇠를 전혀 적용하지 않는다.
+            # vx/vy는 combat_processor.process()가 각 타수 개시 시점에 단 한 번 세팅하며,
+            # 그 값이 attack_timer가 만료될 때까지 그대로 유지되어야 "부드럽게 이동이 연결"되는
+            # 콤보 돌진 감각이 보장된다. 여기서 감쇠를 걸면 대시 도중 서서히 감속되어
+            # 궤적선(A-B) 기반 OBB의 길이가 프레임마다 들쭉날쭉해지고 이동감이 끊긴다.
+            pass
         else:
             if self.vars.is_moving:
                 # 가속
@@ -96,7 +100,7 @@ class Player:
             else:
                 # 감속
                 self.vars.vx *= max(0.0, 1.0 - (0.35 * fps_scale))
-            
+
             # 공격 중이 아닐 때는 vy도 자연스럽게 감속
             self.vars.vy *= max(0.0, 1.0 - (0.35 * fps_scale))
 
@@ -110,7 +114,7 @@ class Player:
 
         # 3. 🎬 상태 기반 애니메이션 프레임 제어
         self.update_animation_state()
-        
+
         anim_list = self.assets.images.get(self.vars.current_state, [])
         if anim_list:
             # [가변 보정] 델타 프레임 가중치를 더해 어떤 프레임에서도 일정한 속도로 애니메이션 재생

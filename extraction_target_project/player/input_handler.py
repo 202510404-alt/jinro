@@ -1,26 +1,39 @@
 # player/input_handler.py
 import pygame
 
+
 class PlayerInputHandler:
     def __init__(self):
-        self.mouse_was_pressed = False # 마우스 단발성 클릭 체크용 변수
+        # 좌/우클릭을 각각 단발성으로 판정하기 위한 분리된 상태 플래그
+        self.mouse_left_was_pressed = False
+        self.mouse_right_was_pressed = False
 
     def update(self, vars_obj, keys, dt=0.0):
-        # ⚔️ 1. 마우스 좌클릭 입력 및 쿨타임 검증
-        # 쿨타임 타이머(attack_cooldown_timer)가 0 이하일 때만 신규 공격 트리거 허용
         mouse_state = pygame.mouse.get_pressed()
-        if mouse_state[0]:  
-            if not self.mouse_was_pressed: 
+
+        # ⚔️ 1-A. 좌클릭: 2배 거리 자동 타겟팅이 조건부로 작동하는 공격 입력
+        if mouse_state[0]:
+            if not self.mouse_left_was_pressed:
                 cooldown = getattr(vars_obj, 'attack_cooldown_timer', 0.0)
                 if cooldown <= 0.0:
-                    self.trigger_attack(vars_obj)
-            self.mouse_was_pressed = True
+                    self.trigger_attack(vars_obj, is_targeting_click=True)
+            self.mouse_left_was_pressed = True
         else:
-            self.mouse_was_pressed = False
+            self.mouse_left_was_pressed = False
+
+        # ⚔️ 1-B. 우클릭: 자동 타겟팅을 사용하지 않는 비타겟팅 고정 공격 입력
+        if mouse_state[2]:
+            if not self.mouse_right_was_pressed:
+                cooldown = getattr(vars_obj, 'attack_cooldown_timer', 0.0)
+                if cooldown <= 0.0:
+                    self.trigger_attack(vars_obj, is_targeting_click=False)
+            self.mouse_right_was_pressed = True
+        else:
+            self.mouse_right_was_pressed = False
 
         # 🏃 2. 키보드 이동 입력 상태 플래그 초기화
         vars_obj.is_moving = False
-        
+
         # [무결성 수정] 시프트 키 분기
         if keys[pygame.K_LSHIFT] or keys[pygame.K_RSHIFT]:
             vars_obj.move_state = "RUN"
@@ -33,7 +46,7 @@ class PlayerInputHandler:
             vars_obj.is_moving = True
             if not vars_obj.is_attacking:
                 vars_obj.facing_right = False
-                
+
         elif keys[pygame.K_d]:
             vars_obj.is_moving = True
             if not vars_obj.is_attacking:
@@ -46,15 +59,21 @@ class PlayerInputHandler:
                 vars_obj.vertical_velocity = -vars_obj.jump_power
                 vars_obj.is_jumping = True
 
-    def trigger_attack(self, vars_obj):
+    def trigger_attack(self, vars_obj, is_targeting_click):
         # 공격 중인 애니메이션 세션이 도는 동안에는 중복 입력 방지
         if vars_obj.is_attacking:
             return
 
         vars_obj.is_attacking = True
-        
-        # 콤보 판정 흐름 설계 (has_hit_enemy 조건과 무관하게 타이머 범위 내 클릭 시 부드럽게 전이)
-        if getattr(vars_obj, 'combo_timer', 0) <= 0:
+        # 이번 타수가 좌클릭(자동 타겟팅) 유래인지, 우클릭(비타겟팅 고정) 유래인지 기록
+        vars_obj.is_targeting = is_targeting_click
+
+        # ⚔️ [OnHit 전용 콤보 전환]
+        # combat_processor.process()는 직전 타수가 적을 맞추지 못했을 경우(has_hit_enemy == False)
+        # 정산 시점에 combo_step을 반드시 0으로 되돌려 놓는다.
+        # 따라서 여기서는 combo_step이 0인지(=직전 타수가 적중하지 못했거나 최초 공격)만 검사하면
+        # "적중 시에만 다음 타수로 전환"이라는 스펙이 자연스럽게 보장된다.
+        if getattr(vars_obj, 'combo_timer', 0) <= 0 or vars_obj.combo_step == 0:
             vars_obj.combo_step = 1
         else:
             if vars_obj.combo_step == 1:

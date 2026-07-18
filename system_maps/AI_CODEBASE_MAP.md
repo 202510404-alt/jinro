@@ -106,8 +106,8 @@ project_root/
 ├── player/
 │   ├── __init__.py [📂 player/__init__.py]
 │   ├── asset_loader.py [📂 player/asset_loader.py] -> [💡 📦 imp: os, pygame, sys | 🧬 class PlayerAssetLoader [L6-70] |     └─ def __init__() [L7-10] |     └─ def load_all_assets() [L12-60] |     └─ def _load_series() [L62-70]]
-│   ├── combat_processor.py [📂 player/combat_processor.py] -> [💡 📦 imp: math, pygame | 🧬 class PlayerCombatProcessor [L5-167] |     └─ def __init__() [L6-7] |     └─ def process() [L9-167]]
-│   ├── input_handler.py [📂 player/input_handler.py] -> [💡 📦 imp: pygame | 🧬 class PlayerInputHandler [L4-67] |     └─ def __init__() [L5-6] |     └─ def update() [L8-47] |     └─ def trigger_attack() [L49-67]]
+│   ├── combat_processor.py [📂 player/combat_processor.py] -> [💡 📦 imp: math, pygame | 🎯 def _obb_vs_aabb_collide() [L6-50] | 🧬 class PlayerCombatProcessor [L53-243] |     └─ def __init__() [L54-55] |     └─ def process() [L57-243]]
+│   ├── input_handler.py [📂 player/input_handler.py] -> [💡 📦 imp: pygame | 🧬 class PlayerInputHandler [L5-86] |     └─ def __init__() [L6-9] |     └─ def update() [L11-60] |     └─ def trigger_attack() [L62-86]]
 │   │     ├── 🔑 [REGISTRY]: "PlayerInputHandler"
 │   ├── motions/
 │   │   ├── __init__.py [📂 player/motions/__init__.py]
@@ -116,6 +116,6 @@ project_root/
 │   │   ├── ground_motions.py [📂 player/motions/ground_motions.py] -> [💡 📦 imp: player.motions.motion_base | 🧬 class GroundMotions [L4-13] |     └─ def handle_state() [L5-13]]
 │   │   ├── motion_base.py [📂 player/motions/motion_base.py] -> [🧬 class MotionBase [L2-8] |     └─ def __init__() [L3-4] |     └─ def handle_state() [L6-8]]
 │   ├── physics_processor.py [📂 player/physics_processor.py] -> [💡 📦 imp: pygame, settings | 🧬 class PlayerPhysicsProcessor [L5-77] |     └─ def __init__() [L6-7] |     └─ def process() [L9-77]]
-│   ├── player_main.py [📂 player/player_main.py] -> [💡 📦 imp: player.asset_loader, player.combat_processor, player.input_handler, player.motions.air_motions, player.motions.attack_motions, player.motions.ground_motions, player.physics_processor, player.variables, pygame | 🧬 class Player [L12-155] |     └─ def __init__() [L13-27] |     └─ def update_animation_state() [L29-40] |     └─ def update() [L42-122] |     └─ def update_with_dt() [L124-126] |     └─ def draw() [L128-155]]
-│   ├── variables.py [📂 player/variables.py] -> [💡 📦 imp: settings | 🧬 class PlayerVariables [L4-85] |     └─ def __init__() [L5-71] |     └─ def take_damage() [L73-79] |     └─ def heal() [L81-85]]
+│   ├── player_main.py [📂 player/player_main.py]
+│   ├── variables.py [📂 player/variables.py] -> [💡 📦 imp: settings | 🧬 class PlayerVariables [L5-92] |     └─ def __init__() [L6-78] |     └─ def take_damage() [L80-86] |     └─ def heal() [L88-92]]
 ├── settings.py [📂 settings.py]
