@@ -8,9 +8,30 @@ C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\map\backgr
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\map\background\test_map\background.jpg
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\map\ground\ground_dirt.png
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\platform\platform_brick.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\attack_effect\1784448778807.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\attack_effect\1784448780135-Photoroom.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\attack_effect\1784448780258-Photoroom.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\attack_effect\1784448780360-Photoroom.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\attack_effect\1784448780477-Photoroom.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\attack_effect\1784448780543-Photoroom.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\attack_effect\1784448780615-Photoroom.png
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\attack_effect\effect_hit1.png
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\attack_effect\effect_hit2.png
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\attack_effect\effect_hit3.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\1784448779157-Photoroom.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\1784448779266-Photoroom (1).png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\1784448779266-Photoroom.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\1784448779395-Photoroom.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\1784448779485-Photoroom.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\1784448779533-Photoroom.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\1784448779610-Photoroom.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\1784448779666-Photoroom.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\1784448779757-Photoroom.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\1784448779813-Photoroom.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\1784448779868-Photoroom.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\1784448779929-Photoroom.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\1784448780001-Photoroom.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\1784448780076-Photoroom.png
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\player_attack1.png
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\player_attack2.png
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\player_attack3.png
@@ -25,11 +46,14 @@ C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\pla
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\player_run1.png
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\player_run2.png
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\player_run3.png
-C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\player_stand1.png
-C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\player_stand2.png
-C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\player_stand3.png
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\player_walk.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\mussic\256872__caderesounds__apocalypse-runner-perc (2).wav
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\mussic\275302__horseyfootage__abandoned (1).mp3
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\mussic\353961__13nharri__heavenly_horn (1).mp3
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\mussic\534301__danjfilms__haunting-siren-in-the-distance (1) (1).wav
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\mussic\614456__victor_natas__evening-of-fear (1) (1).wav
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\mussic\859449__coghezzi__alien-ship-alarm-escape-detected (1).wav
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\mussic\87132__jobro__evacuate (1) (1).wav
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\camera.py
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\dialogue_system\dialogue_manager.py
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\enemy\enemys\dummy\__init__.py

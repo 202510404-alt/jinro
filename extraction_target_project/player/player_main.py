@@ -84,7 +84,7 @@ class Player:
         keys = pygame.key.get_pressed()
         self.input_handler.update(self.vars, keys)
 
-  # 🪐 [관성 물리 메커니즘 통합]
+        # 🪐 [관성 물리 메커니즘 통합]
         if self.vars.is_attacking:
             if getattr(self.vars, 'attack_mode', 'NORMAL') == 'NORMAL':
                 if self.vars.is_moving:
@@ -138,7 +138,7 @@ class Player:
             if self.vars.anim_timer >= delay:
                 self.vars.anim_timer = 0
                 self.vars.current_frame_idx = (self.vars.current_frame_idx + 1) % len(anim_list)
-
+                
     def update_with_dt(self, platforms, game_map, dt, entities=None):
         """main.py의 호출 인터페이스를 지원하기 위한 update 래퍼 메서드"""
         self.update(platforms, entities=entities, game_map=game_map, dt=dt)

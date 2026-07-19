@@ -1016,8 +1016,8 @@
       "end_line": 46,
       "calls": [
         "handle_mouse_down",
-        "screen_to_world",
-        "snap"
+        "snap",
+        "screen_to_world"
       ],
       "used_by": []
     },
@@ -1052,8 +1052,8 @@
       "start_line": 146,
       "end_line": 186,
       "calls": [
-        "screen_to_world",
-        "handle_sidebar_click"
+        "handle_sidebar_click",
+        "screen_to_world"
       ],
       "used_by": []
     },
@@ -1143,8 +1143,8 @@
       "start_line": 36,
       "end_line": 54,
       "calls": [
-        "next_new_map_file",
-        "file_to_map_name"
+        "file_to_map_name",
+        "next_new_map_file"
       ],
       "used_by": []
     },
@@ -1284,9 +1284,9 @@
       "start_line": 6,
       "end_line": 12,
       "calls": [
-        "draw_selection",
         "draw_status",
         "draw_sidebar",
+        "draw_selection",
         "draw_grid"
       ],
       "used_by": []
@@ -1346,11 +1346,11 @@
       "start_line": 77,
       "end_line": 104,
       "calls": [
-        "text",
-        "draw_help",
         "draw_inspector",
-        "draw_tool_button",
-        "draw_button"
+        "text",
+        "draw_button",
+        "draw_help",
+        "draw_tool_button"
       ],
       "used_by": []
     },
@@ -1495,10 +1495,10 @@
       "start_line": 40,
       "end_line": 75,
       "calls": [
-        "_serialize_entity",
-        "_serialize_structure",
         "_serialize_trigger",
-        "_serialize_platform"
+        "_serialize_structure",
+        "_serialize_platform",
+        "_serialize_entity"
       ],
       "used_by": []
     },
