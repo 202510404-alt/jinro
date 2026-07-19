@@ -4,6 +4,8 @@ import os
 import sys
 from enemy.enemys.dummy.variables import DummyVariables
 
+DEBUG = True
+
 class DummyEnemy:
     def __init__(self, x=0, y=0, *args, **kwargs):
         # 🎯 [기능 보존 + 호환성 확장] 어떤 데이터 규격(값, dict 등)으로 들어와도 안전하게 x, y 좌표 바인딩
@@ -161,6 +163,39 @@ class DummyEnemy:
         # 🎯 이미지가 성공적으로 로드된 경우에만 출력하여 크래시 완전 차단
         if current_img:
             screen.blit(current_img, (self.vars.x - ox, self.vars.y - oy))
+    
+    def draw_debug_overlay(self, screen, camera_offset=(0, 0)):
+        """더미 엔티티의 피격 판정(AABB) 상자 및 체력 상태 메타데이터를 화면에 투영합니다."""
+        if not DEBUG or self.vars.hp <= 0 or not screen:
+            return
+
+        ox, oy = camera_offset
+        d_width = getattr(self.vars, 'width', 0)
+        d_height = getattr(self.vars, 'height', 0)
+
+        # 1. 🔴 DummyEnemy 피격 판정 상자(AABB) 실선 렌더링
+        if d_width > 0 and d_height > 0:
+            aabb_rect = pygame.Rect(self.vars.x - ox, self.vars.y - oy, d_width, d_height)
+            pygame.draw.rect(screen, (255, 0, 0), aabb_rect, 2)
+
+        # 2. 📊 실시간 체력 및 히트 상태 메타데이터 투영 (Lazy Evaluation 적용)
+        try:
+            font = pygame.font.SysFont("Consolas", 12)
+        except:
+            font = pygame.font.Font(None, 12)
+
+        debug_texts = [
+            f"HP: {self.vars.hp}/{getattr(self.vars, 'max_hp', '??')}",
+            f"HIT: {self.vars.is_hit}",
+            f"GND: {self.vars.is_grounded}"
+        ]
+
+        for i, text in enumerate(debug_texts):
+            text_surf = font.render(text, True, (255, 0, 0))
+            screen.blit(text_surf, (self.vars.x - ox, self.vars.y - oy - 15 - (i * 13)))
+
+        # 규격화된 출력 로그 생성
+        print(f"[dummy_main.py] draw_debug_overlay() -> Rendered Dummy AABB: HP={self.vars.hp}, HIT={self.vars.is_hit}")
 
 
 # ==============================================================================

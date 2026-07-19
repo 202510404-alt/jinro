@@ -29,6 +29,7 @@ C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\pla
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\player_stand2.png
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\player_stand3.png
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\images\player\player_move\player_walk.png
+C:\Users\COMLAB\Desktop\jinro\extraction_target_project\assets\mussic\614456__victor_natas__evening-of-fear (1) (1).wav
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\camera.py
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\dialogue_system\dialogue_manager.py
 C:\Users\COMLAB\Desktop\jinro\extraction_target_project\enemy\enemys\dummy\__init__.py

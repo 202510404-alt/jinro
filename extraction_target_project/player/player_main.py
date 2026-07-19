@@ -8,6 +8,7 @@ from player.combat_processor import PlayerCombatProcessor   # 🌟 전투 엔진
 from player.motions.ground_motions import GroundMotions
 from player.motions.air_motions import AirMotions
 from player.motions.attack_motions import AttackMotions
+import settings
 
 DEBUG = False
 
@@ -144,6 +145,9 @@ class Player:
 
     def draw(self, screen, camera_offset=(0, 0)):
         """플레이어 본체 이미지와 공격 시 콤보 이펙트 및 임시 돌진 범위 시각화를 화면에 렌더링합니다."""
+# 파일 상단의 로컬 DEBUG 기본값과 전역 settings 스위치를 상호 결합하여 동기화
+        global DEBUG
+        current_debug_state = DEBUG or getattr(settings, 'DEBUG_SHOW_HITBOX', False)
         ox, oy = camera_offset
         # 🎬 1. 캐릭터 본체 스프라이트 시퀀스 추출 및 출력
         anim_list = self.assets.images.get(self.vars.current_state, [])
@@ -199,3 +203,15 @@ class Player:
 
                 if DEBUG:
                     print(f"[player_main.py] draw() -> Rendered DASH OBB Area: center=({obb_cx}, {obb_cy}), len={half_len}, wid={half_wid}")
+
+        # 4. 🟢 [디버그 오버레이] 플레이어 피격 판정 상자(AABB) 실시간 녹색 렌더링
+        if DEBUG:
+            # 플레이어의 width와 height 속성이 설정되어 있는지 안전 필터링 거침
+            p_width = getattr(self.vars, 'width', 0)
+            p_height = getattr(self.vars, 'height', 0)
+            if p_width > 0 and p_height > 0:
+                aabb_rect = pygame.Rect(self.vars.x - ox, self.vars.y - oy, p_width, p_height)
+                pygame.draw.rect(screen, (0, 255, 0), aabb_rect, 2)
+                
+                # 런타임 성능 저하 방지를 위해 디버그 스위치 기반 정밀 로깅 수행
+                print(f"[player_main.py] draw() -> Rendered Player AABB: rect=({aabb_rect.x}, {aabb_rect.y}, {aabb_rect.width}, {aabb_rect.height})")

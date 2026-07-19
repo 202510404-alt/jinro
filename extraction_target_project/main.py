@@ -11,6 +11,13 @@ from map_system.map_main import GameMap
 from camera import ElasticCamera
 from dialogue_system.dialogue_manager import DialogueManager
 
+DEBUG = True
+DEBUG_SHOW_HITBOX = False
+
+if DEBUG:
+    print(f"[main.py] 모듈 초기화() -> 디버그 시스템 활성화: DEBUG={DEBUG}, DEBUG_SHOW_HITBOX={DEBUG_SHOW_HITBOX}")
+
+
 current_dir = os.path.dirname(os.path.abspath(__file__))
 if current_dir not in sys.path:
     sys.path.insert(0, current_dir)
@@ -87,7 +94,7 @@ def draw_player_hp_hud(surface, player_obj):
 
 def run_game(window_screen, virtual_screen, clock):
      """실제 인게임 액션 플레이 모드 루프 (AI 오염 제거 및 멀티맵 동적 락 장착)"""
-     
+     global DEBUG_SHOW_HITBOX
      # 1. 객체 초기화 (기존 데이터 프로토콜 엄격 준수)
      player = Player(100, GROUND_Y - 60)
      game_map = GameMap(map_id=1)
@@ -112,7 +119,7 @@ def run_game(window_screen, virtual_screen, clock):
      )
      camera.set_center(player.vars.x + player.vars.width / 2.0, player.vars.y + player.vars.height / 2.0)
      
-     # 3. 게임 메인 루프
+# 3. 게임 메인 루프
      while True:
          dt = clock.tick(FPS) / 1000.0
          
@@ -122,6 +129,12 @@ def run_game(window_screen, virtual_screen, clock):
              elif event.type == pygame.KEYDOWN:
                  if event.key == pygame.K_ESCAPE:
                      return AppState.MAIN_MENU
+                 # F3 키 입력을 인터셉트하여 히트박스 디버그 플래그 실시간 토글
+                 elif event.key == pygame.K_F3:
+                     before_state = DEBUG_SHOW_HITBOX
+                     DEBUG_SHOW_HITBOX = not DEBUG_SHOW_HITBOX
+                     if DEBUG:
+                         print(f"[main.py] run_game() -> Debug Toggle Changed: DEBUG_SHOW_HITBOX ({before_state} -> {DEBUG_SHOW_HITBOX})")
                  if dialogue_manager.is_active and event.key in (pygame.K_SPACE, pygame.K_RETURN):
                     dialogue_manager.next_line()
                     
@@ -251,7 +264,7 @@ def run_main_menu(window_screen, virtual_screen, clock):
         pygame.display.flip()
 
 def draw(self, screen, camera_offset=(0, 0)):
-        """플레이어 본체 이미지와 공격 시 쇠파이프 콤보 이펙트를 화면에 렌더링합니다."""
+        """플레이어 본체 이미지와 공격 시 쇠파이프 콤보 이펙트를 화면에 렌더링하고 디버그 오버레이를 최종적으로 상위 투영합니다."""
         ox, oy = camera_offset
         # 🎬 1. 캐릭터 본체 스프라이트 시퀀스 추출 및 출력 (기존 순정 로직 완벽 보존)
         anim_list = self.assets.images.get(self.vars.current_state, [])
@@ -303,6 +316,31 @@ def draw(self, screen, camera_offset=(0, 0)):
                 
             # 최종 연산 완료된 이펙트를 게임 화면에 블릿(Blit) 출력
             screen.blit(effect_surf, (eff_rect.x, eff_rect.y))
+
+        # ─────────────────────────────────────────────────────────────
+        # 📊 [F3 실시간 메타데이터 스택 레이어 주입] 마인크래프트 스타일 오버레이
+        # ─────────────────────────────────────────────────────────────
+        if getattr(settings, 'DEBUG_SHOW_HITBOX', False):
+            try:
+                font = pygame.font.SysFont("Consolas", 14)
+            except:
+                font = pygame.font.Font(None, 14)
+            
+            meta_data = [
+                "--- SYSTEM INFO (F3 MODE) ---",
+                f"PLAYER WORLD POS: ({self.vars.x:.2f}, {self.vars.y:.2f})",
+                f"PLAYER STATE: {self.vars.current_state} (FRAME: {self.vars.current_frame_idx})",
+                f"CAMERA OFFSET: ox={ox}, oy={oy}",
+                f"ATTACK ACTIVE: {getattr(self.vars, 'is_attacking', False)} (MODE: {getattr(self.vars, 'attack_mode', 'NORMAL')})"
+            ]
+            
+            # 좌측 상단에 흑색 반투명 가독성 패널 및 화이트 텍스트 스택 블릿
+            for idx, text in enumerate(meta_data):
+                txt_surf = font.render(text, True, (255, 255, 255))
+                bg_surf = pygame.Surface((txt_surf.get_width() + 6, txt_surf.get_height() + 4), pygame.SRCALPHA)
+                bg_surf.fill((0, 0, 0, 150))
+                screen.blit(bg_surf, (10, 60 + (idx * 20)))
+                screen.blit(txt_surf, (13, 62 + (idx * 20)))
 
 def main():
     """게임 진입점"""

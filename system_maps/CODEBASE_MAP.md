@@ -511,6 +511,39 @@ class DummyEnemy:
         # 🎯 이미지가 성공적으로 로드된 경우에만 출력하여 크래시 완전 차단
         if current_img:
             screen.blit(current_img, (self.vars.x - ox, self.vars.y - oy))
+    
+    def draw_debug_overlay(self, screen, camera_offset=(0, 0)):
+        """더미 엔티티의 피격 판정(AABB) 상자 및 체력 상태 메타데이터를 화면에 투영합니다."""
+        if not DEBUG or self.vars.hp <= 0 or not screen:
+            return
+
+        ox, oy = camera_offset
+        d_width = getattr(self.vars, 'width', 0)
+        d_height = getattr(self.vars, 'height', 0)
+
+        # 1. 🔴 DummyEnemy 피격 판정 상자(AABB) 실선 렌더링
+        if d_width > 0 and d_height > 0:
+            aabb_rect = pygame.Rect(self.vars.x - ox, self.vars.y - oy, d_width, d_height)
+            pygame.draw.rect(screen, (255, 0, 0), aabb_rect, 2)
+
+        # 2. 📊 실시간 체력 및 히트 상태 메타데이터 투영 (Lazy Evaluation 적용)
+        try:
+            font = pygame.font.SysFont("Consolas", 12)
+        except:
+            font = pygame.font.Font(None, 12)
+
+        debug_texts = [
+            f"HP: {self.vars.hp}/{getattr(self.vars, 'max_hp', '??')}",
+            f"HIT: {self.vars.is_hit}",
+            f"GND: {self.vars.is_grounded}"
+        ]
+
+        for i, text in enumerate(debug_texts):
+            text_surf = font.render(text, True, (255, 0, 0))
+            screen.blit(text_surf, (self.vars.x - ox, self.vars.y - oy - 15 - (i * 13)))
+
+        # 규격화된 출력 로그 생성
+        print(f"[dummy_main.py] draw_debug_overlay() -> Rendered Dummy AABB: HP={self.vars.hp}, HIT={self.vars.is_hit}")
 
 def auto_register_entity():
     """ 전역 공간이 아닌 함수 내부에서 임포트하여 상호 임포트 락(Lock)을 완전히 우회합니다. """
@@ -773,6 +806,40 @@ class TestEnemy1:
         # 눈 렌더링
         eye_x = render_x + (self.vars.width - 12 if self.vars.direction == 1 else 6)
         pygame.draw.rect(screen, (0, 0, 0), (eye_x, render_y + 15, 6, 6))
+
+    def draw_debug_overlay(self, screen, camera_offset=(0, 0)):
+        """인공지능 적(TestEnemy1)의 AABB 경계상자 및 상태 머신 메타데이터를 화면에 투영합니다."""
+        if not DEBUG or getattr(self.vars, 'is_dead', False) or not screen:
+            return
+
+        ox, oy = camera_offset
+        e_width = getattr(self.vars, 'width', 0)
+        e_height = getattr(self.vars, 'height', 0)
+
+        # 1. 🔴 TestEnemy1 피격 판정 상자(AABB) 실선 렌더링
+        if e_width > 0 and e_height > 0:
+            aabb_rect = pygame.Rect(self.vars.x - ox, self.vars.y - oy, e_width, e_height)
+            pygame.draw.rect(screen, (255, 0, 0), aabb_rect, 2)
+
+        # 2. 📊 AI 상태 구조 및 물리 데이터 추적 (Lazy Evaluation)
+        try:
+            font = pygame.font.SysFont("Consolas", 12)
+        except:
+            font = pygame.font.Font(None, 12)
+
+        debug_texts = [
+            f"HP: {self.vars.hp}/{getattr(self.vars, 'max_hp', '??')}",
+            f"STATE: {getattr(self, 'state', 'NONE')}",            # self 직속 속성 추적으로 변경
+            f"VEL: ({getattr(self.vars, 'vx', 0):.1f}, {getattr(self.vars, 'vy', 0):.1f})",
+            f"GND: {getattr(self, 'on_ground', False)}"             # 누락된 실시간 접지 데이터 바인딩
+        ]
+
+        for i, text in enumerate(debug_texts):
+            text_surf = font.render(text, True, (255, 0, 0))
+            screen.blit(text_surf, (self.vars.x - ox, self.vars.y - oy - 15 - (i * 13)))
+
+        if DEBUG:
+            print(f"[test_enemy1_main.py] draw_debug_overlay() -> Rendered AI Enemy AABB: HP={self.vars.hp}, STATE={getattr(self.vars, 'state', 'NONE')}")
 ```
 
 --------------------------------------------------
@@ -923,7 +990,7 @@ def draw_player_hp_hud(surface, player_obj):
 
 def run_game(window_screen, virtual_screen, clock):
      """실제 인게임 액션 플레이 모드 루프 (AI 오염 제거 및 멀티맵 동적 락 장착)"""
-     
+     global DEBUG_SHOW_HITBOX
      # 1. 객체 초기화 (기존 데이터 프로토콜 엄격 준수)
      player = Player(100, GROUND_Y - 60)
      game_map = GameMap(map_id=1)
@@ -948,7 +1015,7 @@ def run_game(window_screen, virtual_screen, clock):
      )
      camera.set_center(player.vars.x + player.vars.width / 2.0, player.vars.y + player.vars.height / 2.0)
      
-     # 3. 게임 메인 루프
+# 3. 게임 메인 루프
      while True:
          dt = clock.tick(FPS) / 1000.0
          
@@ -958,6 +1025,12 @@ def run_game(window_screen, virtual_screen, clock):
              elif event.type == pygame.KEYDOWN:
                  if event.key == pygame.K_ESCAPE:
                      return AppState.MAIN_MENU
+                 # F3 키 입력을 인터셉트하여 히트박스 디버그 플래그 실시간 토글
+                 elif event.key == pygame.K_F3:
+                     before_state = DEBUG_SHOW_HITBOX
+                     DEBUG_SHOW_HITBOX = not DEBUG_SHOW_HITBOX
+                     if DEBUG:
+                         print(f"[main.py] run_game() -> Debug Toggle Changed: DEBUG_SHOW_HITBOX ({before_state} -> {DEBUG_SHOW_HITBOX})")
                  if dialogue_manager.is_active and event.key in (pygame.K_SPACE, pygame.K_RETURN):
                     dialogue_manager.next_line()
                     
@@ -1002,7 +1075,7 @@ def run_game(window_screen, virtual_screen, clock):
 
 def run_main_menu(window_screen, virtual_screen, clock):
     """메인 메뉴 루프 (순정 사양 복구 및 수려한 디자인 제공)"""
-    pygame.display.set_caption("Jjap Cursor Game Engine - Main Menu")
+    pygame.display.set_caption("Game Engine - Main Menu")
     
     # 폰트 로딩 (한글 및 영문 텍스트 지원)
     try:
@@ -1048,11 +1121,11 @@ def run_main_menu(window_screen, virtual_screen, clock):
         pulse_val = math.sin(time_elapsed * 3.0) * 8.0
         
         # 타이틀 글로우/그림자 효과
-        shadow_surf = title_font.render("Jjap Cursor Game Engine", True, (56, 189, 248))  # Sky 400
+        shadow_surf = title_font.render("Game Engine", True, (56, 189, 248))  # Sky 400
         shadow_rect = shadow_surf.get_rect(center=(VIRTUAL_WIDTH // 2 - 4, 300 + int(pulse_val) - 4))
         virtual_screen.blit(shadow_surf, shadow_rect)
         
-        title_surf = title_font.render("Jjap Cursor Game Engine", True, (255, 255, 255))
+        title_surf = title_font.render("wwwGame Engine", True, (255, 255, 255))
         title_rect = title_surf.get_rect(center=(VIRTUAL_WIDTH // 2, 300 + int(pulse_val)))
         virtual_screen.blit(title_surf, title_rect)
         
@@ -1087,7 +1160,7 @@ def run_main_menu(window_screen, virtual_screen, clock):
         pygame.display.flip()
 
 def draw(self, screen, camera_offset=(0, 0)):
-        """플레이어 본체 이미지와 공격 시 쇠파이프 콤보 이펙트를 화면에 렌더링합니다."""
+        """플레이어 본체 이미지와 공격 시 쇠파이프 콤보 이펙트를 화면에 렌더링하고 디버그 오버레이를 최종적으로 상위 투영합니다."""
         ox, oy = camera_offset
         # 🎬 1. 캐릭터 본체 스프라이트 시퀀스 추출 및 출력 (기존 순정 로직 완벽 보존)
         anim_list = self.assets.images.get(self.vars.current_state, [])
@@ -1139,6 +1212,31 @@ def draw(self, screen, camera_offset=(0, 0)):
                 
             # 최종 연산 완료된 이펙트를 게임 화면에 블릿(Blit) 출력
             screen.blit(effect_surf, (eff_rect.x, eff_rect.y))
+
+        # ─────────────────────────────────────────────────────────────
+        # 📊 [F3 실시간 메타데이터 스택 레이어 주입] 마인크래프트 스타일 오버레이
+        # ─────────────────────────────────────────────────────────────
+        if getattr(settings, 'DEBUG_SHOW_HITBOX', False):
+            try:
+                font = pygame.font.SysFont("Consolas", 14)
+            except:
+                font = pygame.font.Font(None, 14)
+            
+            meta_data = [
+                "--- SYSTEM INFO (F3 MODE) ---",
+                f"PLAYER WORLD POS: ({self.vars.x:.2f}, {self.vars.y:.2f})",
+                f"PLAYER STATE: {self.vars.current_state} (FRAME: {self.vars.current_frame_idx})",
+                f"CAMERA OFFSET: ox={ox}, oy={oy}",
+                f"ATTACK ACTIVE: {getattr(self.vars, 'is_attacking', False)} (MODE: {getattr(self.vars, 'attack_mode', 'NORMAL')})"
+            ]
+            
+            # 좌측 상단에 흑색 반투명 가독성 패널 및 화이트 텍스트 스택 블릿
+            for idx, text in enumerate(meta_data):
+                txt_surf = font.render(text, True, (255, 255, 255))
+                bg_surf = pygame.Surface((txt_surf.get_width() + 6, txt_surf.get_height() + 4), pygame.SRCALPHA)
+                bg_surf.fill((0, 0, 0, 150))
+                screen.blit(bg_surf, (10, 60 + (idx * 20)))
+                screen.blit(txt_surf, (13, 62 + (idx * 20)))
 
 def main():
     """게임 진입점"""
@@ -3380,6 +3478,10 @@ class GameMap:
         for z, obj in drawables:
             obj.draw(screen, camera_offset=camera_offset)
 
+            # 전역 히트박스 디버그 활성화 시 각 엔티티의 디버그 오버레이 순차 커플링 출력
+            if getattr(settings, "DEBUG_SHOW_HITBOX", False) and hasattr(obj, "draw_debug_overlay"):
+                obj.draw_debug_overlay(screen, camera_offset=camera_offset)
+
         # ================================================================
         # 🪨 LAYER 4 — 흙바닥 지형 타일
         # ================================================================
@@ -3965,15 +4067,26 @@ class PlayerCombatProcessor:
             if vars_obj.attack_cooldown_timer < 0.0:
                 vars_obj.attack_cooldown_timer = 0.0
 
-        # 2. 새로운 공격 모션 프레임 개시 시점 (트리거)
+# 2. 새로운 공격 모션 프레임 개시 시점 (트리거)
         if vars_obj.is_attacking and getattr(vars_obj, 'attack_timer', 0) == 0:
             if not hasattr(vars_obj, 'attack_mode'):
                 vars_obj.attack_mode = "NORMAL"
+
+            # 디버그용 Before 상태 백업
+            if DEBUG:
+                before_mode = vars_obj.attack_mode
+                before_x = getattr(vars_obj, 'x', 0)
+                before_y = getattr(vars_obj, 'y', 0)
 
             # 📐 [OBB 축 A점] 돌진/공격 개시 원점 박제
             vars_obj.attack_start_x = vars_obj.x
             vars_obj.attack_start_y = vars_obj.y
             vars_obj.has_hit_enemy = False
+
+            # 타겟팅 공통 변수 상위 스코프 초기화
+            target_enemy = None
+            max_target_distance = vars_obj.attack_range_width * 2.0
+            min_dist_sq = max_target_distance * max_target_distance
 
             # -------------------------------------------------------------
             # [A 트랙] 좌클릭 일반 제자리 콤보 공격 초기화
@@ -3981,10 +4094,6 @@ class PlayerCombatProcessor:
             if vars_obj.attack_mode == "NORMAL":
                 if not hasattr(vars_obj, 'combo_step') or vars_obj.combo_step == 0:
                     vars_obj.combo_step = 1
-
-                # 완전한 제자리 공격 구현을 위한 관성 제동 (가속 0 처리)
-                vars_obj.vx = 0.0
-                vars_obj.vy = 0.0
                 
                 # 타수별 프레임 차등 제어
                 vars_obj.attack_timer = 12 if vars_obj.combo_step in [1, 2] else 18
@@ -3995,7 +4104,7 @@ class PlayerCombatProcessor:
             # -------------------------------------------------------------
             elif vars_obj.attack_mode == "DASH":
                 vars_obj.attack_timer = 12
-                dash_speed = 75.0
+                dash_speed = 20.0
 
                 # 🎯 대쉬 트랙 내 독립 레이더 가동 (공격 범위 2배 탐색)
                 target_enemy = None
@@ -4041,9 +4150,10 @@ class PlayerCombatProcessor:
                     vars_obj.vx = dash_speed if vars_obj.facing_right else -dash_speed
                     vars_obj.vy = 0.0
 
+            # 규격화된 Before-After 디버그 로그 출력 (Lazy Evaluation)
             if DEBUG:
+                print(f"[combat_processor.py] process() -> Attack Initialization Changed: Mode={before_mode} -> {vars_obj.attack_mode}, Origin=({before_x}, {before_y}) -> ({vars_obj.attack_start_x}, {vars_obj.attack_start_y}), Timer={vars_obj.attack_timer}")
                 print(f"[combat_processor.py] process() -> Attack Initialized: mode={vars_obj.attack_mode}, step={getattr(vars_obj, 'combo_step', 0)}, target={vars_obj.target_enemy}")
-
         # -------------------------------------------------------------
         # 3. 공격 액션 진행 및 실시간 히트박스 / 피격 판정 루프 (완벽 복원)
         # -------------------------------------------------------------
@@ -4083,8 +4193,8 @@ class PlayerCombatProcessor:
                     dir_x = 1.0 if vars_obj.facing_right else -1.0
                     dir_y = 0.0
 
-                half_len = (seg_len * 0.5) + (vars_obj.attack_range_width * 0.5)
-                half_wid = vars_obj.attack_range_height * 0.5
+                half_len = (seg_len * 0.5) + (vars_obj.attack_range_width * 0.5) + 80
+                half_wid = (vars_obj.attack_range_height * 0.5) * 1.5
                 obb_cx = (start_cx + cur_cx) * 0.5
                 obb_cy = (start_cy + cur_cy) * 0.5
 
@@ -4150,7 +4260,7 @@ class PlayerCombatProcessor:
                         if vars_obj.attack_mode == "NORMAL" and vars_obj.combo_step == 3:
                             damage = int(damage * 1.5)
                             if hasattr(entity, 'take_damage'):
-                                entity.take_damage(damage, knockback_dir=attack_dir * 0.3)
+                                entity.take_damage(damage, knockback_dir=attack_dir * 0.0)
                         else:
                             if hasattr(entity, 'take_damage'):
                                 entity.take_damage(damage, knockback_dir=attack_dir * 0.0)
@@ -4499,15 +4609,19 @@ class Player:
         keys = pygame.key.get_pressed()
         self.input_handler.update(self.vars, keys)
 
-        # 🪐 [관성 물리 메커니즘 통합]
+  # 🪐 [관성 물리 메커니즘 통합]
         if self.vars.is_attacking:
-            # ⚔️ [끊김 없는 이동 보장] 일반 공격 모드전개 중 사용자가 AD 이동키를 입력 중인 경우
-            # 가속도 입력을 물리적으로 완전 차단하던 기존 구조를 파쇄하고 미끄러지듯 이동 가속을 허용합니다.
             if getattr(self.vars, 'attack_mode', 'NORMAL') == 'NORMAL':
                 if self.vars.is_moving:
+                    # 현재 move_state("RUN" 또는 "WALK")에 맞는 속도를 가져옵니다.
                     target_speed = self.vars.run_speed if self.vars.move_state == "RUN" else self.vars.walk_speed
                     direction = 1 if self.vars.facing_right else -1
-                    target_vx = target_speed * direction * 0.4
+                    
+                    # 💡 감속 비율을 0.4에서 0.7~0.8 정도로 올려주거나, 
+                    # 아예 1.0으로 만들면 공격 중에도 대시 속도가 시원하게 유지됩니다!
+                    vars_target_modifier = 0.75  # 75% 속도 유지 (원하는 대로 조절 가능)
+                    target_vx = target_speed * direction * vars_target_modifier
+                    
                     self.vars.vx += (target_vx - self.vars.vx) * min(1.0, 0.25 * fps_scale)
                 else:
                     self.vars.vx *= max(0.0, 1.0 - (0.35 * fps_scale))
@@ -4556,6 +4670,9 @@ class Player:
 
     def draw(self, screen, camera_offset=(0, 0)):
         """플레이어 본체 이미지와 공격 시 콤보 이펙트 및 임시 돌진 범위 시각화를 화면에 렌더링합니다."""
+# 파일 상단의 로컬 DEBUG 기본값과 전역 settings 스위치를 상호 결합하여 동기화
+        global DEBUG
+        current_debug_state = DEBUG or getattr(settings, 'DEBUG_SHOW_HITBOX', False)
         ox, oy = camera_offset
         # 🎬 1. 캐릭터 본체 스프라이트 시퀀스 추출 및 출력
         anim_list = self.assets.images.get(self.vars.current_state, [])
@@ -4611,6 +4728,18 @@ class Player:
 
                 if DEBUG:
                     print(f"[player_main.py] draw() -> Rendered DASH OBB Area: center=({obb_cx}, {obb_cy}), len={half_len}, wid={half_wid}")
+
+        # 4. 🟢 [디버그 오버레이] 플레이어 피격 판정 상자(AABB) 실시간 녹색 렌더링
+        if DEBUG:
+            # 플레이어의 width와 height 속성이 설정되어 있는지 안전 필터링 거침
+            p_width = getattr(self.vars, 'width', 0)
+            p_height = getattr(self.vars, 'height', 0)
+            if p_width > 0 and p_height > 0:
+                aabb_rect = pygame.Rect(self.vars.x - ox, self.vars.y - oy, p_width, p_height)
+                pygame.draw.rect(screen, (0, 255, 0), aabb_rect, 2)
+                
+                # 런타임 성능 저하 방지를 위해 디버그 스위치 기반 정밀 로깅 수행
+                print(f"[player_main.py] draw() -> Rendered Player AABB: rect=({aabb_rect.x}, {aabb_rect.y}, {aabb_rect.width}, {aabb_rect.height})")
 ```
 
 --------------------------------------------------

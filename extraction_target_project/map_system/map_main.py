@@ -484,6 +484,10 @@ class GameMap:
         for z, obj in drawables:
             obj.draw(screen, camera_offset=camera_offset)
 
+            # 전역 히트박스 디버그 활성화 시 각 엔티티의 디버그 오버레이 순차 커플링 출력
+            if getattr(settings, "DEBUG_SHOW_HITBOX", False) and hasattr(obj, "draw_debug_overlay"):
+                obj.draw_debug_overlay(screen, camera_offset=camera_offset)
+
         # ================================================================
         # 🪨 LAYER 4 — 흙바닥 지형 타일
         # ================================================================

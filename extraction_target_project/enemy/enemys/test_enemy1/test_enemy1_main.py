@@ -4,6 +4,8 @@ import math
 # 우리가 정의한 TestEnemy1Variables 설정을 안전하게 임포트합니다.
 from enemy.enemys.test_enemy1.variables import TestEnemy1Variables
 
+DEBUG = True
+
 class TestEnemy1:
     def __init__(self, x, y):
         # 1. variables.py에 명시된 모든 변수를 실시간 데이터로 장착!
@@ -209,3 +211,37 @@ class TestEnemy1:
         # 눈 렌더링
         eye_x = render_x + (self.vars.width - 12 if self.vars.direction == 1 else 6)
         pygame.draw.rect(screen, (0, 0, 0), (eye_x, render_y + 15, 6, 6))
+
+    def draw_debug_overlay(self, screen, camera_offset=(0, 0)):
+        """인공지능 적(TestEnemy1)의 AABB 경계상자 및 상태 머신 메타데이터를 화면에 투영합니다."""
+        if not DEBUG or getattr(self.vars, 'is_dead', False) or not screen:
+            return
+
+        ox, oy = camera_offset
+        e_width = getattr(self.vars, 'width', 0)
+        e_height = getattr(self.vars, 'height', 0)
+
+        # 1. 🔴 TestEnemy1 피격 판정 상자(AABB) 실선 렌더링
+        if e_width > 0 and e_height > 0:
+            aabb_rect = pygame.Rect(self.vars.x - ox, self.vars.y - oy, e_width, e_height)
+            pygame.draw.rect(screen, (255, 0, 0), aabb_rect, 2)
+
+        # 2. 📊 AI 상태 구조 및 물리 데이터 추적 (Lazy Evaluation)
+        try:
+            font = pygame.font.SysFont("Consolas", 12)
+        except:
+            font = pygame.font.Font(None, 12)
+
+        debug_texts = [
+            f"HP: {self.vars.hp}/{getattr(self.vars, 'max_hp', '??')}",
+            f"STATE: {getattr(self, 'state', 'NONE')}",            # self 직속 속성 추적으로 변경
+            f"VEL: ({getattr(self.vars, 'vx', 0):.1f}, {getattr(self.vars, 'vy', 0):.1f})",
+            f"GND: {getattr(self, 'on_ground', False)}"             # 누락된 실시간 접지 데이터 바인딩
+        ]
+
+        for i, text in enumerate(debug_texts):
+            text_surf = font.render(text, True, (255, 0, 0))
+            screen.blit(text_surf, (self.vars.x - ox, self.vars.y - oy - 15 - (i * 13)))
+
+        if DEBUG:
+            print(f"[test_enemy1_main.py] draw_debug_overlay() -> Rendered AI Enemy AABB: HP={self.vars.hp}, STATE={getattr(self.vars, 'state', 'NONE')}")

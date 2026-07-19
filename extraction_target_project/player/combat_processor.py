@@ -3,7 +3,7 @@ import math
 import pygame
 
 # 2.2. 정밀 디버깅 전용 파일 단위 로컬 스위치 배치
-DEBUG = False
+DEBUG = True
 
 
 def _obb_vs_aabb_collide(cx, cy, half_len, half_wid, dir_x, dir_y, ax, ay, aw, ah):
@@ -65,15 +65,26 @@ class PlayerCombatProcessor:
             if vars_obj.attack_cooldown_timer < 0.0:
                 vars_obj.attack_cooldown_timer = 0.0
 
-        # 2. 새로운 공격 모션 프레임 개시 시점 (트리거)
+# 2. 새로운 공격 모션 프레임 개시 시점 (트리거)
         if vars_obj.is_attacking and getattr(vars_obj, 'attack_timer', 0) == 0:
             if not hasattr(vars_obj, 'attack_mode'):
                 vars_obj.attack_mode = "NORMAL"
+
+            # 디버그용 Before 상태 백업
+            if DEBUG:
+                before_mode = vars_obj.attack_mode
+                before_x = getattr(vars_obj, 'x', 0)
+                before_y = getattr(vars_obj, 'y', 0)
 
             # 📐 [OBB 축 A점] 돌진/공격 개시 원점 박제
             vars_obj.attack_start_x = vars_obj.x
             vars_obj.attack_start_y = vars_obj.y
             vars_obj.has_hit_enemy = False
+
+            # 타겟팅 공통 변수 상위 스코프 초기화
+            target_enemy = None
+            max_target_distance = vars_obj.attack_range_width * 2.0
+            min_dist_sq = max_target_distance * max_target_distance
 
             # -------------------------------------------------------------
             # [A 트랙] 좌클릭 일반 제자리 콤보 공격 초기화
@@ -137,9 +148,10 @@ class PlayerCombatProcessor:
                     vars_obj.vx = dash_speed if vars_obj.facing_right else -dash_speed
                     vars_obj.vy = 0.0
 
+            # 규격화된 Before-After 디버그 로그 출력 (Lazy Evaluation)
             if DEBUG:
+                print(f"[combat_processor.py] process() -> Attack Initialization Changed: Mode={before_mode} -> {vars_obj.attack_mode}, Origin=({before_x}, {before_y}) -> ({vars_obj.attack_start_x}, {vars_obj.attack_start_y}), Timer={vars_obj.attack_timer}")
                 print(f"[combat_processor.py] process() -> Attack Initialized: mode={vars_obj.attack_mode}, step={getattr(vars_obj, 'combo_step', 0)}, target={vars_obj.target_enemy}")
-
         # -------------------------------------------------------------
         # 3. 공격 액션 진행 및 실시간 히트박스 / 피격 판정 루프 (완벽 복원)
         # -------------------------------------------------------------
