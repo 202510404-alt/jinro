@@ -166,7 +166,7 @@ def run_game(window_screen, virtual_screen, clock):
 
 def run_main_menu(window_screen, virtual_screen, clock):
     """메인 메뉴 루프 (순정 사양 복구 및 수려한 디자인 제공)"""
-    pygame.display.set_caption("Jjap Cursor Game Engine - Main Menu")
+    pygame.display.set_caption("Game Engine - Main Menu")
     
     # 폰트 로딩 (한글 및 영문 텍스트 지원)
     try:
@@ -212,11 +212,11 @@ def run_main_menu(window_screen, virtual_screen, clock):
         pulse_val = math.sin(time_elapsed * 3.0) * 8.0
         
         # 타이틀 글로우/그림자 효과
-        shadow_surf = title_font.render("Jjap Cursor Game Engine", True, (56, 189, 248))  # Sky 400
+        shadow_surf = title_font.render("Game Engine", True, (56, 189, 248))  # Sky 400
         shadow_rect = shadow_surf.get_rect(center=(VIRTUAL_WIDTH // 2 - 4, 300 + int(pulse_val) - 4))
         virtual_screen.blit(shadow_surf, shadow_rect)
         
-        title_surf = title_font.render("Jjap Cursor Game Engine", True, (255, 255, 255))
+        title_surf = title_font.render("wwwGame Engine", True, (255, 255, 255))
         title_rect = title_surf.get_rect(center=(VIRTUAL_WIDTH // 2, 300 + int(pulse_val)))
         virtual_screen.blit(title_surf, title_rect)
         
